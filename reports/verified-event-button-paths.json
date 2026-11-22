@@ -1,0 +1,104 @@
+{
+  "image": "b860_102.bin",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "architecture": "mixed ARM A32 and Thumb-2",
+  "method": [
+    "RTTI and vtable association",
+    "literal and table cross-references",
+    "GNU objdump and Capstone instruction agreement",
+    "direct-call and indirect-call inspection"
+  ],
+  "verified_paths": [
+    {
+      "name": "RelayEventTask startup",
+      "path": [
+        "0x900223A4 BL 0x90027036",
+        "0x90027058 stores worker pointer 0x90026FF1",
+        "0x9002702C BLX R0 invokes a registered callback"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "RelayEventTaskEx startup",
+      "path": [
+        "0x900223AC BL 0x900271E4",
+        "0x90027206 stores worker pointer 0x900271A5",
+        "0x900271DA BLX R0 invokes a registered callback"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "generic button event normalization",
+      "path": [
+        "RTTI COPNOButton at 0x91508BAD",
+        "vtable at 0x91516630",
+        "method 0x9013CF56 switches over IDs 0x40..0x4D"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "shutter button event handling",
+      "path": [
+        "RTTI COPNOShutterButton at 0x9150BB3F",
+        "vtable at 0x91521CFC",
+        "method 0x9013DB1E forwards event ID and payload"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "queued button event handling",
+      "path": [
+        "RTTI COPNOQueueButton at 0x9150A8B3",
+        "vtable at 0x9151DE6C",
+        "method 0x9013DDCC handles IDs 0x04..0x15"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "application button controller",
+      "path": [
+        "RTTI CSYSCAppButtonController at 0x91510DE3",
+        "vtable at 0x91538D1C",
+        "constructor 0x90327520 called at 0x90321CF0",
+        "queue loop 0x9032760C called at 0x90329614",
+        "0x903276B4 passes a received record to 0x903512A0"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "candidate_integration_seams": [
+    {
+      "address": "0x9002702C",
+      "role": "RelayEvent callback invocation",
+      "assessment": "Existing indirect callback boundary. Registration ABI and lifetime are not established.",
+      "hook_safety": "unverified"
+    },
+    {
+      "address": "0x900271DA",
+      "role": "RelayEventEx callback invocation",
+      "assessment": "Existing indirect callback boundary. Registration ABI and lifetime are not established.",
+      "hook_safety": "unverified"
+    },
+    {
+      "address": "0x9013CF56",
+      "role": "generic button event normalization",
+      "assessment": "Central class method for button IDs. Physical MENU/OK code mapping is not established.",
+      "hook_safety": "unverified"
+    },
+    {
+      "address": "0x903276B4",
+      "role": "application button-controller handoff",
+      "assessment": "Observed event-record handoff on the controller loop. Record ABI is only partially inferred.",
+      "hook_safety": "unverified"
+    }
+  ],
+  "unresolved": [
+    "physical MENU and OK event-code mapping",
+    "callback registration public entry point and calling convention",
+    "LCD/OSD drawing path",
+    "free executable storage and relocation constraints",
+    "interrupt, concurrency and cache-coherency requirements",
+    "recovery behavior"
+  ],
+  "warning": "Every address is tied to this exact B image. No site is approved for patching or execution on a camera."
+}
