@@ -1,0 +1,49 @@
+{
+  "image_kind": "decoded Nikon D3300 B-firmware (heuristic)",
+  "architecture": "ARMv7 little-endian",
+  "base": "0x90020000",
+  "size": 23854986,
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "reset_vector": "0x90352FE0",
+  "reset_vector_file_offset": "0x332FE0",
+  "ram_maps": [
+    {
+      "name": "kernel_text",
+      "source": "0x9158A358",
+      "destination": "0x10000000",
+      "file_offset": "0x156A358",
+      "length": 243124,
+      "permissions": "rwx",
+      "available": true
+    },
+    {
+      "name": "kernel_data",
+      "source": "0x915C590C",
+      "destination": "0x1003B5B4",
+      "file_offset": "0x15A590C",
+      "length": 6044,
+      "permissions": "rw",
+      "available": true
+    },
+    {
+      "name": "kernel_data_2",
+      "source": "0x916A73A0",
+      "destination": "0x1011D420",
+      "file_offset": "0x16873A0",
+      "length": 166716,
+      "permissions": "rw",
+      "available": true
+    },
+    {
+      "name": "kernel_data_3",
+      "source": "0x916A739C",
+      "destination": "0x1011D03C",
+      "file_offset": "0x168739C",
+      "length": 4,
+      "permissions": "rw",
+      "available": true
+    }
+  ],
+  "all_maps_in_bounds": true,
+  "caution": "Reset check is not a cryptographic camera/model/version authentication."
+}

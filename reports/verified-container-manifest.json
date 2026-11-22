@@ -1,0 +1,30 @@
+{
+  "endian": "big",
+  "count": 2,
+  "headerlen": 112,
+  "unknown1": 0,
+  "unknown2": 0,
+  "entries": [
+    {
+      "name": "a860_010101.bin",
+      "offset": 112,
+      "length": 786434,
+      "unknown1": 0,
+      "unknown2": 0,
+      "sha256": "686b727ecc0ec7296772f3cdb0cee48086c60836ea2073e9f6e17e755c36c807"
+    },
+    {
+      "name": "b860_102.bin",
+      "offset": 786546,
+      "length": 23854986,
+      "unknown1": 0,
+      "unknown2": 0,
+      "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff"
+    }
+  ],
+  "input_filename": "D3300_0102.bin",
+  "input_bytes": 24641548,
+  "input_sha256": "0484d43a471c64c2adcb0016868fcd937183e4f0b61ec964f6f23a62ad50152a",
+  "decoded_sha256": "34fad001c16b2cf30f56f22db8ac41887fa3f6de963e32c6f42a9f5e44edd26a",
+  "decode_offset": 0
+}

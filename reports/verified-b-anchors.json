@@ -1,0 +1,259 @@
+{
+  "input_sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "base": "0x90020000",
+  "size": 23854986,
+  "reset_vector": "0x90352FE0",
+  "all_ram_maps_in_bounds": true,
+  "source": "https://github.com/simeonpilgrim/nikon-firmware-tools/blob/main/Nikon-Patch-JS/src/nikon_patch/patches.c",
+  "source_patch_count": 2,
+  "anchor_count": 23,
+  "groups": {
+    "video_64mbps": {
+      "status": "original",
+      "matched_original": 20,
+      "matched_modified": 0,
+      "unexpected": 0,
+      "out_of_range": 0
+    },
+    "liveview_timeout": {
+      "status": "original",
+      "matched_original": 3,
+      "matched_modified": 0,
+      "unexpected": 0,
+      "out_of_range": 0
+    }
+  },
+  "sites": [
+    {
+      "id": "video32_00",
+      "group": "video_64mbps",
+      "file_offset": "0x143C8BC",
+      "rom_address": "0x9145C8BC",
+      "state": "original",
+      "expected_before": "00366e01002d3101",
+      "expected_after": "0090d00300879303",
+      "observed": "00366e01002d3101"
+    },
+    {
+      "id": "video32_01",
+      "group": "video_64mbps",
+      "file_offset": "0x143C8CC",
+      "rom_address": "0x9145C8CC",
+      "state": "original",
+      "expected_before": "00366e01002d3101",
+      "expected_after": "0090d00300879303",
+      "observed": "00366e01002d3101"
+    },
+    {
+      "id": "video32_02",
+      "group": "video_64mbps",
+      "file_offset": "0x143C8D4",
+      "rom_address": "0x9145C8D4",
+      "state": "original",
+      "expected_before": "00366e01002d3101",
+      "expected_after": "0090d00300879303",
+      "observed": "00366e01002d3101"
+    },
+    {
+      "id": "video32_03",
+      "group": "video_64mbps",
+      "file_offset": "0x143C8E4",
+      "rom_address": "0x9145C8E4",
+      "state": "original",
+      "expected_before": "00366e01002d3101",
+      "expected_after": "0090d00300879303",
+      "observed": "00366e01002d3101"
+    },
+    {
+      "id": "video32_04",
+      "group": "video_64mbps",
+      "file_offset": "0x143C8F4",
+      "rom_address": "0x9145C8F4",
+      "state": "original",
+      "expected_before": "00366e01002d3101",
+      "expected_after": "0090d00300879303",
+      "observed": "00366e01002d3101"
+    },
+    {
+      "id": "video32_05",
+      "group": "video_64mbps",
+      "file_offset": "0x143C904",
+      "rom_address": "0x9145C904",
+      "state": "original",
+      "expected_before": "00366e01002d3101",
+      "expected_after": "0090d00300879303",
+      "observed": "00366e01002d3101"
+    },
+    {
+      "id": "video32_06",
+      "group": "video_64mbps",
+      "file_offset": "0x143C914",
+      "rom_address": "0x9145C914",
+      "state": "original",
+      "expected_before": "00366e01002d3101",
+      "expected_after": "0090d00300879303",
+      "observed": "00366e01002d3101"
+    },
+    {
+      "id": "video16_00",
+      "group": "video_64mbps",
+      "file_offset": "0x143C2C4",
+      "rom_address": "0x9145C2C4",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_01",
+      "group": "video_64mbps",
+      "file_offset": "0x143C2DC",
+      "rom_address": "0x9145C2DC",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_02",
+      "group": "video_64mbps",
+      "file_offset": "0x143C2F4",
+      "rom_address": "0x9145C2F4",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_03",
+      "group": "video_64mbps",
+      "file_offset": "0x143C30C",
+      "rom_address": "0x9145C30C",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_04",
+      "group": "video_64mbps",
+      "file_offset": "0x143C324",
+      "rom_address": "0x9145C324",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_05",
+      "group": "video_64mbps",
+      "file_offset": "0x143C348",
+      "rom_address": "0x9145C348",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_06",
+      "group": "video_64mbps",
+      "file_offset": "0x143C360",
+      "rom_address": "0x9145C360",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_07",
+      "group": "video_64mbps",
+      "file_offset": "0x143C36C",
+      "rom_address": "0x9145C36C",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_08",
+      "group": "video_64mbps",
+      "file_offset": "0x143C384",
+      "rom_address": "0x9145C384",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_09",
+      "group": "video_64mbps",
+      "file_offset": "0x143C39C",
+      "rom_address": "0x9145C39C",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_10",
+      "group": "video_64mbps",
+      "file_offset": "0x143C3B4",
+      "rom_address": "0x9145C3B4",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_11",
+      "group": "video_64mbps",
+      "file_offset": "0x143C3CC",
+      "rom_address": "0x9145C3CC",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "video16_12",
+      "group": "video_64mbps",
+      "file_offset": "0x143C414",
+      "rom_address": "0x9145C414",
+      "state": "original",
+      "expected_before": "c05d0000204e",
+      "expected_after": "00fa000060ea",
+      "observed": "c05d0000204e"
+    },
+    {
+      "id": "liveview_00",
+      "group": "liveview_timeout",
+      "file_offset": "0x92F0",
+      "rom_address": "0x900292F0",
+      "state": "original",
+      "expected_before": "a0bb0d00",
+      "expected_after": "8027cb05",
+      "observed": "a0bb0d00"
+    },
+    {
+      "id": "liveview_01",
+      "group": "liveview_timeout",
+      "file_offset": "0xC318",
+      "rom_address": "0x9002C318",
+      "state": "original",
+      "expected_before": "a0bb0d00",
+      "expected_after": "8027cb05",
+      "observed": "a0bb0d00"
+    },
+    {
+      "id": "liveview_02",
+      "group": "liveview_timeout",
+      "file_offset": "0x3039F0",
+      "rom_address": "0x903239F0",
+      "state": "original",
+      "expected_before": "a0bb0d00",
+      "expected_after": "8027cb05",
+      "observed": "a0bb0d00"
+    }
+  ],
+  "warning": "Anchor verification does not prove camera model, version, safety, or exploitability."
+}
