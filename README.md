@@ -30,6 +30,8 @@ python3 tools/d3300_elf.py ~/Desktop/d3300-analysis/b860_102.bin -o ~/Desktop/d3
 8. **Read-only разбор событий**: подтверждены RelayEvent/RelayEventEx callback-циклы, классы кнопок и цикл `CSYSCAppButtonController`. Адреса и ограничения записаны в `reports/verified-event-button-paths.json`.
 9. **Собственное меню на хосте**: `core/dml_menu.*` предоставляет меню модулей; `make run` сохраняет автоматический прогон, `./build/d3300_sim --interactive` запускает интерактивный режим.
 
+Продолжение анализа кнопок, callback-регистрации и управления графическим буфером описано в `reports/D3300_C102_followup.md`.
+
 ### Что НЕ сделано
 
 - **Теперь проверено на настоящем файле D3300 C 1.02.** Но это исключительно статический анализ, не исполнение кода на камере.
