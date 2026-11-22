@@ -1,0 +1,58 @@
+"""Tests for offline input-record decoding with synthetic records."""
+
+import struct
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from d3300_opno import decode_record
+
+
+class OPNOTest(unittest.TestCase):
+    def test_queue_record_layout(self):
+        data = bytes.fromhex("40 00 02 01 78 56 34 12 F0 DE BC 9A 80 00 00 40")
+        self.assertEqual(
+            decode_record(data, stage="queue"),
+            {
+                "stage": "queue",
+                "event": 0x40,
+                "tag": 0x0102,
+                "value_1": 0x12345678,
+                "value_2": 0x9ABCDEF0,
+                "mask": 0x40000080,
+                "normalized_event": 8,
+                "object_index": 8,
+            },
+        )
+
+    def test_queue_lookup_ranges_and_out_of_bounds(self):
+        cases = (
+            (0x3D, 0x3D), (0x3E, 0), (0x3F, 0), (0x40, 8), (0x47, 8),
+            (0x48, 9), (0x4A, 9), (0x4B, 0x1B), (0x4D, 0x1B), (0x4E, 0x32),
+            (0x4F, None), (0xFFFF, None),
+        )
+        for event, expected_index in cases:
+            with self.subTest(event=event):
+                data = struct.pack("<H", event) + bytes(14)
+                decoded = decode_record(data, stage="queue")
+                self.assertEqual(decoded["object_index"], expected_index)
+                self.assertEqual(
+                    decoded["normalized_event"],
+                    event if expected_index is None else expected_index,
+                )
+
+    def test_controller_stage_preserves_received_halfword(self):
+        for event in (8, 0x40, 0xFFFF):
+            with self.subTest(event=event):
+                data = struct.pack("<H", event) + bytes(14)
+                decoded = decode_record(data, stage="controller")
+                self.assertEqual(decoded["normalized_event"], event)
+                self.assertEqual(decoded["object_index"], 8 if event == 8 else None)
+
+    def test_reject_invalid_length_and_stage(self):
+        for length in (0, 15, 17):
+            with self.subTest(length=length), self.assertRaisesRegex(ValueError, "expected 16"):
+                decode_record(bytes(length), stage="queue")
+        with self.assertRaisesRegex(ValueError, "stage must be"):
+            decode_record(bytes(16), stage="unknown")
