@@ -1,12 +1,20 @@
 #include "intervalometer.h"
 
+void dml_intervalometer_toggle(void *ctx, uint32_t millis, const DmlCameraAPI *api) {
+    DmlIntervalometer *state = ctx;
+    state->active = !state->active;
+    if (state->active) {
+        state->next_due_ms = millis + state->period_ms;
+    }
+    if (api && api->log) {
+        api->log(api->user, state->active ? "intervalometer ON" : "intervalometer OFF");
+    }
+}
+
 static void interval_event(void *ctx, const DmlEvent *event, const DmlCameraAPI *api) {
     DmlIntervalometer *state = (DmlIntervalometer *)ctx;
     if (event->type == DML_EVENT_BUTTON && event->button == 'i') {
-        state->active = !state->active;
-        if (state->active) state->next_due_ms = event->millis + state->period_ms;
-        if (api && api->log)
-            api->log(api->user, state->active ? "intervalometer ON" : "intervalometer OFF");
+        dml_intervalometer_toggle(state, event->millis, api);
     }
     if (event->type == DML_EVENT_TICK && state->active &&
         (int32_t)(event->millis - state->next_due_ms) >= 0) {
@@ -33,9 +41,8 @@ void dml_intervalometer_config(DmlIntervalometer *state, uint32_t period_ms) {
 }
 
 const DmlModule *dml_intervalometer_module(DmlIntervalometer *state) {
-    static DmlModule module = {
-        DML_ABI_VERSION, "intervalometer", interval_event, interval_description, 0
+    state->module = (DmlModule) {
+        DML_ABI_VERSION, "intervalometer", interval_event, interval_description, state
     };
-    module.state = state; /* one-instance host prototype */
-    return &module;
+    return &state->module;
 }
