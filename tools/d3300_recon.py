@@ -85,8 +85,39 @@ def audit(data):
                 warning='Anchor verification does not prove camera model, version, safety, or exploitability.')
 
 
-def find_refs(data, target, *, limit=100, mode='both'):
-    """Find RAW word references and A32 B/BL references, no control-flow analysis.
+def thumb_branches(data):
+    """Yield 32-bit Thumb immediate branch candidates at halfword boundaries."""
+    even_length = len(data) & ~1
+    halfwords = memoryview(data)[:max(0, even_length - 2)]
+    for index, (first,) in enumerate(struct.iter_unpack('<H', halfwords)):
+        if (first & 0xF800) != 0xF000:
+            continue
+        pos = 2 * index
+        second = struct.unpack_from('<H', data, pos + 2)[0]
+        opcode = second & 0xD000
+        sign = (first >> 10) & 1
+        j1 = (second >> 13) & 1
+        j2 = (second >> 11) & 1
+        pc = BASE + pos + 4
+        low = (second & 0x7FF) << 1
+        if opcode == 0x8000 and ((first >> 6) & 0xF) < 0xE:
+            kind = 't32_b_cond_candidate'
+            delta = ((j2 << 19) | (j1 << 18) | ((first & 0x3F) << 12) | low) - (sign << 20)
+        elif opcode in (0x9000, 0xD000) or (opcode == 0xC000 and (second & 1) == 0):
+            i1 = 1 ^ (j1 ^ sign)
+            i2 = 1 ^ (j2 ^ sign)
+            delta = ((i1 << 23) | (i2 << 22) | ((first & 0x3FF) << 12) | low) - (sign << 24)
+            kind = {0x9000: 't32_b_candidate', 0xD000: 't32_bl_candidate',
+                    0xC000: 't32_blx_candidate'}[opcode]
+            if opcode == 0xC000:
+                pc &= ~3
+        else:
+            continue
+        yield pos, (pc + delta) & 0xFFFFFFFF, kind, (first << 16) | second
+
+
+def find_refs(data, target, *, limit=100, mode='both', isa='a32'):
+    """Find aligned word references and immediate branches as static candidates.
 
     Potential false positives, because firmware contains embedded data and Thumb
     instructions; these are research candidates, not demonstrated call sites.
@@ -95,6 +126,8 @@ def find_refs(data, target, *, limit=100, mode='both'):
         raise ValueError('Target must be a 32-bit address')
     if limit < 1:
         raise ValueError('limit must be positive')
+    if isa not in ('a32', 'thumb', 'both'):
+        raise ValueError('isa must be a32, thumb or both')
     results = []
     if mode in ('both', 'pointers'):
         for val, tag in ((target, 'arm_word'), (target | 1, 'thumb_word')):
@@ -111,7 +144,7 @@ def find_refs(data, target, *, limit=100, mode='both'):
                                         file_offset='0x%X' % pos,
                                         rom_address='0x%08X' % (BASE + pos)))
                 at = pos + 1
-    if mode in ('both', 'branches') and len(results) < limit:
+    if mode in ('both', 'branches') and isa in ('a32', 'both') and len(results) < limit:
         # A32 branch: bits 27..25 = 101, bits 31..28 != 1111
         for pos in range(0, len(data) - 3, 4):
             inst = struct.unpack_from('<I', data, pos)[0]
@@ -128,6 +161,15 @@ def find_refs(data, target, *, limit=100, mode='both'):
                                     instruction='0x%08X' % inst))
                 if len(results) == limit:
                     break
+    if mode in ('both', 'branches') and isa in ('thumb', 'both') and len(results) < limit:
+        for pos, dest, kind, inst in thumb_branches(data):
+            if dest != (target & ~1) or ((target & 1) and kind == 't32_blx_candidate'):
+                continue
+            results.append(dict(kind=kind, file_offset='0x%X' % pos,
+                                rom_address='0x%08X' % (BASE + pos),
+                                instruction='0x%08X' % inst))
+            if len(results) == limit:
+                break
     return results
 
 
@@ -138,10 +180,12 @@ def main(argv=None):
     a.add_argument('image', help='Decoded b860_102.bin only')
     a.add_argument('--json', metavar='FILE', help='Save audit report as JSON')
     a.add_argument('--verbose', action='store_true')
-    r = sub.add_parser('refs', help='Scan candidate ARM pointers and A32 branch references')
+    r = sub.add_parser('refs', help='Scan candidate ARM pointers and immediate branch references')
     r.add_argument('image', help='Decoded b860_102.bin only')
     r.add_argument('--target', required=True, type=lambda x: int(x, 0), help='Target ROM address, e.g. 0x90352FE0')
     r.add_argument('--mode', choices=('both', 'pointers', 'branches'), default='both')
+    r.add_argument('--isa', choices=('a32', 'thumb', 'both'), default='a32',
+                   help='Instruction set for branch scanning (default: a32)')
     r.add_argument('--limit', type=int, default=100)
     r.add_argument('--json', metavar='FILE')
     opts = p.parse_args(argv)
@@ -161,10 +205,10 @@ def main(argv=None):
                           (entry['id'], entry['rom_address'], entry['state'], entry['observed']))
         else:
             metadata = analyze(data)
-            refs = find_refs(data, opts.target, limit=opts.limit, mode=opts.mode)
+            refs = find_refs(data, opts.target, limit=opts.limit, mode=opts.mode, isa=opts.isa)
             out = dict(target='0x%08X' % opts.target, image_sha256=metadata['sha256'],
                        candidates=refs,
-                       warning='Static candidates only: pointers may be data; A32 scans do not confirm executable regions.')
+                       warning='Static candidates only: decoding alone does not confirm executable regions.')
             print('Target %s: %d candidate(s) (max %d)' % (out['target'], len(refs), opts.limit))
             for item in refs:
                 print('  %-23s %s %s' % (item['kind'], item['rom_address'], item.get('instruction', '')))

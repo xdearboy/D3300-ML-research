@@ -90,6 +90,32 @@ class ReconTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             recon.find_refs(b'abc', 0, limit=0)
 
+    def test_refs_thumb_direct_branches_in_both_directions(self):
+        # GNU as, ARMv7 Thumb. Each branch targets BASE+0xA0.
+        blob = bytearray(0xA8)
+        blob[0x80:0x8C] = bytes.fromhex('00f00eb8 00f00c80 00f00af8')
+        blob[0xA0:0xA8] = bytes.fromhex('fff7feff fff7fcbf')
+        expected = [
+            ('t32_b_candidate', '0x80'),
+            ('t32_b_cond_candidate', '0x84'),
+            ('t32_bl_candidate', '0x88'),
+            ('t32_bl_candidate', '0xA0'),
+            ('t32_b_candidate', '0xA4'),
+        ]
+        for target in (BASE + 0xA0, BASE + 0xA1):
+            found = recon.find_refs(blob, target, mode='branches', isa='thumb')
+            self.assertEqual([(r['kind'], r['file_offset']) for r in found], expected)
+        self.assertEqual(recon.find_refs(blob, BASE + 0xA0, mode='branches'), [])
+
+    def test_refs_thumb_blx_aligns_pc_and_leaves_thumb_state(self):
+        # At BASE+0x8E, BLX aligns PC down before applying its displacement.
+        blob = bytearray(0x93)
+        blob[0x8E:0x92] = bytes.fromhex('00f018e8')
+        found = recon.find_refs(blob, BASE + 0xC0, mode='branches', isa='both')
+        self.assertEqual([(r['kind'], r['file_offset']) for r in found],
+                         [('t32_blx_candidate', '0x8E')])
+        self.assertEqual(recon.find_refs(blob, BASE + 0xC1, mode='branches', isa='thumb'), [])
+
     def test_elf_valid_layout_and_a32_disassembly(self):
         # Use large synthetic input because ELF exporter verifies known copy maps.
         length = max(src - BASE + l for _, src, _, l, _ in RAM_MAP) + 0x20
