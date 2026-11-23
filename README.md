@@ -30,6 +30,7 @@ python3 tools/d3300_elf.py ~/Desktop/d3300-analysis/b860_102.bin -o ~/Desktop/d3
 8. **Read-only разбор событий**: подтверждены RelayEvent/RelayEventEx callback-циклы, классы кнопок и цикл `CSYSCAppButtonController`. Адреса и ограничения записаны в `reports/verified-event-button-paths.json`.
 9. **Собственное меню на хосте**: `core/dml_menu.*` предоставляет меню модулей; `make run` сохраняет автоматический прогон, `./build/d3300_sim --interactive` запускает интерактивный режим.
 10. **Офлайн-декодер входных записей** (`tools/d3300_opno.py`) читает одну 16-байтную запись из hex-строки и выводит поля в JSON.
+11. **Постоянный индекс статического поиска** (`tools/d3300_search.py`) один раз индексирует прямые ARM/Thumb-переходы, ROM-указатели и строки в SQLite, затем быстро выдаёт xref и обратные цепочки. Все результаты считаются кандидатами до проверки дизассемблированием.
 
 Продолжение анализа кнопок, callback-регистрации и управления графическим буфером описано в `reports/D3300_C102_followup.md`.
 Сопоставление объектов ввода, метода `CMENUController` и графических операций приведено в `reports/D3300_C102_menu_graphics.md`.
@@ -59,6 +60,10 @@ make run     # 5 виртуальных снимков
 
 ```bash
 python3 tools/d3300_opno.py --stage queue '40 00 01 00 01 00 00 00 00 00 00 00 04 00 00 00'
+python3 tools/d3300_search.py index b860_102.bin d3300-search.sqlite
+python3 tools/d3300_search.py refs d3300-search.sqlite 0x90322e12
+python3 tools/d3300_search.py backtrace d3300-search.sqlite 0x90322e12 --depth 2
+python3 tools/d3300_search.py strings d3300-search.sqlite CSYSCDeviceManager
 ```
 
 Режим `queue` возвращает входной код `0x40` и вычисляет индекс объекта `0x08`. Режим `controller` читает запись после преобразования кода и сохраняет её первый halfword без повторного преобразования. Если значение находится за границей таблицы объектов, `object_index` равен `null`. Поля `tag`, `value_1` и `value_2` выводятся как числа. Соответствие конкретным физическим кнопкам остаётся открытым.
