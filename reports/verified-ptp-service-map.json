@@ -1,4 +1,5 @@
 {
+  "warning": "UNVERIFIED raw 16-bit occurrences only; this file does not establish PTP handlers or memory access on D3300",
   "rom_base": "0x90020000",
   "total_size": 23855124,
   "vendor_opcodes_found": 5396,

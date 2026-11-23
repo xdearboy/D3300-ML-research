@@ -229,7 +229,7 @@ int dml_info_screen_render(DmlDrawBufferTable *table, int buf_idx, const DmlCame
     dml_camera_status_format_aperture(status, aperture_str, sizeof(aperture_str));
     char iris_display[32];
     if (aperture_str[0] == 'F') {
-        snprintf(iris_display, sizeof(iris_display), "f %s", aperture_str + 1);
+        snprintf(iris_display, sizeof(iris_display), "f %.29s", aperture_str + 1);
     } else {
         snprintf(iris_display, sizeof(iris_display), "%s", aperture_str);
     }

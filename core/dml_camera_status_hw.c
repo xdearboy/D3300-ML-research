@@ -157,16 +157,10 @@ int dml_camera_status_read_hw(DmlCameraStatus *out_status, const void *raw_ptr) 
     }
 
     const DmlHwCameraStatusRaw *raw = (const DmlHwCameraStatusRaw *)raw_ptr;
-    if (!raw) {
-#if defined(__arm__)
-        raw = (const DmlHwCameraStatusRaw *)D3300_ADDR_CKRRC_CAMERA_STATUS;
-#else
-        return -1; /* Mock pointer required on non-ARM host environments */
-#endif
-    }
+    if (!raw) return -1;
 
-    /* Basic sanity check: vtable must not be completely zeroed */
-    if (raw->vtable == 0) {
+    /* Accept only an explicitly modeled fixture carrying the known vtable. */
+    if (raw->vtable != D3300_ADDR_CKRRC_VTABLE) {
         return -1;
     }
 

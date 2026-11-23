@@ -22,7 +22,7 @@ int dml_payload_init(
 
     dml_init(&env->runtime, &env->camera_api);
 
-    /* Hook into camera's RelayEventEx persistent callback table */
+    /* Register with the host model of the RelayEventEx callback table. */
     env->relay_token = dml_nikon_relay_register(
         env->relay_table,
         dml_payload_on_relay_event,
@@ -75,7 +75,7 @@ void dml_payload_on_relay_event(uint32_t event_mask, void *user_context) {
         DmlEvent event;
         memset(&event, 0, sizeof(event));
 
-        uint32_t current_millis = 0; /* Could be queried from timer */
+        uint32_t current_millis = env->current_millis;
         if (record.code == DML_NIKON_BTN_CODE_MENU_CANDIDATE) {
             int is_down = (record.value_1 == 1);
             if (dml_menu_on_menu_button(&env->menu, is_down, current_millis, &command)) {
@@ -113,6 +113,7 @@ void dml_payload_on_relay_event(uint32_t event_mask, void *user_context) {
 
 void dml_payload_on_tick(DmlPayloadEnv *env, uint32_t current_millis) {
     if (!env || !env->is_active) return;
+    env->current_millis = current_millis;
     dml_menu_tick(&env->menu, current_millis);
     if (env->menu.is_holding_menu || (env->menu.visible && env->menu.anim_progress < 100)) {
         dml_payload_render_osd(env);
@@ -142,7 +143,7 @@ void dml_payload_render_osd(DmlPayloadEnv *env) {
     }
 
     if (env->info_screen_visible) {
-        /* Read live hardware status if available */
+        /* Decode an explicitly supplied simulator fixture if available. */
         DmlCameraStatus status;
         if (dml_camera_status_read_hw(&status, env->hw_status_override) == 0) {
             env->cached_status = status;

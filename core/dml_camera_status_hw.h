@@ -5,14 +5,18 @@
 #include <stdint.h>
 #include "dml_camera_status.h"
 
-/* Verified hardware memory addresses for Nikon D3300 C 1.02 B-firmware */
+/* Verified object identity anchors for Nikon D3300 C 1.02 B-firmware.
+   These addresses do not verify the experimental field layout below. */
 #define D3300_ADDR_CKRRC_CAMERA_STATUS 0x10491580u
 #define D3300_ADDR_CKRRC_VTABLE        0x9151F6F0u
 #define D3300_ADDR_CINFO_SHOOTING_MENU 0x915073A4u
 #define D3300_ADDR_POWER_MANAGER       0x912838A0u
 
-/* Raw memory layout of CKRRCCameraStatus in Nikon D3300 RAM (0x10491580)
-   Verified against constructor at 0x9019A340 and state updater at 0x9019A6B0..0x9019A740 */
+/* Experimental host model of a possible CKRRCCameraStatus layout.
+   The constructor verifies the object address, vtable and a sub-object pointer at
+   +0x84. It does NOT establish the shooting fields modeled at +0x80..+0x9D.
+   Do not use this structure for direct camera RAM access without new disassembly
+   evidence for every field. */
 typedef struct {
     uint32_t vtable;                   /* 0x00: points to 0x9151F6F0 */
     uint8_t  pad_0x04[0x7C];           /* 0x04..0x7F: internal task / mutex states */
@@ -37,9 +41,9 @@ typedef struct {
     uint8_t  pad_0x9E[2];
 } DmlHwCameraStatusRaw;
 
-/* Reads and unpacks live camera parameters from hardware RAM into DmlCameraStatus.
-   If raw_ptr is NULL, on ARM targets it defaults to D3300_ADDR_CKRRC_CAMERA_STATUS.
-   Returns 0 on success, -1 on invalid parameter or uninitialized memory. */
+/* Decodes the experimental layout supplied explicitly by a caller. This function
+   never dereferences the fixed camera address implicitly. It is currently intended
+   for simulator fixtures only. Returns 0 on success, -1 on invalid input. */
 int dml_camera_status_read_hw(DmlCameraStatus *out_status, const void *raw_ptr);
 
 /* Conversion helper functions */

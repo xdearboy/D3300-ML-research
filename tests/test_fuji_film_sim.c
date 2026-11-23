@@ -69,6 +69,11 @@ static void test_fuji_export_to_sd(void) {
     const DmlFujiProfile *velvia = dml_fuji_get_profile(DML_FUJI_VELVIA);
     assert(velvia != NULL);
 
+    char oversized_root[512];
+    memset(oversized_root, 'x', sizeof(oversized_root) - 1);
+    oversized_root[sizeof(oversized_root) - 1] = '\0';
+    assert(dml_fuji_export_to_sd(velvia, oversized_root, 2) == -1);
+
     int res = dml_fuji_export_to_sd(velvia, test_sd, 2);
     assert(res == 0);
 

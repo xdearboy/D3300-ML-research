@@ -1,5 +1,10 @@
 # Cross-Architecture Analysis: Nikon EXPEED 4 (D3300) vs. EXPEED 6 (Z 6II / qemu-expeed)
 
+> **Evidence boundary:** the service-wrap opcodes, memory operations, SGI loader
+> and high-DRAM execution described below are findings for the Z 6II reference.
+> Their presence and semantics have not been established on D3300. Raw 16-bit
+> matches produced by `d3300_ptp_service.py` are search candidates only.
+
 ## 1. Context & Significance
 
 In November 2026, software engineer Arne Baeyens published **qemu-expeed** and a working native port of **DOOM** on the Nikon Z 6II (dual EXPEED 6 SoC), accompanied by an article on NikonRumors.
@@ -19,7 +24,7 @@ This report analyzes the architecture, execution vectors, and reverse-engineerin
 | **Hardware Reference** | GoPro GP1 / GP2 GPL kernel patches | Socionext Milbeaut M-series reference drivers |
 | **Non-Volatile RAM** | DRAM above OS space (`0xD0000000`) | RAM space (`0x10000000..0x104A0000`) |
 | **Display Overlay** | Hardware planes (`Z6II_DISPENG + 0x6440`) | DrawBuffer 20-slot descriptor table (`0x104A0868`) |
-| **PTP Service Mode** | `0x94FE` / `0x94FF` with sub-ops `0xF036`/`0xF037` | Vendor PTP commands in table `0x9151F000..0x91540000` |
+| **PTP Service Mode** | `0x94FE` / `0x94FF` with sub-ops `0xF036`/`0xF037` | Unverified; raw value occurrences only |
 
 ---
 
@@ -75,6 +80,6 @@ Because GoPro released open-source Linux kernel GPL patches for GP1/GP2, these d
 
 ## 6. Actionable Takeaways for D3300-ML
 
-1. **Architecture Confirmed**: The D3300-ML module model (`core/dml_tkernel.c`, `payload/dml_payload.c`) perfectly matches the reality of EXPEED execution: standalone relocatable modules executing as native T-Kernel tasks.
-2. **Safe Host Emulation (QEMU)**: The stall-breaker approach (returning all-ones for unmodeled MMIO registers) combined with Cortex-A9 CPU core emulation allows testing firmware execution loops in QEMU before testing on hardware.
-3. **Zero-Flash Delivery**: Firmware extensions can be tested non-destructively via memory injection without touching flash storage.
+1. The Z 6II work is a useful source of search terms and architectural hypotheses, not proof of D3300 compatibility.
+2. The current D3300 T-Kernel and payload code is a host model; it is not a relocatable ARM module.
+3. No D3300 memory-injection or execution path is verified, and camera-side testing remains out of scope.

@@ -13,11 +13,11 @@
 #include "../core/dml_info_screen.h"
 #include "../core/dml_menu_screen.h"
 
-/* Magic signature for D3300-ML relocatable payload */
+/* Magic signature for the host-side payload lifecycle prototype. */
 #define DML_PAYLOAD_MAGIC   0x4433334Du /* "D33M" */
 #define DML_PAYLOAD_VERSION 0x00010000u /* 1.0.0 */
 
-/* Verified target addresses for Nikon D3300 C 1.02 B-firmware */
+/* Research anchors only. They are not a verified injection or runtime ABI. */
 #define D3300_C102_ADDR_RELAY_REGISTER   0x900272A6u
 #define D3300_C102_ADDR_RELAY_UNREGISTER 0x90027316u
 #define D3300_C102_ADDR_BUTTON_READ      0x9035128Cu
@@ -45,6 +45,7 @@ typedef struct {
     /* Cinema Info Monitor state */
     int             info_screen_visible;
     const void     *hw_status_override; /* If non-NULL, used as raw CKRRCCameraStatus pointer */
+    uint32_t        current_millis;      /* Simulator clock updated by dml_payload_on_tick */
     DmlCameraStatus cached_status;      /* Last read/rendered status */
 } DmlPayloadEnv;
 
@@ -54,7 +55,7 @@ void dml_payload_set_hw_status(DmlPayloadEnv *env, const void *raw_ptr);
 /* Toggles the Cinema Monitor display on or off */
 int dml_payload_toggle_info_screen(DmlPayloadEnv *env);
 
-/* Initializes payload, binds to firmware addresses or mock environment */
+/* Initializes the host-side lifecycle model using caller-provided mocks. */
 int dml_payload_init(
     DmlPayloadEnv *env,
     DmlNikonRelayTable *relay_table,
@@ -69,10 +70,10 @@ void dml_payload_on_relay_event(uint32_t event_mask, void *user_context);
 /* Tick handler called periodically or on vsync */
 void dml_payload_on_tick(DmlPayloadEnv *env, uint32_t current_millis);
 
-/* Renders D3300-ML OSD overlay onto camera's active draw buffer */
+/* Renders into the host DrawBuffer model. Camera integration is not implemented. */
 void dml_payload_render_osd(DmlPayloadEnv *env);
 
-/* Quiets / suspends camera background tasks for clean OSD presentation */
+/* Exercises simulated T-Kernel task suspension; no camera task IDs are verified. */
 int dml_payload_quiet(DmlPayloadEnv *env, const DmlTkId *targets, size_t n_targets);
 
 /* Resumes background tasks when OSD is closed */

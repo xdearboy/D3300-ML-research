@@ -4,9 +4,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* Verified Nikon D3300 C 1.02 DrawBuffer API and pixel pipeline.
-   Reverse-engineered from 0x9029E720..0x9029EB50 in B-firmware.
-   Descriptor table located at RAM 0x104A0868 (20 entries of 20 bytes each). */
+/* Host-side DrawBuffer model informed by routines at 0x9029E720..0x9029EB50.
+   Static analysis confirms a table at RAM 0x104A0868 with 20-byte entries, but
+   exact field semantics, pixel format and live framebuffer addresses are open. */
 
 #define DML_DRAW_BUFFER_MAX 20u
 #define DML_DRAW_BUFFER_ENTRY_SIZE 20u
@@ -17,13 +17,14 @@
 #define DML_DRAW_BUFFER_QUERY_HEIGHT 0x3103u /* Buffer height in pixels */
 #define DML_DRAW_BUFFER_QUERY_SYNC   0x3110u /* Vsync synchronization status */
 #define DML_DRAW_BUFFER_QUERY_STRIDE 0x3111u /* Stride / pitch in bytes */
-#define DML_DRAW_BUFFER_QUERY_FORMAT 0x3112u /* Pixel format (32 bpp ARGB8888) */
+#define DML_DRAW_BUFFER_QUERY_FORMAT 0x3112u /* Host model returns ARGB8888 */
 
 /* Stride alignment formula confirmed at 0x9029EA80..0x9029EA92 and 0x901297F2:
    ((width + 7) / 8) * 32 bytes = ((width + 7) & ~7) * 4 bytes per scanline */
 #define DML_DRAW_BUFFER_STRIDE(w) ((((uint32_t)(w) + 7u) & ~7u) * 4u)
 
-/* 20-byte descriptor matching hardware table at 0x104A0868 */
+/* Simulator entry. This deliberately does not claim ABI compatibility with the
+   camera's observed 20-byte table: the host-only pixel pointer makes it larger. */
 typedef struct {
     uint32_t active;      /* offset 0x00: 1 if allocated, 0 if free */
     uint32_t handle;      /* offset 0x04: buffer handle */
@@ -34,7 +35,7 @@ typedef struct {
     uint32_t *pixels;     /* host/device pixel pointer */
 } DmlDrawBufferEntry;
 
-/* Complete table container matching 20 entries at 0x104A0868 */
+/* Host-side table container. */
 typedef struct {
     DmlDrawBufferEntry entries[DML_DRAW_BUFFER_MAX];
     int current_selected; /* Selected buffer index (0..19), or -1 if none */
@@ -46,24 +47,19 @@ void dml_draw_buffer_init(DmlDrawBufferTable *table);
 /* Releases any allocated host pixel buffers */
 void dml_draw_buffer_cleanup(DmlDrawBufferTable *table);
 
-/* Verified 0x9029E720: DrawBufferCreate.
-   Finds first free slot, computes stride, allocates buffer, returns index (0..19) or -1 on error. */
+/* Host model of the observed DrawBufferCreate behavior. */
 int dml_draw_buffer_create(DmlDrawBufferTable *table, uint16_t width, uint16_t height);
 
-/* Verified 0x9029E848: DrawBufferSelect.
-   Verifies slot is active, sets current_selected, returns 0 on success, -1 on error. */
+/* Host model of the observed DrawBufferSelect behavior. */
 int dml_draw_buffer_select(DmlDrawBufferTable *table, int index);
 
-/* Verified 0x9029E8B0: DrawBufferDestroy.
-   Frees resources, clears active flag. If selected, unselects buffer. Returns 0 on success. */
+/* Host model of the observed DrawBufferDestroy behavior. */
 int dml_draw_buffer_destroy(DmlDrawBufferTable *table, int index);
 
-/* Verified 0x9029E940: DrawBufferSwap.
-   Performs display buffer swap, handles sync flag. Returns 0 on success, -1 on error. */
+/* Host model of the observed DrawBufferSwap behavior. */
 int dml_draw_buffer_swap(DmlDrawBufferTable *table, int index, int sync_vsync);
 
-/* Verified 0x9029E9B2: DrawBufferQuery.
-   Queries field for active buffer using query code. Returns 0 on success, -1 on error. */
+/* Host model of the observed DrawBufferQuery behavior. */
 int dml_draw_buffer_query(const DmlDrawBufferTable *table, int index, uint16_t query_code, void *out_value);
 
 /* Typography & Font Engine */

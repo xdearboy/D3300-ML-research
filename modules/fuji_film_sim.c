@@ -303,12 +303,19 @@ int dml_fuji_export_to_sd(const DmlFujiProfile *profile, const char *sd_root, in
     char file_nop[512];
     char file_ncp[512];
 
-    snprintf(dir_custompc, sizeof(dir_custompc), "%s/NIKON/CUSTOMPC", sd_root);
+    int dir_len = snprintf(dir_custompc, sizeof(dir_custompc), "%s/NIKON/CUSTOMPC", sd_root);
+    if (dir_len < 0 || (size_t)dir_len >= sizeof(dir_custompc)) {
+        return -1;
+    }
     create_dirs_recursive(dir_custompc);
 
-    /* Write both .NOP and .NCP for maximum compatibility with all Nikon firmware versions */
-    snprintf(file_nop, sizeof(file_nop), "%s/PICCON%02d.NOP", dir_custompc, slot_index);
-    snprintf(file_ncp, sizeof(file_ncp), "%s/PICCON%02d.NCP", dir_custompc, slot_index);
+    /* Host-side prototype only: camera compatibility has not been established. */
+    int nop_len = snprintf(file_nop, sizeof(file_nop), "%s/PICCON%02d.NOP", dir_custompc, slot_index);
+    int ncp_len = snprintf(file_ncp, sizeof(file_ncp), "%s/PICCON%02d.NCP", dir_custompc, slot_index);
+    if (nop_len < 0 || (size_t)nop_len >= sizeof(file_nop) ||
+        ncp_len < 0 || (size_t)ncp_len >= sizeof(file_ncp)) {
+        return -1;
+    }
 
     FILE *fnop = fopen(file_nop, "wb");
     if (fnop) {

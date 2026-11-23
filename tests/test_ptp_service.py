@@ -27,18 +27,22 @@ class TestPtpService(unittest.TestCase):
         vendor_ops = scan_ptp_vendor_opcodes(bytes(buf), ROM_BASE)
         self.assertEqual(len(vendor_ops), 2)
         self.assertEqual(vendor_ops[0]["opcode"], "0x94FE")
+        self.assertEqual(vendor_ops[0]["name"], "CANDIDATE_SERVICE_WRAP_SEND")
+        self.assertEqual(vendor_ops[0]["evidence"], "raw_halfword_occurrence")
         self.assertEqual(vendor_ops[0]["target_func_after"], "0x91054321")
         self.assertEqual(vendor_ops[1]["opcode"], "0x94FF")
 
         subops = scan_service_subopcodes(bytes(buf), ROM_BASE)
         self.assertEqual(len(subops), 3)
         self.assertEqual(subops[0]["subop"], "0xF001")
+        self.assertEqual(subops[0]["evidence"], "raw_halfword_occurrence")
         self.assertEqual(subops[1]["subop"], "0xF036")
         self.assertEqual(subops[2]["subop"], "0xF037")
 
         report = analyze_firmware_ptp(bytes(buf), ROM_BASE)
         self.assertEqual(report["vendor_opcodes_found"], 2)
         self.assertEqual(report["service_subops_found"], 3)
+        self.assertIn("no D3300 PTP command semantics", report["warning"])
 
     def test_load_binary_plain(self) -> None:
         data = b"\x00" * 64

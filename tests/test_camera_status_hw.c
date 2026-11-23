@@ -103,11 +103,11 @@ static void test_hw_status_validation(void) {
     DmlHwCameraStatusRaw uninit_raw;
     memset(&uninit_raw, 0, sizeof(uninit_raw));
     assert(dml_camera_status_read_hw(&status, &uninit_raw) == -1);
+    uninit_raw.vtable = 0xDEADBEEFu;
+    assert(dml_camera_status_read_hw(&status, &uninit_raw) == -1);
 
-    /* On host (non-ARM), NULL raw_ptr must safely return -1 */
-#if !defined(__arm__)
+    /* Fixed camera RAM must never be dereferenced implicitly on any target. */
     assert(dml_camera_status_read_hw(&status, NULL) == -1);
-#endif
 }
 
 int main(void) {
