@@ -45,7 +45,32 @@ Worker `0x9019CD66` advances the ring and reads the current snapshot. Its first 
 
 The routine continues through later snapshot words and produces a much larger information block. This behavior and the class name make `CKRRCInfoDispData` a stronger source candidate for values displayed by the stock shooting-information UI than `CKRRCCameraStatus`.
 
-No photographic names are assigned yet. The next verification step is to trace consumers of the worker's normalized output and match individual offsets to UI formatter/resource paths for shutter speed, aperture and ISO.
+## Verified normalized-property map
+
+The decoder does not leave its normalized values only on the stack. At `0x9019DE44` it copies `0x13C` bytes from `SP+4` to RAM `0x104B9044` (the destination literal is at `0x9019DF80`). This is 79 four-byte output slots.
+
+A separate RTTI record at `0x915040E8` names `20CKRRCInfoDispDataGrp`; its vtable starts at `0x9152826C`. The first method, `0x903513AC`, reports 79 entries and returns table address `0x914ED324`. Each 12-byte entry contains:
+
+1. a numeric property ID;
+2. a declared value size;
+3. a RAM address in the normalized output block.
+
+All 79 entries cover `0x104B9044..0x104B917C` in an exact four-byte stride, matching the decoder's `0x13C`-byte copy. The first entries therefore establish these structural mappings:
+
+| Output offset | RAM | Property ID | Size |
+|---:|---:|---:|---:|
+| `0x000` | `0x104B9044` | `0x002A` | 4 |
+| `0x004` | `0x104B9048` | `0x002B` | 4 |
+| `0x008` | `0x104B904C` | `0x002C` | 4 |
+| `0x00C` | `0x104B9050` | `0x005A` | 4 |
+| `0x010` | `0x104B9054` | `0x002D` | 4 |
+| `0x014` | `0x104B9058` | `0x005D` | 4 |
+
+The complete machine-readable map is in `verified-info-disp-property-map.json`.
+
+This also rejects the earlier shortcut of treating every immediate `0x2D` as a route to `CKRRCInfoDispData`: other subsystems use the same small integer. Only the table-backed mapping above is established. Numeric property IDs are not PTP device-property codes or EXIF tags merely because their numbers happen to coincide.
+
+No photographic names are assigned yet. The next verification step is to trace consumers of individual numeric property IDs to UI formatter/resource paths for shutter speed, aperture and ISO. This newly verified property table reduces that search from an anonymous 316-byte block to 79 explicit IDs.
 
 ## Reproduction
 
@@ -54,4 +79,7 @@ The same verifier used for the camera-status ring checks the global address, con
 ```bash
 python3 tools/d3300_verify_camera_status.py b860_102.bin \
   --verify --dump-json reports/verified-camera-status-ring.json
+
+python3 tools/d3300_info_disp_map.py b860_102.bin \
+  --verify --dump-json reports/verified-info-disp-property-map.json
 ```
