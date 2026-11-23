@@ -1,0 +1,11 @@
+{
+  "firmware_sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "handler": "0x9013DDCC",
+  "dispatch": "TBB at 0x9013DDE4; index = event_halfword - 4",
+  "groups": [
+    {"event_codes": ["0x04", "0x05"], "target": "0x9013DDFA", "behavior": "state check; conditional calls 0x9016E0A4 and 0x9016E076"},
+    {"event_codes": ["0x06", "0x07", "0x08", "0x09", "0x0A", "0x0B"], "target": "0x9013DE14", "behavior": "copy 8-byte payload from input record +4 to destination +4"},
+    {"event_codes": ["0x0C", "0x0D", "0x0E", "0x0F", "0x10", "0x11", "0x12", "0x13", "0x14", "0x15"], "target": "0x9013DE00", "behavior": "state check; conditional calls 0x9016E0A4 and 0x9016E076"}
+  ],
+  "negative_finding": "The branch groups do not identify physical MENU/OK labels; no label assignment or hook approval is made."
+}
