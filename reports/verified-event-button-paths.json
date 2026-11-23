@@ -79,14 +79,15 @@
       "confidence": "high"
     },
     {
-      "name": "dynamic application events to manager queue buttons",
+      "name": "device-manager state probes and separate task path",
       "path": [
-        "dispatcher table 0x9144B8AC binds raw ID 0x33 to callbacks 0x9032037E and 0x90320392",
-        "dispatcher table 0x9144B8C8 binds raw ID 0x35 to the same callbacks",
-        "0x90320072 maps raw 0x33 to manager ID 0x0B and raw 0x35 to manager ID 0x0C",
-        "0x90322E90 sends state 1 and 0x90322E12 sends state 0 through veneer 0x90241454",
+        "CSYSCDeviceManager event 0x2B reaches 0x903200E0 through table 0x9144B5E8",
+        "state descriptors 0x9144B8AC and 0x9144B8C8 query selectors 0x33 and 0x35",
+        "0x90320072 maps 0x33 to 0x0B and 0x35 to 0x0C only for local observer calls",
+        "0x90322E90 and 0x90322E12 pass the original selectors 0x33/0x35 through veneer 0x90241454",
         "0x90323E24 selects COPNOHandler slot +0x2C or +0x30",
-        "0x90151518 and 0x90151582 create task message 0x20062C13"
+        "0x90151518 and 0x90151582 create task message 0x20062C13 with the original selector",
+        "manager normalizer 0x900FDBD2 leaves 0x33/0x35 unchanged, so this is not a producer of objects 0x0B/0x0C"
       ],
       "confidence": "high"
     },
@@ -129,15 +130,15 @@
     },
     {
       "address": "0x90323E24",
-      "role": "application-event to COPNOHandler message gateway",
-      "assessment": "Central state-selecting proxy for task message 0x20062C13. Upstream event ownership, reentrancy and ABI lifetime are not established.",
+      "role": "device-state selector to COPNOHandler message gateway",
+      "assessment": "Central state-selecting proxy for task message 0x20062C13. It preserves selectors 0x33/0x35 rather than producing queue-button IDs 0x0B/0x0C; reentrancy and ABI lifetime are not established.",
       "hook_safety": "unverified"
     }
   ],
   "unresolved": [
     "physical MENU and OK event-code mapping",
-    "producers of manager task messages other than the verified 0x20062C13 application-event path",
-    "hardware or transport source and physical labels for raw application events 0x33 and 0x35",
+    "producer of manager input records with IDs 0x0B and 0x0C",
+    "physical labels for device-manager state selectors 0x33 and 0x35",
     "callback registration public entry point and calling convention",
     "LCD/OSD drawing path",
     "free executable storage and relocation constraints",

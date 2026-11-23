@@ -16,18 +16,18 @@ EVENT_TO_OBJECT = (
     0x1B, 0x1B, 0x1B,
     0x32,
 )
-# TBB at 0x9032007A.  This is a distinct upstream application-event
-# translation, not the queue's 0x3E..0x4E object-index normalization above.
-APPLICATION_EVENT_TO_MANAGER = (
+# TBB at 0x9032007A.  This local CSYSCDeviceManager observer translation is
+# distinct from the queue's 0x3E..0x4E object-index normalization above.
+DEVICE_MANAGER_STATE_TO_LOCAL_ID = (
     0x02, 0x03, 0x04, 0x0A, 0x09, 0x05, 0x06,
     0x0B, 0x07, 0x0C, 0x08, 0x00, 0x01,
 )
 
 
-def normalize_application_event(event: int) -> int:
-    """Apply the verified 0x90320072 translation for events 0x2C..0x38."""
+def normalize_device_manager_state(event: int) -> int:
+    """Apply the verified local-observer translation at 0x90320072."""
     if 0x2C <= event <= 0x38:
-        return APPLICATION_EVENT_TO_MANAGER[event - 0x2C]
+        return DEVICE_MANAGER_STATE_TO_LOCAL_ID[event - 0x2C]
     return 0
 
 
