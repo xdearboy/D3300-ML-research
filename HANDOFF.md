@@ -15,7 +15,7 @@ No installable firmware, ARM payload image, linker script, relocation loader, or
 
 ## Unverified or disproven claims
 
-- The shooting-field layout modeled in `DmlHwCameraStatusRaw` is a simulator fixture. Only the `CKRRCCameraStatus` object identity and its sub-object access path are currently established.
+- The shooting-field layout modeled in `DmlHwCameraStatusRaw` is a simulator fixture. `reports/D3300_C102_camera_status_ring.md` proves that `+0x84` selects a ring node pointing to an 8-byte bitfield snapshot and that `+0x8C..+0x98` hold transition indicators, not direct exposure values.
 - ARGB8888, 720x480 as the active OSD surface, and field meanings of the 20-byte DrawBuffer entries are not established by the cited disassembly.
 - Numeric MENU/INFO/directional button mappings remain candidates unless a report explicitly traces the physical producer.
 - `payload/` is a host lifecycle model, not relocatable camera code.

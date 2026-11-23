@@ -13,10 +13,11 @@
 #define D3300_ADDR_POWER_MANAGER       0x912838A0u
 
 /* Experimental host model of a possible CKRRCCameraStatus layout.
-   The constructor verifies the object address, vtable and a sub-object pointer at
-   +0x84. It does NOT establish the shooting fields modeled at +0x80..+0x9D.
+   Further disassembly proved that the camera object uses +0x84 for a snapshot
+   ring and +0x8C..+0x98 for transition indicators. Therefore the shooting fields
+   modeled below do NOT represent the camera object at 0x10491580.
    Do not use this structure for direct camera RAM access without new disassembly
-   evidence for every field. */
+   evidence for every field. See reports/D3300_C102_camera_status_ring.md. */
 typedef struct {
     uint32_t vtable;                   /* 0x00: points to 0x9151F6F0 */
     uint8_t  pad_0x04[0x7C];           /* 0x04..0x7F: internal task / mutex states */

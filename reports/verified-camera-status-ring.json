@@ -1,0 +1,67 @@
+{
+  "firmware": "Nikon D3300 C 1.02 B-firmware",
+  "rom_base": "0x90020000",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "expected_sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "sha256_match": true,
+  "all_anchors_match": true,
+  "conclusion": "CKRRCCameraStatus +0x84 selects a ring node whose +0x0C field points to an 8-byte bitfield snapshot. Bytes +0x8C..+0x98 are transition indicators derived by comparing snapshots, not verified exposure fields.",
+  "anchors": [
+    {
+      "name": "constructor_clears_ring_heads",
+      "address": "0x9019A34E",
+      "expected_bytes": "c0f88040c0f88440",
+      "actual_bytes": "c0f88040c0f88440",
+      "match": true,
+      "observation": "stores zero to object +0x80 and +0x84"
+    },
+    {
+      "name": "ring_initializer",
+      "address": "0x9019A3AE",
+      "expected_bytes": "00f130032946c0f88430",
+      "actual_bytes": "00f130032946c0f88430",
+      "match": true,
+      "observation": "forms object +0x30 and stores it at object +0x84"
+    },
+    {
+      "name": "snapshot_rotation",
+      "address": "0x9019A4EC",
+      "expected_bytes": "00f18404d1b04ff0704720684ff0140200682060c5684168",
+      "actual_bytes": "00f18404d1b04ff0704720684ff0140200682060c5684168",
+      "match": true,
+      "observation": "uses object +0x84, advances the node, then loads node +0x0C and linked-node +0x0C"
+    },
+    {
+      "name": "transition_byte_0x8f",
+      "address": "0x9019A558",
+      "expected_bytes": "28684ff0010931684ff00008c0f34012c1f340119142",
+      "actual_bytes": "28684ff0010931684ff00008c0f34012c1f340119142",
+      "match": true,
+      "observation": "compares bit 5 in two snapshots before writing transition byte +0x8F"
+    },
+    {
+      "name": "transition_byte_0x8c",
+      "address": "0x9019A6FC",
+      "expected_bytes": "28683168c0f34022c1f34021914207d0800502d584f88c90",
+      "actual_bytes": "28683168c0f34022c1f34021914207d0800502d584f88c90",
+      "match": true,
+      "observation": "compares bit 9 in two snapshots and writes code 1 to +0x8C on one transition"
+    },
+    {
+      "name": "status_snapshot_getter",
+      "address": "0x90350DD0",
+      "expected_bytes": "d0f88400c0687047",
+      "actual_bytes": "d0f88400c0687047",
+      "match": true,
+      "observation": "returns *( *(object +0x84) +0x0C )"
+    },
+    {
+      "name": "vtable_slot_plus_0x14",
+      "address": "0x9151F704",
+      "expected_bytes": "d10d3590",
+      "actual_bytes": "d10d3590",
+      "match": true,
+      "observation": "vtable slot +0x14 is Thumb target 0x90350DD1"
+    }
+  ]
+}
