@@ -122,7 +122,7 @@
         "TBB index 0x0B selects table 1 entry 11 = RAM 0x1049151C; index 0x0C selects table 2 entry 12 = RAM 0x10491580",
         "RAM 0x10491580 is adjacent to saved COPNOHandler alias at 0x1049157C; possible relationship is unverified, and no physical button link is established",
         "COPNOQueueButton RTTI/vtable/constructor are 0x915023DC/0x9151DE6C/0x9013DD94; slot +0x14 is 0x901AA6DA, a setter for object field +0x1C",
-        "known COPNOQueueButton subobjects are constructed at offsets from RAM bases 0x103E3B14, 0x103E3C1C, and 0x103E3D2C, not at 0x10491580"
+        "COPNOQueueButton has RTTI/vtable/constructor 0x915023DC/0x9151DE6C/0x9013DD94; all 36 direct ctor calls initialize offsets from 0x103E3B14, 0x103E3C1C, and 0x103E3D2C, not 0x10491580; indirect initialization remains possible"
       ],
       "confidence": "high for table routing and numeric indices; low for alias relationship or physical-button meaning"
     }
