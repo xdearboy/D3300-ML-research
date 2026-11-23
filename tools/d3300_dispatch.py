@@ -59,12 +59,17 @@ def main(argv=None):
     parser.add_argument("image", help="decoded b860_102.bin; never an update package")
     parser.add_argument("--tbb", required=True, type=_integer, help="ROM address of TBB instruction")
     parser.add_argument("--count", required=True, type=int, help="number of byte entries")
-    parser.add_argument("--index", required=True, action="append", type=_integer, help="index to decode; repeatable")
+    selection = parser.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--index", action="append", type=_integer,
+                           help="index to decode; repeatable")
+    selection.add_argument("--all", action="store_true",
+                           help="decode every index from zero through count-1")
     parser.add_argument("--array", action="append", default=[], type=_integer,
                         help="optional ROM address of a parallel 32-bit array; repeatable")
     args = parser.parse_args(argv)
     data = Path(args.image).read_bytes()
-    print(json.dumps(trace_tbb(data, args.tbb, args.count, args.index, args.array), indent=2))
+    indices = range(args.count) if args.all else args.index
+    print(json.dumps(trace_tbb(data, args.tbb, args.count, indices, args.array), indent=2))
 
 
 if __name__ == "__main__":
