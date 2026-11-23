@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h>
 #include "../core/dml_menu.h"
 #include "../modules/intervalometer.h"
 
@@ -108,9 +109,30 @@ static void test_menu_long_press_and_animation(void) {
     assert(menu.visible == 0);
 }
 
+static void test_menu_font_cycling(void) {
+    DmlMenu menu = {0};
+    assert(menu.font_id == 0);
+    assert(strcmp(dml_menu_get_font_name(0), "MODERN SANS") == 0);
+    assert(strcmp(dml_menu_get_font_name(1), "MONO TECH") == 0);
+    assert(strcmp(dml_menu_get_font_name(2), "RETRO MATRIX") == 0);
+
+    dml_menu_cycle_font(&menu);
+    assert(menu.font_id == 1);
+    assert(strcmp(dml_menu_get_font_name(menu.font_id), "MONO TECH") == 0);
+
+    dml_menu_cycle_font(&menu);
+    assert(menu.font_id == 2);
+    assert(strcmp(dml_menu_get_font_name(menu.font_id), "RETRO MATRIX") == 0);
+
+    dml_menu_cycle_font(&menu);
+    assert(menu.font_id == 0);
+    assert(strcmp(dml_menu_get_font_name(menu.font_id), "MODERN SANS") == 0);
+}
+
 int main(void) {
     test_menu_selection();
     test_independent_modules();
     test_menu_long_press_and_animation();
+    test_menu_font_cycling();
     return 0;
 }

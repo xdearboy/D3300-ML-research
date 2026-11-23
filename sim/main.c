@@ -103,6 +103,20 @@ static void describe_modules(void *ctx, uint32_t millis, const DmlCameraAPI *api
     dml_describe(ctx);
 }
 
+static void action_cycle_font(void *state, uint32_t millis, const DmlCameraAPI *api) {
+    (void)millis;
+    (void)api;
+    DmlMenu *menu = (DmlMenu *)state;
+    if (!menu) return;
+    dml_menu_cycle_font(menu);
+    for (size_t i = 0; i < menu->count; ++i) {
+        if (strcmp(menu->items[i].label, "UI FONT") == 0) {
+            menu->items[i].value_text = dml_menu_get_font_name(menu->font_id);
+            break;
+        }
+    }
+}
+
 static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int key) {
     if (key == 'i') {
         g_info_screen_active = !g_info_screen_active;
@@ -289,6 +303,7 @@ int main(int argc, char **argv) {
     int screenshot_is_info = 0;
     int screenshot_is_hold = 0;
     int initial_tab = -1;
+    int font_choice = -1;
 
     if (argc == 2 && strcmp(argv[1], "--interactive") == 0) {
         interactive = 1;
@@ -306,8 +321,12 @@ int main(int argc, char **argv) {
         initial_tab = atoi(argv[2]);
         screenshot_path = argv[3];
         screenshot_is_info = 0;
+    } else if (argc == 4 && strcmp(argv[1], "--screenshot-font") == 0) {
+        font_choice = atoi(argv[2]);
+        screenshot_path = argv[3];
+        screenshot_is_info = 0;
     } else if (argc != 1) {
-        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-hold <path.bmp>] [--screenshot-tab <0..4> <path.bmp>]\n", argv[0]);
+        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-hold <path.bmp>] [--screenshot-tab <0..4> <path.bmp>] [--screenshot-font <0..2> <path.bmp>]\n", argv[0]);
         return 2;
     }
 
@@ -317,6 +336,10 @@ int main(int argc, char **argv) {
     DmlIntervalometer state;
     DmlMenu menu = {0};
     g_active_menu_ptr = &menu;
+
+    if (font_choice >= 0 && font_choice < (int)DML_FONT_COUNT) {
+        menu.font_id = (uint8_t)font_choice;
+    }
 
     if (initial_tab >= 0 && initial_tab < (int)DML_TAB_COUNT) {
         menu.active_tab = (size_t)initial_tab;
@@ -504,6 +527,17 @@ int main(int argc, char **argv) {
     });
 
     /* SYSTEM tab */
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "UI FONT",
+        .desc = "Select interface typography style",
+        .tab = DML_TAB_SYSTEM,
+        .value_text = dml_menu_get_font_name(menu.font_id),
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = &menu,
+        .activate = action_cycle_font
+    });
     dml_menu_add(&menu, (DmlMenuItem){
         .label = "TASK MONITOR",
         .desc = "Realtime T-Kernel thread scheduler status",

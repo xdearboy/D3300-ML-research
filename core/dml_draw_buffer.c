@@ -1,4 +1,5 @@
 #include "dml_draw_buffer.h"
+#include "dml_fonts_data.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -305,8 +306,182 @@ void dml_draw_buffer_draw_char_scaled(DmlDrawBufferTable *table, int index, int 
     }
 }
 
+static DmlFontId g_active_font = DML_FONT_MODERN_SANS;
+
+void dml_draw_buffer_set_font(DmlFontId font_id) {
+    if (font_id < DML_FONT_COUNT) {
+        g_active_font = font_id;
+    }
+}
+
+DmlFontId dml_draw_buffer_get_font(void) {
+    return g_active_font;
+}
+
+int dml_draw_buffer_get_text_width(const char *text, DmlFontId font_id) {
+    if (!text) return 0;
+    int max_width = 0;
+    int line_width = 0;
+
+    while (*text) {
+        if (*text == '\n') {
+            if (line_width > max_width) max_width = line_width;
+            line_width = 0;
+            text++;
+            continue;
+        }
+        char c = *text;
+        if (c < 32 || (unsigned char)c > 126) c = '?';
+
+        if (font_id == DML_FONT_MODERN_SANS) {
+            line_width += g_font_sans14[(unsigned char)c - 32].advance;
+        } else if (font_id == DML_FONT_RETRO_MATRIX) {
+            line_width += 7;
+        } else {
+            line_width += 8;
+        }
+        text++;
+    }
+    if (line_width > max_width) max_width = line_width;
+    return max_width;
+}
+
+void dml_draw_buffer_draw_text_font(
+    DmlDrawBufferTable *table,
+    int index,
+    int x,
+    int y,
+    const char *text,
+    uint32_t fg_argb,
+    uint32_t bg_argb,
+    DmlFontId font_id
+) {
+    if (!table || index < 0 || (uint32_t)index >= DML_DRAW_BUFFER_MAX || !text) return;
+    if (!table->entries[index].active || !table->entries[index].pixels) return;
+
+    DmlDrawBufferEntry *entry = &table->entries[index];
+    uint32_t words_per_stride = entry->stride / 4u;
+    int cur_x = x;
+    int cur_y = y;
+
+    while (*text) {
+        if (*text == '\n') {
+            cur_x = x;
+            cur_y += (font_id == DML_FONT_MODERN_SANS) ? 16 : 10;
+            text++;
+            continue;
+        }
+        char c = *text;
+        if (c < 32 || (unsigned char)c > 126) c = '?';
+
+        if (font_id == DML_FONT_MODERN_SANS) {
+            const DmlGlyph *glyph = &g_font_sans14[(unsigned char)c - 32];
+
+            for (int r = 0; r < 15; r++) {
+                uint16_t bits = glyph->rows[r];
+                if (bits == 0) continue;
+                int py = cur_y + r;
+                if (py < 0 || py >= (int)entry->height) continue;
+                uint32_t *row_ptr = entry->pixels + py * words_per_stride;
+
+                for (int col = 0; col < 16; col++) {
+                    int is_fg = (bits & (0x8000u >> col)) != 0;
+                    if (!is_fg && (bg_argb & 0xFF000000u) == 0) continue;
+                    uint32_t color = is_fg ? fg_argb : bg_argb;
+                    int px = cur_x + col;
+                    if (px >= 0 && px < (int)entry->width) {
+                        row_ptr[px] = color;
+                    }
+                }
+            }
+            cur_x += glyph->advance;
+        } else if (font_id == DML_FONT_RETRO_MATRIX) {
+            const uint8_t *glyph = g_font_retro_matrix[(unsigned char)c - 32];
+            for (int r = 0; r < 7; r++) {
+                uint8_t bits = glyph[r];
+                int py = cur_y + r;
+                if (py < 0 || py >= (int)entry->height) continue;
+                uint32_t *row_ptr = entry->pixels + py * words_per_stride;
+
+                for (int col = 0; col < 5; col++) {
+                    int is_fg = (bits & (0x10u >> col)) != 0;
+                    if (!is_fg && (bg_argb & 0xFF000000u) == 0) continue;
+                    uint32_t color = is_fg ? fg_argb : bg_argb;
+                    int px = cur_x + col;
+                    if (px >= 0 && px < (int)entry->width) {
+                        row_ptr[px] = color;
+                    }
+                }
+            }
+            cur_x += 7;
+        } else {
+            /* DML_FONT_MONO_TECH */
+            dml_draw_buffer_draw_char_scaled(table, index, cur_x, cur_y, c, fg_argb, bg_argb, 1);
+            cur_x += 8;
+        }
+        text++;
+    }
+}
+
+void dml_draw_buffer_draw_text_sub(
+    DmlDrawBufferTable *table,
+    int index,
+    int x,
+    int y,
+    const char *text,
+    uint32_t fg_argb,
+    uint32_t bg_argb
+) {
+    if (!table || index < 0 || (uint32_t)index >= DML_DRAW_BUFFER_MAX || !text) return;
+    if (!table->entries[index].active || !table->entries[index].pixels) return;
+
+    DmlDrawBufferEntry *entry = &table->entries[index];
+    uint32_t words_per_stride = entry->stride / 4u;
+    int cur_x = x;
+    int cur_y = y;
+
+    while (*text) {
+        if (*text == '\n') {
+            cur_x = x;
+            cur_y += 12;
+            text++;
+            continue;
+        }
+        char c = *text;
+        if (c < 32 || (unsigned char)c > 126) c = '?';
+
+        if (g_active_font == DML_FONT_MODERN_SANS) {
+            const DmlGlyph *glyph = &g_font_sans10[(unsigned char)c - 32];
+
+            for (int r = 0; r < 12; r++) {
+                uint16_t bits = glyph->rows[r];
+                if (bits == 0) continue;
+                int py = cur_y + r;
+                if (py < 0 || py >= (int)entry->height) continue;
+                uint32_t *row_ptr = entry->pixels + py * words_per_stride;
+
+                for (int col = 0; col < 16; col++) {
+                    int is_fg = (bits & (0x8000u >> col)) != 0;
+                    if (!is_fg && (bg_argb & 0xFF000000u) == 0) continue;
+                    uint32_t color = is_fg ? fg_argb : bg_argb;
+                    int px = cur_x + col;
+                    if (px >= 0 && px < (int)entry->width) {
+                        row_ptr[px] = color;
+                    }
+                }
+            }
+            cur_x += glyph->advance;
+        } else {
+            /* In mono or retro mode, use corresponding font */
+            dml_draw_buffer_draw_text_font(table, index, cur_x, cur_y, (const char[2]){c, '\0'}, fg_argb, bg_argb, g_active_font);
+            cur_x += (g_active_font == DML_FONT_RETRO_MATRIX) ? 7 : 8;
+        }
+        text++;
+    }
+}
+
 void dml_draw_buffer_draw_text(DmlDrawBufferTable *table, int index, int x, int y, const char *text, uint32_t fg_argb, uint32_t bg_argb) {
-    dml_draw_buffer_draw_text_scaled(table, index, x, y, text, fg_argb, bg_argb, 1);
+    dml_draw_buffer_draw_text_font(table, index, x, y, text, fg_argb, bg_argb, g_active_font);
 }
 
 void dml_draw_buffer_draw_text_scaled(DmlDrawBufferTable *table, int index, int x, int y, const char *text, uint32_t fg_argb, uint32_t bg_argb, uint8_t scale) {

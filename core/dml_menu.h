@@ -52,6 +52,9 @@ typedef struct {
     uint8_t is_holding_menu;
     uint8_t hold_progress; /* 0..100 (%) */
     uint8_t anim_progress; /* 0..100 (%) */
+
+    /* Typography setting (defaults to DML_FONT_MODERN_SANS) */
+    uint8_t font_id;
 } DmlMenu;
 
 int dml_menu_add(DmlMenu *menu, DmlMenuItem item);
@@ -62,5 +65,7 @@ int dml_menu_on_menu_button(DmlMenu *menu, int is_down, uint32_t millis, DmlMenu
 const char *dml_menu_tab_name(DmlMenuTab tab);
 size_t dml_menu_tab_item_count(const DmlMenu *menu, DmlMenuTab tab);
 const DmlMenuItem *dml_menu_get_tab_item(const DmlMenu *menu, DmlMenuTab tab, size_t index);
+void dml_menu_cycle_font(DmlMenu *menu);
+const char *dml_menu_get_font_name(uint8_t font_id);
 
 #endif /* DML_MENU_H */

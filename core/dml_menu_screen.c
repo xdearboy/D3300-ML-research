@@ -33,13 +33,13 @@ static void draw_tab(
         /* Top and bottom 2px emerald accent lines */
         dml_draw_buffer_fill_rect(table, buf_idx, tx, ty, tw, 2, COLOR_EMERALD);
         dml_draw_buffer_fill_rect(table, buf_idx, tx, ty + 42, tw, 2, COLOR_EMERALD);
-        int text_w = (int)strlen(name) * 8;
+        int text_w = dml_draw_buffer_get_text_width(name, dml_draw_buffer_get_font());
         int text_x = tx + (tw - text_w) / 2;
-        dml_draw_buffer_draw_text(table, buf_idx, text_x, ty + 18, name, COLOR_WHITE, 0x00000000u);
+        dml_draw_buffer_draw_text(table, buf_idx, text_x, ty + 16, name, COLOR_WHITE, 0x00000000u);
     } else {
-        int text_w = (int)strlen(name) * 8;
+        int text_w = dml_draw_buffer_get_text_width(name, dml_draw_buffer_get_font());
         int text_x = tx + (tw - text_w) / 2;
-        dml_draw_buffer_draw_text(table, buf_idx, text_x, ty + 18, name, COLOR_MUTED, 0x00000000u);
+        dml_draw_buffer_draw_text(table, buf_idx, text_x, ty + 16, name, COLOR_MUTED, 0x00000000u);
     }
     /* Hairline vertical divider between tabs */
     dml_draw_buffer_draw_line_v(table, buf_idx, tx + tw, ty + 10, 24, 0xFF252538u);
@@ -54,7 +54,8 @@ static void draw_battery(
 ) {
     char b_str[16];
     snprintf(b_str, sizeof(b_str), "%u%%", pct);
-    dml_draw_buffer_draw_text(table, buf_idx, x - 35, y + 2, b_str, COLOR_TEXT, 0x00000000u);
+    int text_w = dml_draw_buffer_get_text_width(b_str, dml_draw_buffer_get_font());
+    dml_draw_buffer_draw_text(table, buf_idx, x - text_w - 8, y + 2, b_str, COLOR_TEXT, 0x00000000u);
 
     /* Flat sharp battery body: 40x16 px */
     dml_draw_buffer_draw_rect(table, buf_idx, x, y, 40, 16, COLOR_SURF1);
@@ -78,6 +79,8 @@ int dml_menu_screen_render(
         return -1;
     }
 
+    dml_draw_buffer_set_font((DmlFontId)menu->font_id);
+
     if (!menu->visible) {
         if (menu->is_holding_menu && menu->hold_progress > 0) {
             /* Render sleek Cinema hold progress overlay */
@@ -92,7 +95,8 @@ int dml_menu_screen_render(
 
             char pct_str[8];
             snprintf(pct_str, sizeof(pct_str), "%u%%", (unsigned int)menu->hold_progress);
-            dml_draw_buffer_draw_text(table, buf_idx, pill_x + pill_w - 44, pill_y + 8, pct_str, COLOR_TEXT, 0x00000000u);
+            int pct_w = dml_draw_buffer_get_text_width(pct_str, dml_draw_buffer_get_font());
+            dml_draw_buffer_draw_text(table, buf_idx, pill_x + pill_w - 14 - pct_w, pill_y + 8, pct_str, COLOR_TEXT, 0x00000000u);
 
             /* Progress bar track */
             int bar_x = pill_x + 14;
@@ -123,7 +127,7 @@ int dml_menu_screen_render(
     dml_draw_buffer_draw_line_h(table, buf_idx, 0, hdr_y + 44, 720, COLOR_SURF0);
 
     /* Brand Logo */
-    dml_draw_buffer_draw_text(table, buf_idx, 20, hdr_y + 18, "D3300-ML", COLOR_MAUVE, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 20, hdr_y + 16, "D3300-ML", COLOR_MAUVE, 0x00000000u);
 
     /* Category Tabs */
     static const char *kTabNames[DML_TAB_COUNT] = {
@@ -181,12 +185,12 @@ int dml_menu_screen_render(
         /* 1px hairline horizontal divider below each row */
         dml_draw_buffer_draw_line_h(table, buf_idx, 0, y + row_h - 1, 720, COLOR_SURF0);
 
-        /* Left text */
+        /* Left text: Title (14px) and Description (10px subtitle) */
         uint32_t title_color = is_sel ? COLOR_WHITE : COLOR_TEXT;
-        dml_draw_buffer_draw_text(table, buf_idx, 24 - slide_x, y + 15, it->label ? it->label : "", title_color, 0x00000000u);
+        dml_draw_buffer_draw_text(table, buf_idx, 24 - slide_x, y + 14, it->label ? it->label : "", title_color, 0x00000000u);
 
         uint32_t sub_color = is_sel ? COLOR_MUTED : COLOR_SUB;
-        dml_draw_buffer_draw_text(table, buf_idx, 24 - slide_x, y + 37, it->desc ? it->desc : "", sub_color, 0x00000000u);
+        dml_draw_buffer_draw_text_sub(table, buf_idx, 24 - slide_x, y + 37, it->desc ? it->desc : "", sub_color, 0x00000000u);
 
         /* Right Controls (Flat 90-degree boxes, strictly right-aligned to right_margin) */
         int box_y = y + 17;
@@ -194,60 +198,64 @@ int dml_menu_screen_render(
 
         if (it->has_val && it->is_on && it->value_text && it->value_text[0] != '\0') {
             /* Combined value box + ON badge */
-            int val_w = 70;
+            int tw_val = dml_draw_buffer_get_text_width(it->value_text, dml_draw_buffer_get_font());
+            int val_w = tw_val + 20;
+            if (val_w < 70) val_w = 70;
             int val_x = right_margin - 60 - val_w - 8;
             dml_draw_buffer_fill_rect(table, buf_idx, val_x, box_y, val_w, box_h, COLOR_BOX_BG);
             dml_draw_buffer_draw_rect(table, buf_idx, val_x, box_y, val_w, box_h, COLOR_SURF0);
 
-            int tw = (int)strlen(it->value_text) * 8;
-            int tx = val_x + (val_w - tw) / 2;
-            dml_draw_buffer_draw_text(table, buf_idx, tx, box_y + 9, it->value_text, COLOR_ORANGE, 0x00000000u);
+            int tx = val_x + (val_w - tw_val) / 2;
+            dml_draw_buffer_draw_text(table, buf_idx, tx, box_y + 8, it->value_text, COLOR_ORANGE, 0x00000000u);
 
             int on_x = right_margin - 60;
             dml_draw_buffer_fill_rect(table, buf_idx, on_x, box_y, 60, box_h, COLOR_EMERALD);
-            int tw_on = 2 * 8;
-            dml_draw_buffer_draw_text(table, buf_idx, on_x + (60 - tw_on) / 2, box_y + 9, "ON", COLOR_WHITE, 0x00000000u);
+            int tw_on = dml_draw_buffer_get_text_width("ON", dml_draw_buffer_get_font());
+            dml_draw_buffer_draw_text(table, buf_idx, on_x + (60 - tw_on) / 2, box_y + 8, "ON", COLOR_WHITE, 0x00000000u);
 
         } else if (it->is_on || (it->status_text && strcmp(it->status_text, "ON") == 0)) {
             /* Standalone ON badge */
             int on_x = right_margin - 60;
             dml_draw_buffer_fill_rect(table, buf_idx, on_x, box_y, 60, box_h, COLOR_EMERALD);
-            int tw_on = 2 * 8;
-            dml_draw_buffer_draw_text(table, buf_idx, on_x + (60 - tw_on) / 2, box_y + 9, "ON", COLOR_WHITE, 0x00000000u);
+            int tw_on = dml_draw_buffer_get_text_width("ON", dml_draw_buffer_get_font());
+            dml_draw_buffer_draw_text(table, buf_idx, on_x + (60 - tw_on) / 2, box_y + 8, "ON", COLOR_WHITE, 0x00000000u);
 
         } else if (it->status_text && strcmp(it->status_text, "OFF") == 0) {
             /* Flat OFF badge */
             int off_x = right_margin - 60;
             dml_draw_buffer_fill_rect(table, buf_idx, off_x, box_y, 60, box_h, COLOR_BOX_BG);
             dml_draw_buffer_draw_rect(table, buf_idx, off_x, box_y, 60, box_h, COLOR_SURF0);
-            int tw_off = 3 * 8;
-            dml_draw_buffer_draw_text(table, buf_idx, off_x + (60 - tw_off) / 2, box_y + 9, "OFF", COLOR_MUTED, 0x00000000u);
+            int tw_off = dml_draw_buffer_get_text_width("OFF", dml_draw_buffer_get_font());
+            dml_draw_buffer_draw_text(table, buf_idx, off_x + (60 - tw_off) / 2, box_y + 8, "OFF", COLOR_MUTED, 0x00000000u);
 
         } else if (it->value_text && it->value_text[0] != '\0') {
             /* Standalone value box (e.g. 5.0 FPS, 10 SEC, NEVER) */
-            int val_w = 84;
+            int tw = dml_draw_buffer_get_text_width(it->value_text, dml_draw_buffer_get_font());
+            int val_w = tw + 24;
+            if (val_w < 84) val_w = 84;
             int val_x = right_margin - val_w;
             dml_draw_buffer_fill_rect(table, buf_idx, val_x, box_y, val_w, box_h, COLOR_BOX_BG);
             dml_draw_buffer_draw_rect(table, buf_idx, val_x, box_y, val_w, box_h, COLOR_SURF0);
-            int tw = (int)strlen(it->value_text) * 8;
             int tx = val_x + (val_w - tw) / 2;
-            dml_draw_buffer_draw_text(table, buf_idx, tx, box_y + 9, it->value_text, COLOR_MAUVE, 0x00000000u);
+            dml_draw_buffer_draw_text(table, buf_idx, tx, box_y + 8, it->value_text, COLOR_MAUVE, 0x00000000u);
 
         } else if (it->status_text && it->status_text[0] != '\0') {
-            int stat_w = 60;
+            int tw = dml_draw_buffer_get_text_width(it->status_text, dml_draw_buffer_get_font());
+            int stat_w = tw + 20;
+            if (stat_w < 60) stat_w = 60;
             int stat_x = right_margin - stat_w;
             dml_draw_buffer_fill_rect(table, buf_idx, stat_x, box_y, stat_w, box_h, COLOR_BOX_BG);
             dml_draw_buffer_draw_rect(table, buf_idx, stat_x, box_y, stat_w, box_h, COLOR_SURF0);
-            int tw = (int)strlen(it->status_text) * 8;
             int tx = stat_x + (stat_w - tw) / 2;
-            dml_draw_buffer_draw_text(table, buf_idx, tx, box_y + 9, it->status_text, COLOR_TEXT, 0x00000000u);
+            dml_draw_buffer_draw_text(table, buf_idx, tx, box_y + 8, it->status_text, COLOR_TEXT, 0x00000000u);
         } else {
             /* Clean action indicator */
             int act_w = 32;
             int act_x = right_margin - act_w;
             dml_draw_buffer_fill_rect(table, buf_idx, act_x, box_y, act_w, box_h, COLOR_BOX_BG);
             dml_draw_buffer_draw_rect(table, buf_idx, act_x, box_y, act_w, box_h, COLOR_SURF0);
-            dml_draw_buffer_draw_text(table, buf_idx, act_x + 12, box_y + 9, ">", COLOR_MUTED, 0x00000000u);
+            int tw_gt = dml_draw_buffer_get_text_width(">", dml_draw_buffer_get_font());
+            dml_draw_buffer_draw_text(table, buf_idx, act_x + (act_w - tw_gt) / 2, box_y + 8, ">", COLOR_MUTED, 0x00000000u);
         }
     }
 
@@ -258,18 +266,26 @@ int dml_menu_screen_render(
     dml_draw_buffer_fill_rect(table, buf_idx, 0, ftr_y, 720, 44, 0xFF12121Bu);
     dml_draw_buffer_draw_line_h(table, buf_idx, 0, ftr_y, 720, COLOR_SURF0);
 
-    /* Navigation Hints with Color Coding */
-    dml_draw_buffer_draw_text(table, buf_idx, 24, ftr_y + 17, "[UP/DOWN]", COLOR_MAUVE, 0x00000000u);
-    dml_draw_buffer_draw_text(table, buf_idx, 104, ftr_y + 17, "NAVIGATE", COLOR_MUTED, 0x00000000u);
+    /* Navigation Hints with Dynamic Spacing */
+    int x1 = 24;
+    dml_draw_buffer_draw_text(table, buf_idx, x1, ftr_y + 15, "[UP/DOWN]", COLOR_MAUVE, 0x00000000u);
+    x1 += dml_draw_buffer_get_text_width("[UP/DOWN]", dml_draw_buffer_get_font()) + 8;
+    dml_draw_buffer_draw_text(table, buf_idx, x1, ftr_y + 15, "NAVIGATE", COLOR_MUTED, 0x00000000u);
+    x1 += dml_draw_buffer_get_text_width("NAVIGATE", dml_draw_buffer_get_font()) + 24;
 
-    dml_draw_buffer_draw_text(table, buf_idx, 184, ftr_y + 17, "[OK]", COLOR_EMERALD, 0x00000000u);
-    dml_draw_buffer_draw_text(table, buf_idx, 222, ftr_y + 17, "TOGGLE/EDIT", COLOR_MUTED, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, x1, ftr_y + 15, "[OK]", COLOR_EMERALD, 0x00000000u);
+    x1 += dml_draw_buffer_get_text_width("[OK]", dml_draw_buffer_get_font()) + 8;
+    dml_draw_buffer_draw_text(table, buf_idx, x1, ftr_y + 15, "TOGGLE/EDIT", COLOR_MUTED, 0x00000000u);
+    x1 += dml_draw_buffer_get_text_width("TOGGLE/EDIT", dml_draw_buffer_get_font()) + 24;
 
-    dml_draw_buffer_draw_text(table, buf_idx, 330, ftr_y + 17, "[LEFT/RIGHT]", COLOR_ORANGE, 0x00000000u);
-    dml_draw_buffer_draw_text(table, buf_idx, 432, ftr_y + 17, "SWITCH TAB", COLOR_MUTED, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, x1, ftr_y + 15, "[LEFT/RIGHT]", COLOR_ORANGE, 0x00000000u);
+    x1 += dml_draw_buffer_get_text_width("[LEFT/RIGHT]", dml_draw_buffer_get_font()) + 8;
+    dml_draw_buffer_draw_text(table, buf_idx, x1, ftr_y + 15, "SWITCH TAB", COLOR_MUTED, 0x00000000u);
 
-    dml_draw_buffer_draw_text(table, buf_idx, 580, ftr_y + 17, "[MENU]", COLOR_MAUVE, 0x00000000u);
-    dml_draw_buffer_draw_text(table, buf_idx, 634, ftr_y + 17, "RETURN", COLOR_MUTED, 0x00000000u);
+    int ret_w = dml_draw_buffer_get_text_width("RETURN", dml_draw_buffer_get_font());
+    int menu_w = dml_draw_buffer_get_text_width("[MENU]", dml_draw_buffer_get_font());
+    dml_draw_buffer_draw_text(table, buf_idx, 720 - 24 - ret_w, ftr_y + 15, "RETURN", COLOR_MUTED, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 720 - 24 - ret_w - 8 - menu_w, ftr_y + 15, "[MENU]", COLOR_MAUVE, 0x00000000u);
 
     return 0;
 }

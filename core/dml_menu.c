@@ -176,3 +176,17 @@ void dml_menu_tick(DmlMenu *menu, uint32_t millis) {
         }
     }
 }
+
+void dml_menu_cycle_font(DmlMenu *menu) {
+    if (!menu) return;
+    menu->font_id = (uint8_t)((menu->font_id + 1) % 3);
+}
+
+const char *dml_menu_get_font_name(uint8_t font_id) {
+    switch (font_id) {
+        case 0: return "MODERN SANS";
+        case 1: return "MONO TECH";
+        case 2: return "RETRO MATRIX";
+        default: return "MODERN SANS";
+    }
+}

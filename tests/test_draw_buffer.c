@@ -167,11 +167,66 @@ static void test_screenshot_export(void) {
     dml_draw_buffer_cleanup(&table);
 }
 
+static void test_typography(void) {
+    /* 1. Default active font */
+    assert(dml_draw_buffer_get_font() == DML_FONT_MODERN_SANS);
+
+    /* 2. Set and get font */
+    dml_draw_buffer_set_font(DML_FONT_MONO_TECH);
+    assert(dml_draw_buffer_get_font() == DML_FONT_MONO_TECH);
+    dml_draw_buffer_set_font(DML_FONT_RETRO_MATRIX);
+    assert(dml_draw_buffer_get_font() == DML_FONT_RETRO_MATRIX);
+    dml_draw_buffer_set_font(DML_FONT_MODERN_SANS);
+    assert(dml_draw_buffer_get_font() == DML_FONT_MODERN_SANS);
+
+    /* 3. Text width measurements */
+    assert(dml_draw_buffer_get_text_width("", DML_FONT_MODERN_SANS) == 0);
+    assert(dml_draw_buffer_get_text_width(NULL, DML_FONT_MODERN_SANS) == 0);
+
+    /* Mono font is 8px per char */
+    assert(dml_draw_buffer_get_text_width("Nikon", DML_FONT_MONO_TECH) == 5 * 8);
+
+    /* Retro matrix is 7px per char */
+    assert(dml_draw_buffer_get_text_width("Nikon", DML_FONT_RETRO_MATRIX) == 5 * 7);
+
+    /* Modern Sans is proportional: 'I' must be narrower than 'M' */
+    int w_i = dml_draw_buffer_get_text_width("I", DML_FONT_MODERN_SANS);
+    int w_m = dml_draw_buffer_get_text_width("M", DML_FONT_MODERN_SANS);
+    assert(w_i < w_m);
+
+    /* 4. Rendering test */
+    DmlDrawBufferTable table;
+    dml_draw_buffer_init(&table);
+    int idx = dml_draw_buffer_create(&table, 120, 40);
+    assert(idx >= 0);
+
+    /* Draw proportional text */
+    dml_draw_buffer_draw_text_font(&table, idx, 10, 10, "Cinema OS", 0xFFFFFFFFu, 0x00000000u, DML_FONT_MODERN_SANS);
+
+    /* Verify non-zero pixels written */
+    uint32_t words_per_stride = table.entries[idx].stride / 4u;
+    int pixel_count = 0;
+    for (int y = 0; y < 40; y++) {
+        for (int x = 0; x < 120; x++) {
+            if (table.entries[idx].pixels[y * words_per_stride + x] == 0xFFFFFFFFu) {
+                pixel_count++;
+            }
+        }
+    }
+    assert(pixel_count > 50);
+
+    /* Test subtitle text */
+    dml_draw_buffer_draw_text_sub(&table, idx, 10, 25, "Sub description", 0xFF888888u, 0x00000000u);
+
+    dml_draw_buffer_cleanup(&table);
+}
+
 int main(void) {
     test_stride_calculation();
     test_table_lifecycle();
     test_rasterizer();
     test_screenshot_export();
+    test_typography();
     puts("All DrawBuffer tests passed successfully.");
     return 0;
 }
