@@ -101,7 +101,7 @@
         "only 0x90323E24 selects sending slots +0x2C or +0x30 among those direct consumers",
         "all direct calls to veneer 0x90241454 use dynamic selectors 0x33/0x35 or explicit IDs 0x2D, 0x2E, 0x31, 0x32 and 0x4E",
         "0x90257F1C maps interface IDs 0x0B/0x0C to state selectors 0x16/0x17 and calls read slot +0x10",
-        "0x900FD4F0 is the sole indexed direct call to alias setter 0x9013B9AA, which stores R1 at RAM 0x1049157C; 0x901A4900/0x901A4904 instead set/read a separate 0/1 state field at 0x1049156C"
+        "0x900FD4F0 is the sole indexed direct call to alias setter 0x9013B9AA, which stores R1 at RAM 0x1049157C; a full read-only xref index finds no aligned ROM pointer/branch reference directly targeting 0x1049157C; 0x901A4900/0x901A4904 instead set/read a separate 0/1 state field at 0x1049156C"
       ],
       "confidence": "high for direct ROM consumers and the alias store; downstream alias readers remain unresolved"
     },
