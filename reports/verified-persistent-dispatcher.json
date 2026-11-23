@@ -1,0 +1,103 @@
+{
+  "image": "b860_102.bin",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "module": "RelayEventTaskEx.cpp",
+  "string_address": "0x9002733C",
+  "object_ram_base": "0x10121EA8",
+  "object_size_bytes": 276,
+  "rom_initial_data": {
+    "section": "kernel_data_2",
+    "rom_address": "0x916ABE28",
+    "file_offset": "0x0168BE28"
+  },
+  "header_layout": {
+    "0x00": "tskid (int32, task ID)",
+    "0x04": "flgid (int32, event flag ID)",
+    "0x08": "semid (int32, semaphore ID)"
+  },
+  "slots_table": {
+    "base_address": "0x10121EB4",
+    "offset_from_object": "0x0C",
+    "total_slots": 32,
+    "slot_stride_bytes": 8,
+    "slot_layout": {
+      "0x00": "mask (uint32_t, pre-initialized to 1 << index)",
+      "0x04": "func_ptr (uint32_t, callback function pointer)"
+    }
+  },
+  "procedures": {
+    "task_init": {
+      "address": "0x900271E4",
+      "mode": "Thumb-2",
+      "callers": [
+        "0x900223AC (boot init)"
+      ],
+      "actions": [
+        "creates semaphore, flgid, and task with entry 0x900271A4",
+        "writes IDs to 0x10121EA8 header"
+      ]
+    },
+    "worker_dispatcher": {
+      "address": "0x900271A4",
+      "mode": "Thumb-2",
+      "wait_call": "0x900271C0 bl 0x90025FB8 (tk_wai_flg)",
+      "mask_test": "0x900271CE tst r0, r1",
+      "dispatch_call": "0x900271DA blx r0",
+      "clearing_store": "none (strictly persistent)"
+    },
+    "registration": {
+      "address": "0x900272A6",
+      "mode": "Thumb-2",
+      "input_args": "r0 = callback_func_ptr (Thumb address with LSB=1)",
+      "locking": "0x900272BE bl 0x90025F36 (tk_wai_sem)",
+      "slot_search": "checks [slot + 4] == 0 for r4 in 0..31",
+      "write_instruction": "0x9002730A str.w r9, [r1, #4]",
+      "unlocking": "0x900272EA bl 0x90025F48 (tk_sig_sem)",
+      "return_value": "r0 = slots[r4].mask (1 << r4) on success; 0 on table full"
+    },
+    "event_signal": {
+      "address": "0x90027316",
+      "mode": "Thumb-2",
+      "input_args": "r0 = event_mask (token returned by registration)",
+      "syscall": "0x9002731E bl 0x90025FD2 (tk_set_flg)",
+      "return_value": "0 on success, -1 on error"
+    }
+  },
+  "abi": {
+    "entry_r0": "func_ptr (residue from target load for blx r0)",
+    "entry_r1": "flgptn (32-bit received event mask)",
+    "entry_r2_r3": "unspecified / dirty",
+    "rom_usage": "all 9 callback functions treat signature as void (*)(void)",
+    "return_value": "ignored by dispatcher"
+  },
+  "rom_callsites": {
+    "registration_calls_count": 13,
+    "registration_calls": [
+      {"callsite": "0x900275D8", "callback": "0x9002758A"},
+      {"callsite": "0x9002B920", "callback": "0x9002B942"},
+      {"callsite": "0x9003A006", "callback": "0x90039FA8"},
+      {"callsite": "0x9003A010", "callback": "0x90039F98"},
+      {"callsite": "0x900E6A74", "callback": "0x900E6A08"},
+      {"callsite": "0x9011CA7C", "callback": "0x9011CA1E"},
+      {"callsite": "0x9011DD78", "callback": "0x9011DD5C"},
+      {"callsite": "0x9011F20E", "callback": "0x9011F080"},
+      {"callsite": "0x90122534", "callback": "0x901224C6"},
+      {"callsite": "0x90122552", "callback": "0x90122444"},
+      {"callsite": "0x90160DF6", "callback": "0x9015FC2E"},
+      {"callsite": "0x90161976", "callback": "0x90160FA0"},
+      {"callsite": "0x90162596", "callback": "0x90162506"}
+    ],
+    "signal_calls_count": 16,
+    "signal_calls": [
+      "0x9002749A", "0x900274E2", "0x90027554", "0x9002756C",
+      "0x9003A3FA", "0x9003A416", "0x900E6C5C", "0x9011E742",
+      "0x9011F198", "0x90122798", "0x9015FC24", "0x90161002",
+      "0x9016104E", "0x9016109A", "0x901610E6", "0x90162C8C"
+    ]
+  },
+  "passive_observer_assessment": {
+    "ram_state_inspection": "PROVEN (0x10121EB4..0x10121FB4 readable)",
+    "dynamic_event_capture_without_mutation": "UNPROVEN / INFEASIBLE (no event history buffer)",
+    "safe_slot_allocation": "UNPROVEN (requires calling 0x900272A6 under semaphore)"
+  }
+}
