@@ -37,6 +37,16 @@ class InputChainTest(unittest.TestCase):
         self.assertEqual(data[mailbox:mailbox + 6], bytes.fromhex("012210b50261"))
         self.assertEqual(data[mailbox + 0x0C:mailbox + 0x14], bytes.fromhex("c0e90e41c0e90c23"))
 
+    def test_callback_continuation_packs_input_message(self):
+        data = firmware()
+        continuation = 0x9011E756 - BASE
+        self.assertEqual(data[continuation:continuation + 12],
+                         bytes.fromhex("1fb50220642310228df80000"))
+        # The continuation stores message type 2 and sends 0x10 bytes through
+        # the verified message-buffer veneer; physical button identity remains unknown.
+        self.assertEqual(data[continuation + 12:continuation + 20],
+                         bytes.fromhex("69465448806910f7"))
+
     def test_physical_identity_is_not_inferred(self):
         # This test intentionally checks only the static boundary; no MENU/OK
         # label is assigned to GPIO Pin 8.

@@ -8,7 +8,8 @@ GPIO debouncer 0x9011DDA8
   -> state helper 0x9011E738
   -> RelayEventEx mask 0x00000008 (0x9011E742)
   -> callback 0x9011DD5C
-  -> input message path / queue state 0x1011FFB4
+  -> continuation 0x9011E756 (message type 2, length 0x10)
+  -> snd_mbf veneer 0x9002EC0E / queue state 0x1011FFB4
   -> COPNOQueueButton 0x9013DDCC
   -> normalized 16-byte record
   -> CSYSCAppButtonController 0x903276B4
