@@ -8,6 +8,7 @@ GPIO debouncer 0x9011DDA8
   -> state helper 0x9011E738
   -> RelayEventEx mask 0x00000008 (0x9011E742)
   -> callback 0x9011DD5C
+  -> ARM state gate 0x90369364 (reads global byte +3)
   -> continuation 0x9011E756 (message type 2, length 0x10)
   -> snd_mbf veneer 0x9002EC0E / queue state 0x1011FFB4
   -> COPNOQueueButton 0x9013DDCC
@@ -18,6 +19,10 @@ GPIO debouncer 0x9011DDA8
 
 What is proven: the code addresses, the mask, the 16-byte record boundary,
 the queue-button range/TBB, and the application mailbox setter/getter.
+
+`0x90369364` is an ARM A32 helper (`ldr`/`ldrb`/`bx lr`) returning a global
+state byte. It does not construct a button code. The callback's comparison with
+`1` is therefore a state gate, not proof of MENU/OK/INFO identity.
 
 What is not proven: which physical camera button is wired to GPIO Pin 8, and
 whether an external observer can safely read the live T-Kernel flag or queue.

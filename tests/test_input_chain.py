@@ -47,6 +47,13 @@ class InputChainTest(unittest.TestCase):
         self.assertEqual(data[continuation + 12:continuation + 20],
                          bytes.fromhex("69465448806910f7"))
 
+    def test_callback_state_gate_is_a32_byte_getter(self):
+        data = firmware()
+        gate = 0x90369364 - BASE
+        # ARM A32: ldr r0,[pc,#imm]; ldrb r0,[r0,#3]; bx lr.
+        self.assertEqual(data[gate:gate + 12],
+                         bytes.fromhex("70029fe50300d0e51eff2fe1"))
+
     def test_physical_identity_is_not_inferred(self):
         # This test intentionally checks only the static boundary; no MENU/OK
         # label is assigned to GPIO Pin 8.
