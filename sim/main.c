@@ -6,6 +6,7 @@
 #include "../core/dml_nikon_adapter.h"
 #include "../core/dml_draw_buffer.h"
 #include "../core/dml_camera_status.h"
+#include "../core/dml_camera_status_hw.h"
 #include "../core/dml_info_screen.h"
 #include "../modules/intervalometer.h"
 
@@ -13,43 +14,8 @@ typedef struct { unsigned int shots; } SimCamera;
 static DmlDrawBufferTable g_display_table;
 static int g_display_buf_idx = -1;
 static DmlCameraStatus g_camera_status;
+static DmlHwCameraStatusRaw g_hw_raw;
 static int g_info_screen_active = 0;
-
-static const struct { uint32_t num; uint32_t den; uint8_t bulb; } k_shutter_table[] = {
-    {0, 0, 1},       /* BULB */
-    {30, 1, 0},      /* 30" */
-    {15, 1, 0},      /* 15" */
-    {8, 1, 0},       /* 8" */
-    {4, 1, 0},       /* 4" */
-    {2, 1, 0},       /* 2" */
-    {1, 1, 0},       /* 1" */
-    {1, 2, 0},       /* 1/2 */
-    {1, 4, 0},       /* 1/4 */
-    {1, 8, 0},       /* 1/8 */
-    {1, 15, 0},      /* 1/15 */
-    {1, 30, 0},      /* 1/30 */
-    {1, 60, 0},      /* 1/60 */
-    {1, 125, 0},     /* 1/125 */
-    {1, 250, 0},     /* 1/250 */
-    {1, 500, 0},     /* 1/500 */
-    {1, 1000, 0},    /* 1/1000 */
-    {1, 2000, 0},    /* 1/2000 */
-    {1, 4000, 0}     /* 1/4000 */
-};
-static const size_t k_shutter_count = sizeof(k_shutter_table) / sizeof(k_shutter_table[0]);
-static size_t g_shutter_idx = 14; /* 1/250 */
-
-static const uint16_t k_aperture_table[] = {
-    140, 180, 200, 280, 400, 560, 800, 1100, 1600, 2200
-};
-static const size_t k_aperture_count = sizeof(k_aperture_table) / sizeof(k_aperture_table[0]);
-static size_t g_aperture_idx = 3; /* f/2.8 */
-
-static const uint32_t k_iso_table[] = {
-    100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600
-};
-static const size_t k_iso_count = sizeof(k_iso_table) / sizeof(k_iso_table[0]);
-static size_t g_iso_idx = 2; /* 400 */
 
 static void print_msg(void *user, const char *s) {
     (void)user;
@@ -129,62 +95,87 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
         return;
     }
 
-    /* Exposure adjustments */
+    /* Exposure adjustments via raw hardware status memory */
     if (key == '[') {
-        if (g_shutter_idx > 0) g_shutter_idx--;
-        g_camera_status.shutter_numerator = k_shutter_table[g_shutter_idx].num;
-        g_camera_status.shutter_denominator = k_shutter_table[g_shutter_idx].den;
-        g_camera_status.is_bulb = k_shutter_table[g_shutter_idx].bulb;
+        if (g_hw_raw.tv_code > 0) g_hw_raw.tv_code--;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
         char s[32];
         dml_camera_status_format_shutter(&g_camera_status, s, sizeof(s));
-        printf("[status] Shutter: %s\n", s);
+        printf("[hw status] Shutter (tv_code=%u): %s\n", g_hw_raw.tv_code, s);
         render_display(menu);
         return;
     }
     if (key == ']') {
-        if (g_shutter_idx + 1 < k_shutter_count) g_shutter_idx++;
-        g_camera_status.shutter_numerator = k_shutter_table[g_shutter_idx].num;
-        g_camera_status.shutter_denominator = k_shutter_table[g_shutter_idx].den;
-        g_camera_status.is_bulb = k_shutter_table[g_shutter_idx].bulb;
+        if (g_hw_raw.tv_code < 52) g_hw_raw.tv_code++;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
         char s[32];
         dml_camera_status_format_shutter(&g_camera_status, s, sizeof(s));
-        printf("[status] Shutter: %s\n", s);
+        printf("[hw status] Shutter (tv_code=%u): %s\n", g_hw_raw.tv_code, s);
         render_display(menu);
         return;
     }
     if (key == '-') {
-        if (g_aperture_idx > 0) g_aperture_idx--;
-        g_camera_status.aperture_centi = k_aperture_table[g_aperture_idx];
+        if (g_hw_raw.av_code > 0) g_hw_raw.av_code--;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
         char a[32];
         dml_camera_status_format_aperture(&g_camera_status, a, sizeof(a));
-        printf("[status] Aperture: %s\n", a);
+        printf("[hw status] Aperture (av_code=%u): %s\n", g_hw_raw.av_code, a);
         render_display(menu);
         return;
     }
     if (key == '=') {
-        if (g_aperture_idx + 1 < k_aperture_count) g_aperture_idx++;
-        g_camera_status.aperture_centi = k_aperture_table[g_aperture_idx];
+        if (g_hw_raw.av_code < 30) g_hw_raw.av_code++;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
         char a[32];
         dml_camera_status_format_aperture(&g_camera_status, a, sizeof(a));
-        printf("[status] Aperture: %s\n", a);
+        printf("[hw status] Aperture (av_code=%u): %s\n", g_hw_raw.av_code, a);
         render_display(menu);
         return;
     }
     if (key == ',') {
-        if (g_iso_idx > 0) g_iso_idx--;
-        g_camera_status.iso = k_iso_table[g_iso_idx];
+        if ((g_hw_raw.iso_code & 0x7F) > 0) g_hw_raw.iso_code--;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
         char iso[32];
         dml_camera_status_format_iso(&g_camera_status, iso, sizeof(iso));
-        printf("[status] ISO: %s\n", iso);
+        printf("[hw status] ISO (iso_code=%u): %s\n", g_hw_raw.iso_code, iso);
         render_display(menu);
         return;
     }
     if (key == '.') {
-        if (g_iso_idx + 1 < k_iso_count) g_iso_idx++;
-        g_camera_status.iso = k_iso_table[g_iso_idx];
+        if ((g_hw_raw.iso_code & 0x7F) < 8) g_hw_raw.iso_code++;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
         char iso[32];
         dml_camera_status_format_iso(&g_camera_status, iso, sizeof(iso));
-        printf("[status] ISO: %s\n", iso);
+        printf("[hw status] ISO (iso_code=%u): %s\n", g_hw_raw.iso_code, iso);
+        render_display(menu);
+        return;
+    }
+    if (key == 'f') {
+        g_hw_raw.flash_state ^= 0x80;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
+        printf("[hw status] Flash: %s (%s)\n",
+               g_camera_status.flash_raised ? "RAISED" : "LOWERED",
+               dml_camera_status_flash_mode_name(g_camera_status.flash_mode));
+        render_display(menu);
+        return;
+    }
+    if (key == 'b') {
+        /* Cycle battery: 100 -> 84 -> 50 -> 20 -> 5 (critical) */
+        uint8_t curr = g_hw_raw.battery_status & 0x7F;
+        if (curr >= 100) g_hw_raw.battery_status = 84;
+        else if (curr >= 84) g_hw_raw.battery_status = 50;
+        else if (curr >= 50) g_hw_raw.battery_status = 20;
+        else if (curr >= 20) g_hw_raw.battery_status = 0x85; /* 5% + critical flag */
+        else g_hw_raw.battery_status = 100;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
+        printf("[hw status] Battery: %u%% (warning=%u)\n", g_camera_status.battery_pct, g_camera_status.battery_warning);
+        render_display(menu);
+        return;
+    }
+    if (key == 'a') {
+        g_hw_raw.active_focus_point = (g_hw_raw.active_focus_point + 1) % 11;
+        dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
+        printf("[hw status] Active Focus Point: %u/10\n", g_camera_status.active_focus_point);
         render_display(menu);
         return;
     }
@@ -213,7 +204,7 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
 static void interactive_run(DmlRuntime *runtime, DmlMenu *menu) {
     uint32_t millis = 0;
     int key;
-    puts("m menu, i info screen, [/] shutter, -/= aperture, ,/. iso, t advance 500 ms, p screenshot, q quit");
+    puts("m menu, i info screen, [/] shutter, -/= aperture, ,/. iso, f flash, b battery, a focus point, t tick, p screenshot, q quit");
     while ((key = getchar()) != EOF && key != 'q') {
         if (key == 't') {
             millis += 500;
@@ -256,7 +247,25 @@ int main(int argc, char **argv) {
     DmlIntervalometer state;
     DmlMenu menu = {0};
 
-    dml_camera_status_init_default(&g_camera_status);
+    memset(&g_hw_raw, 0, sizeof(g_hw_raw));
+    g_hw_raw.vtable = D3300_ADDR_CKRRC_VTABLE;
+    g_hw_raw.mode_flags = 0x00; /* M mode */
+    g_hw_raw.tv_code = 40;      /* 1/250s */
+    g_hw_raw.av_code = 9;       /* f/2.8 */
+    g_hw_raw.iso_code = 2;      /* ISO 400 */
+    g_hw_raw.ev_compensation = 0;
+    g_hw_raw.metering_mode = 0; /* Matrix */
+    g_hw_raw.af_mode = 0;       /* AF-S */
+    g_hw_raw.active_focus_point = 0; /* Center */
+    g_hw_raw.release_mode = 0;  /* Single */
+    g_hw_raw.flash_state = 0x81;/* Raised + Fill flash */
+    g_hw_raw.flash_compensation = 0;
+    g_hw_raw.battery_status = 84; /* 84% */
+    g_hw_raw.image_quality = 0; /* RAW+Fine */
+    g_hw_raw.shots_remaining = 1420;
+    g_hw_raw.buffer_remaining = 12;
+    g_hw_raw.white_balance = 0; /* Auto */
+    dml_camera_status_read_hw(&g_camera_status, &g_hw_raw);
 
     dml_draw_buffer_init(&g_display_table);
     g_display_buf_idx = dml_draw_buffer_create(&g_display_table, 720, 480);
