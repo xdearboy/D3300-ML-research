@@ -114,48 +114,55 @@
       "confidence": "high"
     },
     {
-      "name": "candidate CKRCCCommandManager indexed route",
+      "name": "CKRCCCommandManager indexed route",
       "path": [
         "RTTI at 0x91503790 names 19CKRCCCommandManager at 0x9150C56A; vtable 0x915241F8 points to methods 0x9013B6BC, 0x9013B76E, 0x9013B786",
         "0x9013B76E and 0x9013B786 read tables at 0x91478498 and 0x91478640; second table is first +0x1A8 and routing range is 106 indices",
-        "0x900FAB14 classifies the requested index with TBB at 0x9013B7AA, selects a table, then dispatches through object vtable slot +0x14",
+        "0x900FAB14 classifies requested index with TBB at 0x9013B7B0 inside classifier 0x9013B7AA, selects table, then dispatches through object vtable slot +0x14",
         "TBB index 0x0B selects table 1 entry 11 = RAM 0x1049151C; index 0x0C selects table 2 entry 12 = RAM 0x10491580",
-        "RAM 0x10491580 is adjacent to saved COPNOHandler alias at 0x1049157C; possible relationship is unverified, and no physical button link is established",
-        "COPNOQueueButton RTTI/vtable/constructor are 0x915023DC/0x9151DE6C/0x9013DD94; slot +0x14 is 0x901AA6DA, a setter for object field +0x1C",
-        "COPNOQueueButton has RTTI/vtable/constructor 0x915023DC/0x9151DE6C/0x9013DD94; all 36 direct ctor calls initialize offsets from 0x103E3B14, 0x103E3C1C, and 0x103E3D2C, not 0x10491580; indirect initialization remains possible"
+        "RAM 0x10491580 is constructed by 0x9019A340 (called directly at 0x9013BC60) with vtable 0x9151F6F0 and RTTI 17CKRRCCameraStatus at 0x9150AFBB",
+        "Slot +0x14 is 0x90350DD0, which reads object field +0x84 and returns the word at +0x0C of that structure for memcpy via 0x90274BBC",
+        "Route is closed: CKRCC index 0x0C is a camera-status read path, not a physical button producer; adjacent COPNOHandler alias at 0x1049157C is a separate global",
+        "COPNOQueueButton has RTTI/vtable/constructor 0x915023DC/0x9151DE6C/0x9013DD94; all 36 direct ctor calls initialize offsets from 0x103E3B14, 0x103E3C1C, and 0x103E3D2C, not 0x10491580"
       ],
-      "confidence": "high for table routing and numeric indices; low for alias relationship or physical-button meaning"
+      "confidence": "high; verified as camera-status reading path, not button event producer"
     }
   ],
   "candidate_integration_seams": [
     {
-      "address": "0x9002702C",
-      "role": "RelayEvent callback invocation",
-      "assessment": "Existing indirect callback boundary. Registration ABI and lifetime are not established.",
+      "address": "0x900272A6",
+      "role": "RelayEventEx callback registration API",
+      "assessment": "Persistent callback registration taking callback in R0 into a 32-slot table; returns token (1 << slot) or 0 on overflow; unregister at 0x90027316; worker at 0x900271A4 does not clear slot before BLX R0.",
       "hook_safety": "unverified"
     },
     {
-      "address": "0x900271DA",
-      "role": "RelayEventEx callback invocation",
-      "assessment": "Existing indirect callback boundary. Registration ABI and lifetime are not established.",
+      "address": "0x900270F8",
+      "role": "RelayEvent one-shot callback registration API",
+      "assessment": "One-shot callback registration; worker 0x90026FF0 zeroes callback slot before BLX R0 at 0x9002702C; unregister at 0x90027168.",
       "hook_safety": "unverified"
     },
     {
-      "address": "0x9013CF56",
-      "role": "generic button event normalization",
-      "assessment": "Central class method for button IDs. Physical MENU/OK code mapping is not established.",
+      "address": "0x903512A0",
+      "role": "application button-controller accepted record handoff",
+      "assessment": "Called at 0x903276B4: R0=destination state object, R1=pointer to 16-byte record; sets dest+0x10=1 and copies 4 words to dest+0x30..+0x3C.",
       "hook_safety": "unverified"
     },
     {
-      "address": "0x903276B4",
-      "role": "application button-controller handoff",
-      "assessment": "Observed event-record handoff on the controller loop. Record ABI is only partially inferred.",
+      "address": "0x9035128C",
+      "role": "button state record read-side seam",
+      "assessment": "Candidate read ABI: R0=state object, R1=NULL (poll) or buffer pointer; if ready flag at state+0x10 is non-zero and R1!=NULL, copies 16 bytes from state+0x30; returns ready flag.",
+      "hook_safety": "unverified"
+    },
+    {
+      "address": "0x90031E30",
+      "role": "CMENUController message boundary",
+      "assessment": "Standard message dispatch via slot +0x14 leading to dispatcher 0x9003FD72; receives request 0x00020101 reaching 0x900F466C and controller slot +0x38 (0x9002A400).",
       "hook_safety": "unverified"
     },
     {
       "address": "0x90323E24",
       "role": "device-state selector to COPNOHandler message gateway",
-      "assessment": "Central state-selecting proxy for task message 0x20062C13. It preserves selectors 0x33/0x35 rather than producing queue-button IDs 0x0B/0x0C; reentrancy and ABI lifetime are not established.",
+      "assessment": "Central state-selecting proxy for task message 0x20062C13. Preserves selectors 0x33/0x35 rather than producing queue-button IDs 0x0B/0x0C; avoid as button hook.",
       "hook_safety": "unverified"
     }
   ],
