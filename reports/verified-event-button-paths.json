@@ -50,9 +50,12 @@
       "path": [
         "RTTI COPNOQueueButton at 0x9150A8B3",
         "vtable at 0x9151DE6C",
-        "method 0x9013DDCC handles IDs 0x04..0x15",
-        "ID 0x0B reaches the direct-copy branch at 0x9013DE14",
-        "ID 0x0C requires value_1 == 1 and runtime guards at 0x9013DE00..0x9013DE12"
+        "method 0x9013DDCC handles IDs 0x04..0x16 via TBB [PC, R1 - 4]",
+        "ID 0x0B reaches direct-copy branch at 0x9013DE14",
+        "ID 0x0C (OK) branches to 0x9013DE00 and checks value_1 == 1",
+        "0x9013DE00 -> 0x9016E076 -> 0x900E6B68 packages 16-byte message [2, 0, ...] and calls snd_mbf(0x1012090C, msg, 0x10, 100) via 0x9002EC0E",
+        "0x9016E088 packages release message [3, 0, ...] on value_1 == 0",
+        "CSYSCAppButtonController (vtable 0x91538D1C at 0x103DBFD8+0x5C4 inside CSYSCAppManager) receives event and invokes 0x903512A0 via 0x903276EE"
       ],
       "confidence": "high"
     },
