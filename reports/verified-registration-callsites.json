@@ -176,5 +176,412 @@
       "subsystem": "Timer.cpp",
       "confidence": "PROVEN"
     }
-  ]
+  ],
+  "total_triggers": 16,
+  "total_tailcalls": 4,
+  "trigger_ledger": [
+    {
+      "trigger_site": "0x9002749A",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x90027490 ldr r0, [r7]",
+        "0x90027492 movs r1, #0x14",
+        "0x90027494 bl 0x9002ec62",
+        "0x90027498 ldr r0, [r4, #0x4]"
+      ],
+      "r0_source_instruction": "0x90027498 ldr r0, [r4, #0x4]",
+      "mask_source_type": "struct_field ([0x10121FB4 + 0x4] = 0x10121FB8)",
+      "r0_value_at_call": "0x00000002",
+      "assigned_slot": 1,
+      "token_mask": "0x00000002",
+      "subsystem": "SdDriver.cpp (SD Card Detect / Ch 0)",
+      "category": "storage",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers SD slot 1 callback 0x9002758A on card insertion/removal status change."
+    },
+    {
+      "trigger_site": "0x900274E2",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x900274d8 ldr r0, [r7, #0x4]",
+        "0x900274da movs r1, #0x14",
+        "0x900274dc bl 0x9002ec62",
+        "0x900274e0 ldr r0, [r4, #0x8]"
+      ],
+      "r0_source_instruction": "0x900274e0 ldr r0, [r4, #0x8]",
+      "mask_source_type": "struct_field ([0x10121FB4 + 0x8] = 0x10121FBC)",
+      "r0_value_at_call": "0x00000000 (unpopulated on single-slot D3300)",
+      "assigned_slot": null,
+      "token_mask": "0x00000000",
+      "subsystem": "SdDriver.cpp (SD Ch 1 - Secondary SD slot)",
+      "category": "storage",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN (code site) / UNPOPULATED (hardware slot)",
+      "notes": "Secondary SD channel handler from shared Nikon codebase; slot 1 token storage at [r4, #8] is unpopulated/zero on D3300."
+    },
+    {
+      "trigger_site": "0x90027554",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x9002754c ldr r0, [pc, #0x220] (0x90027770)",
+        "0x9002754e blx 0x901b6c04",
+        "0x90027552 ldr r0, [r4, #0x4]"
+      ],
+      "r0_source_instruction": "0x90027552 ldr r0, [r4, #0x4]",
+      "mask_source_type": "struct_field ([0x10121FB4 + 0x4] = 0x10121FB8)",
+      "r0_value_at_call": "0x00000002",
+      "assigned_slot": 1,
+      "token_mask": "0x00000002",
+      "subsystem": "SdDriver.cpp (SD Transfer Complete / Ch 0)",
+      "category": "storage",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers SD slot 1 callback after DMA block transfer completion."
+    },
+    {
+      "trigger_site": "0x9002756C",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x90027568 strb r7, [r4]",
+        "0x9002756a ldr r0, [r4, #0x4]"
+      ],
+      "r0_source_instruction": "0x9002756a ldr r0, [r4, #0x4]",
+      "mask_source_type": "struct_field ([0x10121FB4 + 0x4] = 0x10121FB8)",
+      "r0_value_at_call": "0x00000002",
+      "assigned_slot": 1,
+      "token_mask": "0x00000002",
+      "subsystem": "SdDriver.cpp (SD Error / State Transition / Ch 0)",
+      "category": "storage",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers SD slot 1 callback on state machine transition."
+    },
+    {
+      "trigger_site": "0x9003A3FA",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x9003a3dc ldr r1, [pc, #0x214] (0x10121370)",
+        "0x9003a3f0 ldr r0, [pc, #0x208] (0x1031AA48)",
+        "0x9003a3f2 ldr r0, [r0, #0x4]",
+        "0x9003a3f4 cmp r0, #0x0",
+        "0x9003a3f8 ldr r0, [r1, #0x4]"
+      ],
+      "r0_source_instruction": "0x9003a3f8 ldr r0, [r1, #0x4]",
+      "mask_source_type": "struct_field ([0x10121370 + 0x4] = 0x10121374)",
+      "r0_value_at_call": "0x00000020",
+      "assigned_slot": 5,
+      "token_mask": "0x00000020",
+      "subsystem": "DspDriver.cpp (DSP Channel A)",
+      "category": "dsp",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers DSP coprocessor callback 0x90039FA8 for channel A job completion."
+    },
+    {
+      "trigger_site": "0x9003A416",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x9003a3dc ldr r1, [pc, #0x214] (0x10121370)",
+        "0x9003a40a ldr r0, [pc, #0x1f0] (0x1031AA48)",
+        "0x9003a40c adds r0, #0xc",
+        "0x9003a40e ldr r0, [r0, #0x4]",
+        "0x9003a410 cmp r0, #0x0",
+        "0x9003a414 ldr r0, [r1, #0x8]"
+      ],
+      "r0_source_instruction": "0x9003a414 ldr r0, [r1, #0x8]",
+      "mask_source_type": "struct_field ([0x10121370 + 0x8] = 0x10121378)",
+      "r0_value_at_call": "0x00000040",
+      "assigned_slot": 6,
+      "token_mask": "0x00000040",
+      "subsystem": "DspDriver.cpp (DSP Channel B)",
+      "category": "dsp",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers DSP coprocessor callback 0x90039F98 for channel B job completion."
+    },
+    {
+      "trigger_site": "0x900E6C5C",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x900e6c54 cmp r0, #0x5",
+        "0x900e6c58 str r6, [r1, #0x3c]",
+        "0x900e6c5a ldr r0, [r1, #0x40]"
+      ],
+      "r0_source_instruction": "0x900e6c5a ldr r0, [r1, #0x40]",
+      "mask_source_type": "struct_field ([0x1012090C -> 0x40])",
+      "r0_value_at_call": "0x00000010",
+      "assigned_slot": 4,
+      "token_mask": "0x00000010",
+      "subsystem": "Input Msg Buffer Controller (HDMI-CEC Driver)",
+      "category": "input_control_msg",
+      "is_button_or_user_input": true,
+      "confidence": "PROVEN",
+      "notes": "Transmits external control packet (e.g. HDMI-CEC remote commands) into mailbox queue [r0, #4] via callback 0x900E6A08."
+    },
+    {
+      "trigger_site": "0x9011E742",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x9011e738 push {r4, lr}",
+        "0x9011e73a mov r4, r0",
+        "0x9011e73c ldr r0, [pc, #0x178] (0x1011FFB4)",
+        "0x9011e73e ldr r0, [r0, #0x8]",
+        "0x9011e740 cbz r0, 0x9011e746"
+      ],
+      "r0_source_instruction": "0x9011e73e ldr r0, [r0, #0x8]",
+      "mask_source_type": "struct_field ([0x1011FFB4 + 0x8])",
+      "r0_value_at_call": "0x00000008",
+      "assigned_slot": 3,
+      "token_mask": "0x00000008",
+      "subsystem": "Input Event Queue Forwarder (GPIO Pin 8 Debouncer)",
+      "category": "input_gpio_pin",
+      "is_button_or_user_input": true,
+      "confidence": "PROVEN",
+      "notes": "PRIMARY HARDWARE INPUT FORWARDER: Debouncer 0x9011DDA8 samples GPIO Pin 8 via 0x902742C2. On state change, invokes 0x9011E738 with r0=1 (press) or r0=0 (release), triggering Slot 3. Callback 0x9011DD5C pushes input event type 2 into input mailbox queue [0x1011FFB4 + 0x18]. Specific physical button identity UNPROVEN without hardware schematic."
+    },
+    {
+      "trigger_site": "0x9011F198",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x9011f18c add.w r0, r0, r1, lsl #3",
+        "0x9011f190 str r0, [r5]",
+        "0x9011f194 ldr.w r0, [r10, #0x8]"
+      ],
+      "r0_source_instruction": "0x9011f194 ldr.w r0, [r10, #0x8]",
+      "mask_source_type": "struct_field ([0x10317E30 + 0x8] = 0x10317E38)",
+      "r0_value_at_call": "0x00001000",
+      "assigned_slot": 12,
+      "token_mask": "0x00001000",
+      "subsystem": "Timer.cpp (Hardware Interval Timer)",
+      "category": "timer",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers periodic interval timer callback 0x9011F080."
+    },
+    {
+      "trigger_site": "0x90122798",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x9012277e cmp r0, #0x7",
+        "0x90122780 str r0, [r5, #0xc]",
+        "0x90122794 strb r0, [r4]",
+        "0x90122796 ldr r0, [r4, #0x4]"
+      ],
+      "r0_source_instruction": "0x90122796 ldr r0, [r4, #0x4]",
+      "mask_source_type": "struct_field ([0x101254B8 + 0x4])",
+      "r0_value_at_call": "0x00000100",
+      "assigned_slot": 8,
+      "token_mask": "0x00000100",
+      "subsystem": "15CUsbDongleCycle (USB Dongle Rx)",
+      "category": "usb",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers USB wireless dongle Rx callback 0x901224C6 on packet arrival."
+    },
+    {
+      "trigger_site": "0x9015FC24",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x9015fc1e strd r2, r4, [r0, #24]",
+        "0x9015fc22 ldr r0, [r0, #0x38]"
+      ],
+      "r0_source_instruction": "0x9015fc22 ldr r0, [r0, #0x38]",
+      "mask_source_type": "struct_field ([0x10317CB0 + 0x38] = 0x10317CE8)",
+      "r0_value_at_call": "0x00000400",
+      "assigned_slot": 10,
+      "token_mask": "0x00000400",
+      "subsystem": "I2SCH0 (Audio I2S Channel 0)",
+      "category": "audio",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers audio driver callback 0x9015FC2E upon buffer DMA transfer completion."
+    },
+    {
+      "trigger_site": "0x90161002",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x90160fe6 movs r0, #0xe",
+        "0x90160fe8 bl 0x902742c2",
+        "0x90160ffe str r0, [r4, #0x28]",
+        "0x90161000 ldr r0, [r4, #0x20]"
+      ],
+      "r0_source_instruction": "0x90161000 ldr r0, [r4, #0x20]",
+      "mask_source_type": "struct_field ([0x10317898 + 0x20] = 0x103178B8)",
+      "r0_value_at_call": "0x00000001",
+      "assigned_slot": 0,
+      "token_mask": "0x00000001",
+      "subsystem": "KrDriver.cpp (KRMAIN / Release Mechanism GPIO 14.6)",
+      "category": "release_mechanism",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers KrDriver callback 0x90160FA0 upon shutter/mirror release mechanism sensor transition (GPIO port 14 pin 6)."
+    },
+    {
+      "trigger_site": "0x9016104E",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x90161032 movs r0, #0xe",
+        "0x90161034 bl 0x902742c2",
+        "0x9016104a str r0, [r4, #0x28]",
+        "0x9016104c ldr r0, [r4, #0x20]"
+      ],
+      "r0_source_instruction": "0x9016104c ldr r0, [r4, #0x20]",
+      "mask_source_type": "struct_field ([0x10317898 + 0x20] = 0x103178B8)",
+      "r0_value_at_call": "0x00000001",
+      "assigned_slot": 0,
+      "token_mask": "0x00000001",
+      "subsystem": "KrDriver.cpp (KRMAIN / Release Mechanism GPIO 14.5)",
+      "category": "release_mechanism",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers KrDriver callback 0x90160FA0 upon release mechanism sensor transition (GPIO port 14 pin 5)."
+    },
+    {
+      "trigger_site": "0x9016109A",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x9016107e movs r0, #0xe",
+        "0x90161080 bl 0x902742c2",
+        "0x90161096 str r0, [r4, #0x28]",
+        "0x90161098 ldr r0, [r4, #0x20]"
+      ],
+      "r0_source_instruction": "0x90161098 ldr r0, [r4, #0x20]",
+      "mask_source_type": "struct_field ([0x10317898 + 0x20] = 0x103178B8)",
+      "r0_value_at_call": "0x00000001",
+      "assigned_slot": 0,
+      "token_mask": "0x00000001",
+      "subsystem": "KrDriver.cpp (KRMAIN / Release Mechanism GPIO 14.4)",
+      "category": "release_mechanism",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers KrDriver callback 0x90160FA0 upon release mechanism sensor transition (GPIO port 14 pin 4)."
+    },
+    {
+      "trigger_site": "0x901610E6",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x901610c6 movs r0, #0xe",
+        "0x901610cc bl 0x902742c2",
+        "0x901610e2 str r0, [r4, #0x28]",
+        "0x901610e4 ldr r0, [r4, #0x20]"
+      ],
+      "r0_source_instruction": "0x901610e4 ldr r0, [r4, #0x20]",
+      "mask_source_type": "struct_field ([0x10317898 + 0x20] = 0x103178B8)",
+      "r0_value_at_call": "0x00000001",
+      "assigned_slot": 0,
+      "token_mask": "0x00000001",
+      "subsystem": "KrDriver.cpp (KRMAIN / Release Mechanism GPIO 14.7)",
+      "category": "release_mechanism",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers KrDriver callback 0x90160FA0 upon release mechanism sensor transition (GPIO port 14 pin 7)."
+    },
+    {
+      "trigger_site": "0x90162C8C",
+      "call_type": "BL",
+      "disassembly_before": [
+        "0x90162c80 cmp r0, #0x7",
+        "0x90162c82 str r0, [r5, #0xc]",
+        "0x90162c86 cmp r0, #0x38",
+        "0x90162c8a ldr r0, [r4, #0xc]"
+      ],
+      "r0_source_instruction": "0x90162c8a ldr r0, [r4, #0xc]",
+      "mask_source_type": "struct_field ([0x10317C1C + 0xC] = 0x10317C28)",
+      "r0_value_at_call": "0x00000080",
+      "assigned_slot": 7,
+      "token_mask": "0x00000080",
+      "subsystem": "USBMAIN (USB VBUS / Connection Detect)",
+      "category": "usb",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers USBMAIN callback 0x90162506 upon USB cable insertion / VBUS state transition."
+    },
+    {
+      "trigger_site": "0x9002B84A",
+      "call_type": "B.W (tail-call)",
+      "disassembly_before": [
+        "0x9002b844 strd r2, r3, [r0, #12]",
+        "0x9002b848 ldr r0, [r0, #0x14]"
+      ],
+      "r0_source_instruction": "0x9002b848 ldr r0, [r0, #0x14]",
+      "mask_source_type": "struct_field ([r0, #0x14] = 0x10317E04)",
+      "r0_value_at_call": "0x00000800",
+      "assigned_slot": 11,
+      "token_mask": "0x00000800",
+      "subsystem": "14CAudioAACCodec (Audio AAC Codec Buffer)",
+      "category": "audio",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers audio AAC codec callback 0x9002B942 via tail-call branch."
+    },
+    {
+      "trigger_site": "0x900E6C3E",
+      "call_type": "B.W (tail-call)",
+      "disassembly_before": [
+        "0x900e6c36 ldr r0, [r4]",
+        "0x900e6c38 ldr r0, [r0, #0x40]",
+        "0x900e6c3a pop.w {r4, r5, r6, lr}"
+      ],
+      "r0_source_instruction": "0x900e6c38 ldr r0, [r0, #0x40]",
+      "mask_source_type": "struct_field ([0x1012090C -> 0x40])",
+      "r0_value_at_call": "0x00000010",
+      "assigned_slot": 4,
+      "token_mask": "0x00000010",
+      "subsystem": "Input Msg Buffer Controller (Overflow / Reset Trigger)",
+      "category": "input_control_msg",
+      "is_button_or_user_input": true,
+      "confidence": "PROVEN",
+      "notes": "Triggers input message controller callback 0x900E6A08 on buffer condition."
+    },
+    {
+      "trigger_site": "0x9011CFA8",
+      "call_type": "B.W (tail-call)",
+      "disassembly_before": [
+        "0x9011cfa0 ldr r0, [pc, #0x378] (0x9011D31C)",
+        "0x9011cfa2 ldr r0, [r0, #0x1c]",
+        "0x9011cfa4 cmp r0, #0x0",
+        "0x9011cfa6 beq 0x9011cfac"
+      ],
+      "r0_source_instruction": "0x9011cfa2 ldr r0, [r0, #0x1c]",
+      "mask_source_type": "struct_field ([0x10317FF8 + 0x1C] = 0x10317FFC)",
+      "r0_value_at_call": "0x00000004",
+      "assigned_slot": 2,
+      "token_mask": "0x00000004",
+      "subsystem": "Serial / Display Queue (0x10317FF8)",
+      "category": "queues",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers serial/display queue callback 0x9011CA1E on queue state transition."
+    },
+    {
+      "trigger_site": "0x901225FE",
+      "call_type": "B.W (tail-call)",
+      "disassembly_before": [
+        "0x901225f8 ldr r1, [pc, #0x1c0] (0x101254B8)",
+        "0x901225fa strb r0, [r1, #0x1]",
+        "0x901225fc ldr r0, [r1, #0x8]"
+      ],
+      "r0_source_instruction": "0x901225fc ldr r0, [r1, #0x8]",
+      "mask_source_type": "struct_field ([0x101254B8 + 0x8])",
+      "r0_value_at_call": "0x00000200",
+      "assigned_slot": 9,
+      "token_mask": "0x00000200",
+      "subsystem": "15CUsbDongleCycle (USB Dongle Tx)",
+      "category": "usb",
+      "is_button_or_user_input": false,
+      "confidence": "PROVEN",
+      "notes": "Triggers USB dongle Tx callback 0x90122444 upon transmission queue update."
+    }
+  ],
+  "menu_router_implications": {
+    "primary_input_forwarder_slot": 3,
+    "primary_input_forwarder_token_mask": "0x00000008",
+    "primary_input_forwarder_trigger": "0x9011E742",
+    "primary_input_forwarder_callback": "0x9011DD5C",
+    "secondary_control_msg_slot": 4,
+    "secondary_control_msg_token_mask": "0x00000010",
+    "secondary_control_msg_trigger": "0x900E6C5C",
+    "passive_monitoring_strategy": "A passive menu router should monitor flgptn pattern 0x00000008 to detect physical GPIO switch transitions without mutating any dispatcher pointers."
+  }
 }
