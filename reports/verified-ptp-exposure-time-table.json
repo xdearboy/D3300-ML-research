@@ -1,0 +1,13 @@
+{
+  "firmware_sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "rom_base": "0x90020000",
+  "class": "CPTPCExposureTime",
+  "rtti_record": "0x91502BCC",
+  "vtable": "0x91520B38",
+  "constructor": "0x90300FD4",
+  "table_pointer_literal": "0x90301200",
+  "table": "0x914FE9FC",
+  "verified_values_prefix_us": [300000, 250000, 250000, 200000, 200000, 150000, 150000, 125000],
+  "scope": "PTP property subsystem only; not mapped to CKRRCInfoDispDataGrp IDs",
+  "unresolved_display_id": "0x002D"
+}

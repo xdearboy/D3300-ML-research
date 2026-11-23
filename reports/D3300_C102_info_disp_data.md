@@ -72,6 +72,12 @@ This also rejects the earlier shortcut of treating every immediate `0x2D` as a r
 
 No photographic names are assigned yet. The next verification step is to trace consumers of individual numeric property IDs to UI formatter/resource paths for shutter speed, aperture and ISO. This newly verified property table reduces that search from an anonymous 316-byte block to 79 explicit IDs.
 
+## PTP exposure-time table (separate subsystem)
+
+The PTP class `CPTPCExposureTime` is independently identified by its RTTI record at `0x91502BCC` and vtable `0x91520B38`. Its constructor at `0x90300FD4` installs that vtable. A literal at `0x90301200` points to ROM table `0x914FE9FC`; the table contains repeated shutter/exposure intervals in microsecond-like units (`300000`, `250000`, `200000`, `125000`, `100000`, ...). This establishes a PTP exposure-time value table, not a display-group property map.
+
+The numeric display ID `0x002D` is therefore left unnamed: its coincidence with a PTP exposure-time/shutter domain is not proof of an alias. No address or semantic assignment is made without a consumer trace.
+
 ## Reproduction
 
 The same verifier used for the camera-status ring checks the global address, constructor, ring initializer, getter and vtable bytes:
