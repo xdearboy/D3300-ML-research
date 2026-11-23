@@ -33,9 +33,10 @@ typedef struct {
     DmlDrawBufferTable  *draw_table;
 
     /* DML engine components */
-    DmlRuntime   runtime;
-    DmlMenu      menu;
-    DmlCameraAPI camera_api;
+    DmlRuntime      runtime;
+    DmlMenu         menu;
+    DmlCameraAPI    camera_api;
+    DmlTkQuietState quiet_state;
 } DmlPayloadEnv;
 
 /* Initializes payload, binds to firmware addresses or mock environment */
@@ -56,7 +57,14 @@ void dml_payload_on_tick(DmlPayloadEnv *env, uint32_t current_millis);
 /* Renders D3300-ML OSD overlay onto camera's active draw buffer */
 void dml_payload_render_osd(DmlPayloadEnv *env);
 
+/* Quiets / suspends camera background tasks for clean OSD presentation */
+int dml_payload_quiet(DmlPayloadEnv *env, const DmlTkId *targets, size_t n_targets);
+
+/* Resumes background tasks when OSD is closed */
+int dml_payload_unquiet(DmlPayloadEnv *env);
+
 /* Shuts down payload and unhooks callbacks */
 int dml_payload_shutdown(DmlPayloadEnv *env);
 
 #endif /* DML_PAYLOAD_H */
+

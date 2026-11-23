@@ -50,6 +50,40 @@ typedef struct {
     void          *buf;        /* Buffer memory pointer or NULL */
 } DmlTkMsgBufferCreationPacket;
 
+/* Mutex creation packet (T_CMTX) */
+typedef struct {
+    void          *exinf;      /* Extended information */
+    DmlTkAttr      mtxatr;     /* Mutex attributes (e.g. TA_INHERIT) */
+    DmlTkPriority  ceilpri;    /* Ceiling priority */
+    uint32_t       reserved;
+} DmlTkMutexCreationPacket;
+
+#define DML_TK_TA_INHERIT 0x00000002u
+#define DML_TK_MAX_TASKS  32u
+#define DML_TK_MAX_MUTEXES 16u
+
+/* Task state tracker for quieting/suspending background tasks */
+typedef struct {
+    uint32_t count;
+    DmlTkId  ids[DML_TK_MAX_TASKS];
+} DmlTkQuietState;
+
+/* Task lifecycle API */
+DmlTkId   dml_tk_cre_tsk(const DmlTkTaskCreationPacket *pk);
+DmlTkError dml_tk_sta_tsk(DmlTkId tskid, int32_t stacd);
+DmlTkError dml_tk_sus_tsk(DmlTkId tskid);
+DmlTkError dml_tk_rsm_tsk(DmlTkId tskid);
+void       dml_tk_ext_tsk(void);
+
+/* Mutex API matching T-Kernel standard */
+DmlTkId   dml_tk_cre_mtx(const DmlTkMutexCreationPacket *pk);
+DmlTkError dml_tk_loc_mtx(DmlTkId mtxid, DmlTkTimeout tmout);
+DmlTkError dml_tk_unl_mtx(DmlTkId mtxid);
+
+/* Background task quieting API for clean display takeover */
+DmlTkError dml_tk_quiet_tasks(DmlTkQuietState *state, const DmlTkId *targets, size_t n_targets);
+DmlTkError dml_tk_unquiet_tasks(DmlTkQuietState *state);
+
 /* Mailbox send message: models firmware 0x9002EC0E (snd_mbf) */
 DmlTkError dml_tk_snd_mbf(DmlTkId mbfid, const void *msg, size_t msgsz, DmlTkTimeout tmout);
 
@@ -60,3 +94,4 @@ DmlTkError dml_tk_rcv_mbf(DmlTkId mbfid, void *out_msg, DmlTkTimeout tmout);
 DmlTkError dml_tk_dly_tsk(DmlTkTimeout millis);
 
 #endif /* DML_TKERNEL_H */
+

@@ -86,10 +86,33 @@ static void test_payload_lifecycle(void) {
     dml_payload_on_tick(&env, 2000);
     assert(g_shutter_count >= 1);
 
+    /* Test background task quieting via payload */
+    DmlTkTaskCreationPacket bg_pk = {
+        .exinf = NULL,
+        .tskatr = DML_TK_TA_HLNG,
+        .task = NULL,
+        .itskpri = 20,
+        .stksz = 2048,
+        .buf = NULL
+    };
+    DmlTkId bg_tid = dml_tk_cre_tsk(&bg_pk);
+    assert(bg_tid > 0);
+    assert(dml_tk_sta_tsk(bg_tid, 0) == DML_TK_E_OK);
+
+    assert(dml_payload_quiet(&env, &bg_tid, 1) == 0);
+    assert(env.quiet_state.count == 1);
+    assert(dml_payload_unquiet(&env) == 0);
+    assert(env.quiet_state.count == 0);
+
+    /* Quiet again before shutdown to verify shutdown unquiets */
+    assert(dml_payload_quiet(&env, &bg_tid, 1) == 0);
+    assert(env.quiet_state.count == 1);
+
     /* Shutdown payload */
     assert(dml_payload_shutdown(&env) == 0);
     assert(env.is_active == 0);
     assert(env.relay_token == 0);
+    assert(env.quiet_state.count == 0);
 
     /* Cleanup draw table */
     dml_draw_buffer_cleanup(&draw_table);

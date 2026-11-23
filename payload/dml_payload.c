@@ -105,8 +105,22 @@ void dml_payload_render_osd(DmlPayloadEnv *env) {
     dml_draw_buffer_swap(env->draw_table, buf_idx, 1);
 }
 
+int dml_payload_quiet(DmlPayloadEnv *env, const DmlTkId *targets, size_t n_targets) {
+    if (!env || !env->is_active) return -1;
+    return dml_tk_quiet_tasks(&env->quiet_state, targets, n_targets) == DML_TK_E_OK ? 0 : -1;
+}
+
+int dml_payload_unquiet(DmlPayloadEnv *env) {
+    if (!env || !env->is_active) return -1;
+    return dml_tk_unquiet_tasks(&env->quiet_state) == DML_TK_E_OK ? 0 : -1;
+}
+
 int dml_payload_shutdown(DmlPayloadEnv *env) {
     if (!env || !env->is_active) return -1;
+
+    if (env->quiet_state.count > 0) {
+        dml_tk_unquiet_tasks(&env->quiet_state);
+    }
 
     if (env->relay_token && env->relay_table) {
         dml_nikon_relay_unregister(env->relay_table, env->relay_token);
@@ -115,3 +129,4 @@ int dml_payload_shutdown(DmlPayloadEnv *env) {
     env->is_active = 0;
     return 0;
 }
+
