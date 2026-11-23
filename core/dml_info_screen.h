@@ -5,19 +5,28 @@
 #include "dml_draw_buffer.h"
 #include "dml_camera_status.h"
 
-/* D3300-ML Custom Shooting Information Display Screen
+/* D3300-ML Minimalist Cinema Shooting Information Display Screen
+   Styled with Blackmagic OS minimalism and d3vo.ru (Catppuccin Mocha) palette.
    Renders onto the 720x480 32bpp ARGB8888 DrawBuffer (0x104A0868). */
 
-/* Color palette constants (ARGB8888) */
-#define DML_COLOR_BG            0xFF101318u /* Deep obsidian black */
-#define DML_COLOR_CARD_BG       0xFF191E26u /* Dark slate card background */
-#define DML_COLOR_CARD_BORDER   0xFF2B3342u /* Subtle card outline */
-#define DML_COLOR_TEXT_PRIMARY  0xFFFFFFFFu /* Pure white for primary digits */
-#define DML_COLOR_TEXT_MUTED    0xFF8E9AA8u /* Cool gray for labels and titles */
-#define DML_COLOR_ACCENT_BLUE   0xFF0099FFu /* Electric Nikon cyan */
-#define DML_COLOR_ACCENT_AMBER  0xFFFFAA00u /* Warm amber for ISO and warnings */
-#define DML_COLOR_ACCENT_GREEN  0xFF00CC66u /* Emerald green for battery/status */
-#define DML_COLOR_ALERT_RED     0xFFFF3344u /* Red for low battery/errors */
+/* Color palette constants (ARGB8888) — Catppuccin Mocha & d3vo.ru */
+#define DML_COLOR_BG            0xFF181825u /* Catppuccin Mocha Mantle #181825 */
+#define DML_COLOR_SURFACE       0xFF1E1E2Eu /* Catppuccin Mocha Base #1e1e2e */
+#define DML_COLOR_CARD_BG       0xFF1E1E2Eu /* Card surface */
+#define DML_COLOR_CARD_BORDER   0xFF313244u /* Surface0 subtle border #313244 */
+#define DML_COLOR_DIVIDER       0xFF313244u /* Hairline divider #313244 */
+#define DML_COLOR_TEXT_PRIMARY  0xFFCDD6F4u /* Mocha Text #cdd6f4 */
+#define DML_COLOR_TEXT_WHITE    0xFFFFFFFFu /* Crisp white */
+#define DML_COLOR_TEXT_MUTED    0xFF7F849Cu /* Muted subtext #7f849c */
+#define DML_COLOR_ACCENT_MAUVE  0xFFCBA6F7u /* d3vo.ru primary accent Mauve #cba6f7 */
+#define DML_COLOR_ACCENT_BLUE   0xFF89B4FAu /* Blackmagic Sapphire Blue #89b4fa */
+#define DML_COLOR_D3VO_EMERALD  0xFF00BB7Fu /* d3vo.ru signature Emerald #00bb7f */
+#define DML_COLOR_D3VO_ORANGE   0xFFF99C00u /* d3vo.ru signature Orange #f99c00 */
+#define DML_COLOR_ALERT_RED     0xFFF38BA8u /* Mocha Red #f38ba8 */
+
+/* Legacy aliases for backward compatibility with existing tests */
+#define DML_COLOR_ACCENT_AMBER  DML_COLOR_D3VO_ORANGE
+#define DML_COLOR_ACCENT_GREEN  DML_COLOR_D3VO_EMERALD
 
 /* Renders the full 720x480 custom info screen into the specified draw buffer slot.
    Returns 0 on success, -1 on invalid parameter or buffer error. */

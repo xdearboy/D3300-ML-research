@@ -21,10 +21,16 @@ void dml_camera_status_init_default(DmlCameraStatus *status) {
     status->shots_remaining = 1420;
 
     status->af_mode = DML_AF_MODE_AF_S;
+    status->active_focus_point = 0; /* Center point */
     status->metering_mode = DML_METERING_MATRIX;
     status->release_mode = DML_RELEASE_SINGLE;
     status->image_quality = DML_QUALITY_RAW_FINE;
     status->white_balance = DML_WB_AUTO;
+
+    status->flash_raised = 1; /* Pop-up flash is raised */
+    status->flash_mode = DML_FLASH_MODE_AUTO;
+    status->flash_compensation_third_stops = 0;
+    status->buffer_remaining = 12;
 
     status->exposure_locked = 0;
     status->focus_locked = 0;
@@ -166,5 +172,17 @@ const char *dml_camera_status_wb_name(DmlWhiteBalance wb) {
         case DML_WB_SHADE: return "Shade";
         case DML_WB_PRESET_MANUAL: return "Preset";
         default: return "WB";
+    }
+}
+
+const char *dml_camera_status_flash_mode_name(DmlFlashMode mode) {
+    switch (mode) {
+        case DML_FLASH_MODE_AUTO: return "Auto";
+        case DML_FLASH_MODE_FILL: return "Fill";
+        case DML_FLASH_MODE_RED_EYE: return "RedEye";
+        case DML_FLASH_MODE_SLOW_SYNC: return "Slow";
+        case DML_FLASH_MODE_REAR_CURTAIN: return "Rear";
+        case DML_FLASH_MODE_OFF: return "Off";
+        default: return "Flash";
     }
 }

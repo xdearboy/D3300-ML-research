@@ -159,13 +159,21 @@ static void test_info_screen_render(void) {
     /* Background at (2, 2) should be DML_COLOR_BG */
     assert(entry->pixels[2 * words_per_stride + 2] == DML_COLOR_BG);
 
-    /* Shooting mode badge at (20, 20) should have DML_COLOR_ACCENT_BLUE or white text */
-    uint32_t mode_pixel = entry->pixels[20 * words_per_stride + 20];
-    assert(mode_pixel == DML_COLOR_ACCENT_BLUE || mode_pixel == DML_COLOR_TEXT_PRIMARY);
+    /* Shooting mode indicator around (28..36, 20..28) should contain mauve text pixel */
+    int mode_has_mauve = 0;
+    for (int y = 20; y < 28; y++) {
+        for (int x = 28; x < 36; x++) {
+            if (entry->pixels[y * words_per_stride + x] == DML_COLOR_ACCENT_MAUVE) {
+                mode_has_mauve = 1;
+                break;
+            }
+        }
+    }
+    assert(mode_has_mauve == 1);
 
-    /* Shutter card hero section around (100, 100) should have non-background pixels */
+    /* Shutter hero section around (40..150, 106..165) should have stroke pixels */
     int card_has_content = 0;
-    for (int y = 90; y < 140; y++) {
+    for (int y = 106; y < 165; y++) {
         for (int x = 40; x < 150; x++) {
             if (entry->pixels[y * words_per_stride + x] == DML_COLOR_TEXT_PRIMARY) {
                 card_has_content = 1;

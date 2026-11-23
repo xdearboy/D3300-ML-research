@@ -59,6 +59,15 @@ typedef enum {
     DML_WB_PRESET_MANUAL = 7                   /* Preset manual */
 } DmlWhiteBalance;
 
+typedef enum {
+    DML_FLASH_MODE_AUTO = 0,                   /* Auto flash */
+    DML_FLASH_MODE_FILL = 1,                   /* Fill flash (always on) */
+    DML_FLASH_MODE_RED_EYE = 2,                /* Red-eye reduction */
+    DML_FLASH_MODE_SLOW_SYNC = 3,              /* Slow sync */
+    DML_FLASH_MODE_REAR_CURTAIN = 4,           /* Rear-curtain sync */
+    DML_FLASH_MODE_OFF = 5                     /* Suppressed / Off */
+} DmlFlashMode;
+
 /* Complete camera exposure and operational snapshot */
 typedef struct {
     /* Primary exposure parameters */
@@ -78,18 +87,25 @@ typedef struct {
     uint8_t battery_pct;                       /* 0..100% */
     uint8_t battery_warning;                   /* 0: OK, 1: Low, 2: Critical */
     uint32_t shots_remaining;                  /* e.g., 1420 */
+    uint8_t buffer_remaining;                  /* e.g., 12 buffer shots remaining */
 
     /* Focus and capture configuration */
     DmlAFMode af_mode;
+    uint8_t active_focus_point;                /* 0 = center point, 1..10 = outer 11-point array */
     DmlMeteringMode metering_mode;
     DmlReleaseMode release_mode;
     DmlImageQuality image_quality;
     DmlWhiteBalance white_balance;
 
+    /* Flash configuration */
+    uint8_t flash_raised;                      /* 1 if built-in flash is popped up, 0 if down */
+    DmlFlashMode flash_mode;                   /* Flash sync mode */
+    int8_t flash_compensation_third_stops;     /* 1/3 EV: 0 = 0.0, -3 = -1.0 EV */
+
     /* Status indicators */
     uint8_t exposure_locked;                   /* AE-L */
     uint8_t focus_locked;                      /* AF-L */
-    uint8_t flash_ready;                       /* Flash strobe ready */
+    uint8_t flash_ready;                       /* Flash strobe charged and ready */
     uint8_t active_d_lighting;                 /* Active D-Lighting enabled */
 } DmlCameraStatus;
 
@@ -123,5 +139,6 @@ const char *dml_camera_status_metering_name(DmlMeteringMode metering);
 const char *dml_camera_status_release_name(DmlReleaseMode release);
 const char *dml_camera_status_quality_name(DmlImageQuality quality);
 const char *dml_camera_status_wb_name(DmlWhiteBalance wb);
+const char *dml_camera_status_flash_mode_name(DmlFlashMode mode);
 
 #endif /* DML_CAMERA_STATUS_H */
