@@ -108,6 +108,40 @@ static void test_payload_lifecycle(void) {
     assert(dml_payload_quiet(&env, &bg_tid, 1) == 0);
     assert(env.quiet_state.count == 1);
 
+    /* Close menu */
+    dml_nikon_button_state_write(&button_state, &rec_menu);
+    dml_nikon_relay_dispatch(&relay_table, env.relay_token);
+    assert(env.menu.visible == 0);
+
+    /* Test INFO button toggle and Cinema Screen rendering */
+    DmlHwCameraStatusRaw mock_hw;
+    memset(&mock_hw, 0, sizeof(mock_hw));
+    mock_hw.vtable = D3300_ADDR_CKRRC_VTABLE;
+    mock_hw.tv_code = 40;  /* 1/250s */
+    mock_hw.av_code = 9;   /* f/2.8 */
+    mock_hw.iso_code = 2;  /* ISO 400 */
+    mock_hw.battery_status = 84;
+    mock_hw.shots_remaining = 1420;
+    mock_hw.buffer_remaining = 12;
+    mock_hw.flash_state = 0x81;
+    dml_payload_set_hw_status(&env, &mock_hw);
+
+    DmlNikonButtonRecord rec_info = {
+        .code = DML_NIKON_BTN_CODE_INFO_CANDIDATE,
+        .value_1 = 1,
+    };
+    dml_nikon_button_state_write(&button_state, &rec_info);
+    dml_nikon_relay_dispatch(&relay_table, env.relay_token);
+    assert(env.info_screen_visible == 1);
+    /* Verify draw buffer has cinema monitor background (#181825 -> 0xFF181825) */
+    assert(draw_table.entries[buf_idx].pixels[0] == DML_COLOR_BG);
+
+    /* Press INFO again to close */
+    dml_nikon_button_state_write(&button_state, &rec_info);
+    dml_nikon_relay_dispatch(&relay_table, env.relay_token);
+    assert(env.info_screen_visible == 0);
+    assert(draw_table.entries[buf_idx].pixels[0] == 0x00000000u);
+
     /* Shutdown payload */
     assert(dml_payload_shutdown(&env) == 0);
     assert(env.is_active == 0);

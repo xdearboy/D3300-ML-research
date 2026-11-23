@@ -9,7 +9,8 @@ typedef enum {
     DML_MENU_TOGGLE = 1,
     DML_MENU_PREVIOUS,
     DML_MENU_NEXT,
-    DML_MENU_ACTIVATE
+    DML_MENU_ACTIVATE,
+    DML_MENU_TOGGLE_INFO
 } DmlMenuCommand;
 
 typedef struct {

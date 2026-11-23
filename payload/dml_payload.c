@@ -32,8 +32,32 @@ int dml_payload_init(
         return -1;
     }
 
+    /* Set sensible initial status defaults */
+    env->cached_status.shooting_mode = DML_SHOOTING_MODE_MANUAL;
+    env->cached_status.shutter_numerator = 1;
+    env->cached_status.shutter_denominator = 250;
+    env->cached_status.aperture_centi = 280;
+    env->cached_status.iso = 400;
+    env->cached_status.metering_mode = DML_METERING_MATRIX;
+    env->cached_status.af_mode = DML_AF_MODE_AF_S;
+    env->cached_status.battery_pct = 84;
+    env->cached_status.image_quality = DML_QUALITY_RAW_FINE;
+    env->cached_status.shots_remaining = 1420;
+    env->cached_status.buffer_remaining = 12;
+
     env->is_active = 1;
     return 0;
+}
+
+void dml_payload_set_hw_status(DmlPayloadEnv *env, const void *raw_ptr) {
+    if (!env) return;
+    env->hw_status_override = raw_ptr;
+}
+
+int dml_payload_toggle_info_screen(DmlPayloadEnv *env) {
+    if (!env || !env->is_active) return -1;
+    env->info_screen_visible = !env->info_screen_visible;
+    return env->info_screen_visible;
 }
 
 void dml_payload_on_relay_event(uint32_t event_mask, void *user_context) {
@@ -53,6 +77,11 @@ void dml_payload_on_relay_event(uint32_t event_mask, void *user_context) {
 
         uint32_t current_millis = 0; /* Could be queried from timer */
         if (dml_nikon_translate_record(&record, &command, &event, current_millis)) {
+            if (command == DML_MENU_TOGGLE_INFO) {
+                dml_payload_toggle_info_screen(env);
+                dml_payload_render_osd(env);
+                return;
+            }
             if (dml_menu_handle(&env->menu, command, current_millis, &env->camera_api)) {
                 dml_payload_render_osd(env);
                 return;
@@ -81,27 +110,39 @@ void dml_payload_render_osd(DmlPayloadEnv *env) {
         dml_draw_buffer_select(env->draw_table, buf_idx);
     }
 
-    if (!env->menu.visible) {
-        dml_draw_buffer_clear(env->draw_table, buf_idx, 0x00000000u);
+    if (env->menu.visible) {
+        /* Render D3300-ML Menu OSD */
+        dml_draw_buffer_clear(env->draw_table, buf_idx, 0xCC101010u);
+        dml_draw_buffer_fill_rect(env->draw_table, buf_idx, 0, 0, 720, 28, 0xFF1E1E1Eu);
+        dml_draw_buffer_draw_text(env->draw_table, buf_idx, 16, 10, "D3300-ML :: ON-CAMERA PAYLOAD", 0xFFFFFFFFu, 0x00000000u);
+
+        for (size_t i = 0; i < env->menu.count; i++) {
+            int y = 44 + (int)i * 22;
+            if (i == env->menu.selected) {
+                dml_draw_buffer_fill_rect(env->draw_table, buf_idx, 8, y - 2, 704, 18, 0xFF0055AAu);
+                dml_draw_buffer_draw_text(env->draw_table, buf_idx, 14, y + 3, ">", 0xFFFFFFFFu, 0x00000000u);
+                dml_draw_buffer_draw_text(env->draw_table, buf_idx, 28, y + 3, env->menu.items[i].label, 0xFFFFFFFFu, 0x00000000u);
+            } else {
+                dml_draw_buffer_draw_text(env->draw_table, buf_idx, 28, y + 3, env->menu.items[i].label, 0xFFAAAAAAu, 0x00000000u);
+            }
+        }
         dml_draw_buffer_swap(env->draw_table, buf_idx, 1);
         return;
     }
 
-    /* Render D3300-ML OSD */
-    dml_draw_buffer_clear(env->draw_table, buf_idx, 0xCC101010u);
-    dml_draw_buffer_fill_rect(env->draw_table, buf_idx, 0, 0, 720, 28, 0xFF1E1E1Eu);
-    dml_draw_buffer_draw_text(env->draw_table, buf_idx, 16, 10, "D3300-ML :: ON-CAMERA PAYLOAD", 0xFFFFFFFFu, 0x00000000u);
-
-    for (size_t i = 0; i < env->menu.count; i++) {
-        int y = 44 + (int)i * 22;
-        if (i == env->menu.selected) {
-            dml_draw_buffer_fill_rect(env->draw_table, buf_idx, 8, y - 2, 704, 18, 0xFF0055AAu);
-            dml_draw_buffer_draw_text(env->draw_table, buf_idx, 14, y + 3, ">", 0xFFFFFFFFu, 0x00000000u);
-            dml_draw_buffer_draw_text(env->draw_table, buf_idx, 28, y + 3, env->menu.items[i].label, 0xFFFFFFFFu, 0x00000000u);
-        } else {
-            dml_draw_buffer_draw_text(env->draw_table, buf_idx, 28, y + 3, env->menu.items[i].label, 0xFFAAAAAAu, 0x00000000u);
+    if (env->info_screen_visible) {
+        /* Read live hardware status if available */
+        DmlCameraStatus status;
+        if (dml_camera_status_read_hw(&status, env->hw_status_override) == 0) {
+            env->cached_status = status;
         }
+        dml_info_screen_render(env->draw_table, buf_idx, &env->cached_status);
+        dml_draw_buffer_swap(env->draw_table, buf_idx, 1);
+        return;
     }
+
+    /* Neither visible: clear draw buffer */
+    dml_draw_buffer_clear(env->draw_table, buf_idx, 0x00000000u);
     dml_draw_buffer_swap(env->draw_table, buf_idx, 1);
 }
 

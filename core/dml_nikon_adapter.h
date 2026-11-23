@@ -16,6 +16,7 @@
 /* Candidate button codes verified in B firmware input pipeline */
 #define DML_NIKON_BTN_CODE_MENU_CANDIDATE 0x000Bu
 #define DML_NIKON_BTN_CODE_OK_CANDIDATE   0x000Cu
+#define DML_NIKON_BTN_CODE_INFO_CANDIDATE 0x000Du
 #define DML_NIKON_BTN_CODE_UP_CANDIDATE   0x0048u
 #define DML_NIKON_BTN_CODE_DOWN_CANDIDATE 0x004Au
 

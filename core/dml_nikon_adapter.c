@@ -95,6 +95,10 @@ int dml_nikon_translate_record(
             *out_menu_cmd = DML_MENU_TOGGLE;
             return 1;
 
+        case DML_NIKON_BTN_CODE_INFO_CANDIDATE:
+            *out_menu_cmd = DML_MENU_TOGGLE_INFO;
+            return 1;
+
         case DML_NIKON_BTN_CODE_OK_CANDIDATE:
             /* Queue button filter requires value_1 == 1 for activation */
             if (record->value_1 == 1u) {

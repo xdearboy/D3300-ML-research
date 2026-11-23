@@ -8,6 +8,9 @@
 #include "../core/dml_nikon_adapter.h"
 #include "../core/dml_draw_buffer.h"
 #include "../core/dml_tkernel.h"
+#include "../core/dml_camera_status.h"
+#include "../core/dml_camera_status_hw.h"
+#include "../core/dml_info_screen.h"
 
 /* Magic signature for D3300-ML relocatable payload */
 #define DML_PAYLOAD_MAGIC   0x4433334Du /* "D33M" */
@@ -37,7 +40,18 @@ typedef struct {
     DmlMenu         menu;
     DmlCameraAPI    camera_api;
     DmlTkQuietState quiet_state;
+
+    /* Cinema Info Monitor state */
+    int             info_screen_visible;
+    const void     *hw_status_override; /* If non-NULL, used as raw CKRRCCameraStatus pointer */
+    DmlCameraStatus cached_status;      /* Last read/rendered status */
 } DmlPayloadEnv;
+
+/* Sets raw hardware pointer override for camera status reading (useful in tests/mocks) */
+void dml_payload_set_hw_status(DmlPayloadEnv *env, const void *raw_ptr);
+
+/* Toggles the Cinema Monitor display on or off */
+int dml_payload_toggle_info_screen(DmlPayloadEnv *env);
 
 /* Initializes payload, binds to firmware addresses or mock environment */
 int dml_payload_init(
