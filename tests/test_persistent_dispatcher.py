@@ -58,6 +58,11 @@ class TestPersistentDispatcher(unittest.TestCase):
         # 0x90027310: ldr.w r0, [r6, r4, lsl #3] (f856 0034) - load mask as token
         self.assertEqual(data[off + 0x6A:off + 0x6E], bytes.fromhex("56f83400"))
 
+        # Registration takes the dispatcher semaphore before scanning and
+        # signals it on both the success and full-table paths.
+        self.assertEqual(data[off + 0x18:off + 0x1C], bytes.fromhex("fef13aee"))
+        self.assertEqual(data[off + 0x44:off + 0x48], bytes.fromhex("fef128ee"))
+
     def test_signal_function_0x90027316(self):
         data = get_firmware_data()
         off = 0x90027316 - ROM_BASE
