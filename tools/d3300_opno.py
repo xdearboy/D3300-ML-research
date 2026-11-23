@@ -18,6 +18,27 @@ EVENT_TO_OBJECT = (
 )
 
 
+def queue_button_policy(event: int, value_1: int) -> dict:
+    """Describe the verified COPNOQueueButton filter at 0x9013DDCC.
+
+    The two runtime guards used for events 0x0C..0x15 cannot be evaluated from
+    a saved record alone, so this deliberately reports a conditional result.
+    """
+    if event in (0x04, 0x05):
+        accepted = value_1 == 1
+        policy = "value_1-equals-1"
+    elif 0x06 <= event <= 0x0B:
+        accepted = True
+        policy = "direct-copy"
+    elif 0x0C <= event <= 0x15:
+        accepted = None if value_1 == 1 else False
+        policy = "value_1-equals-1-and-runtime-guards"
+    else:
+        accepted = False
+        policy = "outside-queue-button-range"
+    return {"policy": policy, "accepted": accepted}
+
+
 def decode_record(record: bytes, *, stage: str) -> dict:
     """Decode queue data or a record already returned by the controller path."""
     if len(record) != RECORD.size:
@@ -30,7 +51,7 @@ def decode_record(record: bytes, *, stage: str) -> dict:
     if stage == "queue" and 0x3E <= event <= 0x4E:
         normalized_event = EVENT_TO_OBJECT[event - 0x3E]
 
-    return {
+    result = {
         "stage": stage,
         "event": event,
         "tag": tag,
@@ -40,6 +61,14 @@ def decode_record(record: bytes, *, stage: str) -> dict:
         "normalized_event": normalized_event,
         "object_index": normalized_event if normalized_event < OBJECT_COUNT else None,
     }
+    # Only these two object indices are tied to COPNOQueueButton instances by
+    # the audited constructor table. Do not project this class policy onto
+    # other normalized objects that use different vtables.
+    result["queue_button_filter"] = (
+        queue_button_policy(normalized_event, value_1)
+        if normalized_event in (0x0B, 0x0C) else None
+    )
+    return result
 
 
 def main() -> None:

@@ -50,7 +50,9 @@
       "path": [
         "RTTI COPNOQueueButton at 0x9150A8B3",
         "vtable at 0x9151DE6C",
-        "method 0x9013DDCC handles IDs 0x04..0x15"
+        "method 0x9013DDCC handles IDs 0x04..0x15",
+        "ID 0x0B reaches the direct-copy branch at 0x9013DE14",
+        "ID 0x0C requires value_1 == 1 and runtime guards at 0x9013DE00..0x9013DE12"
       ],
       "confidence": "high"
     },

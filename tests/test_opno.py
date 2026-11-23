@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-from d3300_opno import decode_record
+from d3300_opno import decode_record, queue_button_policy
 
 
 class OPNOTest(unittest.TestCase):
@@ -23,6 +23,7 @@ class OPNOTest(unittest.TestCase):
                 "mask": 0x40000080,
                 "normalized_event": 8,
                 "object_index": 8,
+                "queue_button_filter": None,
             },
         )
 
@@ -56,3 +57,26 @@ class OPNOTest(unittest.TestCase):
                 decode_record(bytes(length), stage="queue")
         with self.assertRaisesRegex(ValueError, "stage must be"):
             decode_record(bytes(16), stage="unknown")
+
+    def test_verified_queue_button_filter(self):
+        self.assertEqual(
+            queue_button_policy(0x0B, 0),
+            {"policy": "direct-copy", "accepted": True},
+        )
+        self.assertEqual(
+            queue_button_policy(0x0C, 0),
+            {"policy": "value_1-equals-1-and-runtime-guards", "accepted": False},
+        )
+        self.assertEqual(
+            queue_button_policy(0x0C, 1),
+            {"policy": "value_1-equals-1-and-runtime-guards", "accepted": None},
+        )
+        self.assertEqual(
+            queue_button_policy(0x16, 1),
+            {"policy": "outside-queue-button-range", "accepted": False},
+        )
+
+        menu = decode_record(struct.pack("<HHIII", 0x0B, 1, 0, 0, 0x100), stage="queue")
+        confirm = decode_record(struct.pack("<HHIII", 0x0C, 1, 1, 0, 0x200), stage="queue")
+        self.assertEqual(menu["queue_button_filter"]["accepted"], True)
+        self.assertIsNone(confirm["queue_button_filter"]["accepted"])
