@@ -96,6 +96,14 @@
 
 Офлайн-инструмент `tools/d3300_opno.py` теперь выводит поле `queue_button_filter`. Значение `accepted: null` означает, что формат записи подходит, но результат двух runtime-проверок нельзя вывести из дампа самой записи.
 
+## Отдельный агрегатор COPNOButton по индексу 0x1B
+
+Инициализация `0x900FDF34..0x900FDF3A` создаёт объект по `0x103E3E8C` с идентификатором `0x1B` вызовом конструктора `0x9013CDD0`. Конструктор ставит vtable `0x91516630`; RTTI этого класса указывает на строку `11COPNOButton`. Пара менеджера для индекса `0x1B` лежит по `0x1012B9E0` и содержит тот же объект, но нулевую маску состояния.
+
+Метод `0x9013CF56` этого класса разбирает диапазон `0x40..0x4D`. Для `0x48..0x4A` он вызывает `0x9013CE5C`, которая ставит или очищает биты 0, 1 и 2 в поле объекта +8 и сохраняет отдельные значения по +0x1C, +0x20 и +0x24. Аналогичная функция `0x9013CDFE` обрабатывает `0x4B..0x4D`. Общий нормализатор менеджера `0x900FDBD2` сводит первую тройку к индексу `0x09`, вторую — к `0x1B`.
+
+Этот специализированный агрегатор отличается по классу и обработчикам от `COPNOQueueButton` по индексам `0x0B` и `0x0C`. Следовательно, наличие агрегированных входов `0x48..0x4D` не подтверждает физическую привязку MENU или OK к `0x0B/0x0C`; эти тракты нельзя объединять без найденного производителя исходных записей.
+
 ## Источник запроса 0x00020101 к контроллеру меню
 
 Для ветви с входом `0x40000003` в таблицу `0x900230F0` код инициализации использует `CMENUController` по `0x10317C90`. Конструктор `0x9002A280`, вызванный из `0x90023186`, ставит vtable `0x9151B62C`. В `0x900231B8..0x900231C2` адрес того же контроллера передаётся конструктору `CUIFAJAppHandle` по `0x10317D10`. Его vtable `0x9151D304` связана с RTTI `15CUIFAJAppHandle` по `0x91502104`. Цепочка `0x9002D466 → 0x9011BC04` соединяет порт handle+0x14 с контроллером. Инструкция `0x9011BC1E` сохраняет адрес вторичного интерфейса handle+0x18 в контроллер+0x0C. Слот цикла `0x9015B270` читает из этого поля. Конструктор handle сохраняет указатель на первичный интерфейс в собственном поле +0x34 по `0x9002D480`.
@@ -159,4 +167,7 @@ arm-linux-gnueabi-objdump -s --start-address=0x90225d60 --stop-address=0x90225d9
 arm-linux-gnueabi-objdump -s --start-address=0x9151de68 --stop-address=0x9151de98 d3300_analysis.elf
 arm-linux-gnueabi-objdump -d -M force-thumb --start-address=0x9013ddcc --stop-address=0x9013de20 d3300_analysis.elf
 arm-linux-gnueabi-objdump -d -M force-thumb --start-address=0x90151cd4 --stop-address=0x90151d58 d3300_analysis.elf
+arm-linux-gnueabi-objdump -d -M force-thumb --start-address=0x900fdf34 --stop-address=0x900fdf56 d3300_analysis.elf
+arm-linux-gnueabi-objdump -d -M force-thumb --start-address=0x9013ce5c --stop-address=0x9013cfc0 d3300_analysis.elf
+arm-linux-gnueabi-objdump -s --start-address=0x1012b9e0 --stop-address=0x1012b9e8 d3300_analysis.elf
 ```

@@ -57,6 +57,17 @@
       "confidence": "high"
     },
     {
+      "name": "separate COPNOButton aggregate",
+      "path": [
+        "0x900FDF34 constructs object 0x103E3E8C with ID 0x1B via 0x9013CDD0",
+        "vtable 0x91516630 is associated with RTTI COPNOButton",
+        "0x9013CF56 dispatches inputs 0x40..0x4D",
+        "0x9013CE5C aggregates 0x48..0x4A as three state bits",
+        "0x900FDBD2 normalizes 0x48..0x4A to 0x09 and 0x4B..0x4D to 0x1B"
+      ],
+      "confidence": "high"
+    },
+    {
       "name": "application button controller",
       "path": [
         "RTTI CSYSCAppButtonController at 0x91510DE3",
