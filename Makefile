@@ -40,9 +40,12 @@ build/test_fuji_film_sim: $(CORE_SOURCES) $(CORE_HEADERS) tests/test_fuji_film_s
 build/test_photo_assist: $(CORE_SOURCES) $(CORE_HEADERS) tests/test_photo_assist.c
 	mkdir -p build
 	$(CC) $(CFLAGS) $(CORE_SOURCES) tests/test_photo_assist.c $(LDFLAGS) -o $@
+build/test_mvp_pipeline: $(CORE_SOURCES) $(CORE_HEADERS) tests/test_mvp_pipeline.c
+	mkdir -p build
+	$(CC) $(CFLAGS) $(CORE_SOURCES) tests/test_mvp_pipeline.c $(LDFLAGS) -o $@
 run: all
 	./build/d3300_sim
-test: all build/test_menu build/test_adapter build/test_draw_buffer build/test_tkernel build/test_payload build/test_info_screen build/test_camera_status_hw build/test_menu_screen build/test_fuji_film_sim build/test_photo_assist
+test: all build/test_menu build/test_adapter build/test_draw_buffer build/test_tkernel build/test_payload build/test_info_screen build/test_camera_status_hw build/test_menu_screen build/test_fuji_film_sim build/test_photo_assist build/test_mvp_pipeline
 	./build/d3300_sim
 	./build/test_menu
 	./build/test_adapter
@@ -54,6 +57,7 @@ test: all build/test_menu build/test_adapter build/test_draw_buffer build/test_t
 	./build/test_menu_screen
 	./build/test_fuji_film_sim
 	./build/test_photo_assist
+	./build/test_mvp_pipeline
 	python3 -m unittest discover -s tests -v
 clean:
 	rm -rf build
