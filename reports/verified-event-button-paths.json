@@ -112,6 +112,17 @@
         "0x903276B4 passes a received record to 0x903512A0"
       ],
       "confidence": "high"
+    },
+    {
+      "name": "candidate CKRCCCommandManager indexed route",
+      "path": [
+        "RTTI at 0x91503790 names 19CKRCCCommandManager at 0x9150C56A; vtable 0x915241F8 points to methods 0x9013B6BC, 0x9013B76E, 0x9013B786",
+        "0x9013B76E and 0x9013B786 read tables at 0x91478498 and 0x91478640; second table is first +0x1A8 and routing range is 106 indices",
+        "0x900FAB14 classifies the requested index with TBB at 0x9013B7AA, selects a table, then dispatches through object vtable slot +0x14",
+        "TBB index 0x0B selects table 1 entry 11 = RAM 0x1049151C; index 0x0C selects table 2 entry 12 = RAM 0x10491580",
+        "RAM 0x10491580 is adjacent to saved COPNOHandler alias at 0x1049157C; possible relationship is unverified, and no physical button link is established"
+      ],
+      "confidence": "high for table routing and numeric indices; low for alias relationship or physical-button meaning"
     }
   ],
   "candidate_integration_seams": [
