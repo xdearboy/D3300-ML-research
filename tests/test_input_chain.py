@@ -53,6 +53,8 @@ class InputChainTest(unittest.TestCase):
         # ARM A32: ldr r0,[pc,#imm]; ldrb r0,[r0,#3]; bx lr.
         self.assertEqual(data[gate:gate + 12],
                          bytes.fromhex("70029fe50300d0e51eff2fe1"))
+        literal = struct.unpack("<I", data[0x903695DC - BASE:0x903695E0 - BASE])[0]
+        self.assertEqual(literal, 0x10125160)
 
     def test_physical_identity_is_not_inferred(self):
         # This test intentionally checks only the static boundary; no MENU/OK

@@ -20,9 +20,11 @@ GPIO debouncer 0x9011DDA8
 What is proven: the code addresses, the mask, the 16-byte record boundary,
 the queue-button range/TBB, and the application mailbox setter/getter.
 
-`0x90369364` is an ARM A32 helper (`ldr`/`ldrb`/`bx lr`) returning a global
-state byte. It does not construct a button code. The callback's comparison with
-`1` is therefore a state gate, not proof of MENU/OK/INFO identity.
+`0x90369364` is an ARM A32 helper (`ldr`/`ldrb`/`bx lr`) returning byte
+`[0x10125160 + 3]` (the literal pointer is at `0x903695DC`). It does not
+construct a button code. The callback's comparison with `1` is therefore a
+state gate, not proof of MENU/OK/INFO identity. A writer for this global byte
+was not established in the current static pass (**UNPROVEN**).
 
 What is not proven: which physical camera button is wired to GPIO Pin 8, and
 whether an external observer can safely read the live T-Kernel flag or queue.
