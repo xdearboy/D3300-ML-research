@@ -4,9 +4,12 @@
 #include "../core/dml.h"
 #include "../core/dml_menu.h"
 #include "../core/dml_nikon_adapter.h"
+#include "../core/dml_draw_buffer.h"
 #include "../modules/intervalometer.h"
 
 typedef struct { unsigned int shots; } SimCamera;
+static DmlDrawBufferTable g_display_table;
+static int g_display_buf_idx = -1;
 
 static void print_msg(void *user, const char *s) {
     (void)user;
@@ -26,6 +29,34 @@ static void dispatch(DmlRuntime *runtime, DmlEventType type, uint32_t millis, in
 }
 
 static void render_menu(const DmlMenu *menu) {
+    if (g_display_buf_idx >= 0) {
+        if (!menu->visible) {
+            /* Black display with subtle LiveView standby text */
+            dml_draw_buffer_clear(&g_display_table, g_display_buf_idx, 0xFF000000u);
+            dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 16, 16, "LiveView / Standby", 0xFF666666u, 0x00000000u);
+        } else {
+            /* 720x480 LCD OSD overlay */
+            dml_draw_buffer_clear(&g_display_table, g_display_buf_idx, 0xFF141414u);
+            /* Header bar */
+            dml_draw_buffer_fill_rect(&g_display_table, g_display_buf_idx, 0, 0, 720, 28, 0xFF222222u);
+            dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 12, 10, "D3300-ML :: OSD MENU", 0xFFE0E0E0u, 0x00000000u);
+
+            /* Menu items */
+            for (size_t i = 0; i < menu->count; ++i) {
+                int item_y = 48 + (int)i * 24;
+                if (i == menu->selected) {
+                    /* Nikon blue highlight for selected entry */
+                    dml_draw_buffer_fill_rect(&g_display_table, g_display_buf_idx, 8, item_y - 3, 704, 20, 0xFF004D99u);
+                    dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 14, item_y + 3, ">", 0xFFFFFFFFu, 0x00000000u);
+                    dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 28, item_y + 3, menu->items[i].label, 0xFFFFFFFFu, 0x00000000u);
+                } else {
+                    dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 28, item_y + 3, menu->items[i].label, 0xFFA0A0A0u, 0x00000000u);
+                }
+            }
+        }
+        dml_draw_buffer_swap(&g_display_table, g_display_buf_idx, 1);
+    }
+
     if (!menu->visible) {
         puts("Menu closed");
         return;
@@ -88,6 +119,11 @@ int main(int argc, char **argv) {
     DmlRuntime runtime;
     DmlIntervalometer state;
     DmlMenu menu = {0};
+    dml_draw_buffer_init(&g_display_table);
+    g_display_buf_idx = dml_draw_buffer_create(&g_display_table, 720, 480);
+    if (g_display_buf_idx >= 0) {
+        dml_draw_buffer_select(&g_display_table, g_display_buf_idx);
+    }
     dml_init(&runtime, &api);
     dml_intervalometer_config(&state, 2000);
     if (!dml_register(&runtime, dml_intervalometer_module(&state))) return 1;
@@ -109,5 +145,6 @@ int main(int argc, char **argv) {
         }
     }
     printf("simulated shots: %u\n", camera.shots);
+    dml_draw_buffer_cleanup(&g_display_table);
     return interactive || camera.shots == 5 ? 0 : 2;
 }
