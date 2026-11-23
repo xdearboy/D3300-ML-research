@@ -97,11 +97,19 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
 static void interactive_run(DmlRuntime *runtime, DmlMenu *menu) {
     uint32_t millis = 0;
     int key;
-    puts("m menu, w/s select, e activate, t advance 500 ms, q quit");
+    puts("m menu, w/s select, e activate, t advance 500 ms, p screenshot, q quit");
     while ((key = getchar()) != EOF && key != 'q') {
         if (key == 't') {
             millis += 500;
             dispatch(runtime, DML_EVENT_TICK, millis, 0);
+        } else if (key == 'p') {
+            if (g_display_buf_idx >= 0) {
+                if (dml_draw_buffer_save_bmp(&g_display_table, g_display_buf_idx, "screenshot.bmp") == 0) {
+                    puts("[screenshot] Saved screenshot.bmp");
+                } else {
+                    puts("[screenshot] Failed to save screenshot.bmp");
+                }
+            }
         } else if (key != '\n' && key != '\r') {
             handle_key(runtime, menu, millis, key);
         }
@@ -109,9 +117,15 @@ static void interactive_run(DmlRuntime *runtime, DmlMenu *menu) {
 }
 
 int main(int argc, char **argv) {
-    int interactive = argc == 2 && strcmp(argv[1], "--interactive") == 0;
-    if (argc != 1 && !interactive) {
-        fprintf(stderr, "usage: %s [--interactive]\n", argv[0]);
+    int interactive = 0;
+    const char *screenshot_path = NULL;
+
+    if (argc == 2 && strcmp(argv[1], "--interactive") == 0) {
+        interactive = 1;
+    } else if (argc == 3 && strcmp(argv[1], "--screenshot") == 0) {
+        screenshot_path = argv[2];
+    } else if (argc != 1) {
+        fprintf(stderr, "usage: %s [--interactive] [--screenshot <output.bmp|.ppm>]\n", argv[0]);
         return 2;
     }
     SimCamera camera = {0};
@@ -135,6 +149,23 @@ int main(int argc, char **argv) {
     puts("D3300 ML host simulator (NOT running on a Nikon camera)");
     if (interactive) {
         interactive_run(&runtime, &menu);
+    } else if (screenshot_path) {
+        /* Open menu so OSD is rendered onto framebuffer */
+        handle_key(&runtime, &menu, 0, 'm');
+        const char *ext = strrchr(screenshot_path, '.');
+        int res;
+        if (ext && strcmp(ext, ".ppm") == 0) {
+            res = dml_draw_buffer_save_ppm(&g_display_table, g_display_buf_idx, screenshot_path);
+        } else {
+            res = dml_draw_buffer_save_bmp(&g_display_table, g_display_buf_idx, screenshot_path);
+        }
+        if (res == 0) {
+            printf("[screenshot] Exported OSD menu to %s\n", screenshot_path);
+        } else {
+            fprintf(stderr, "[screenshot] Failed to export to %s\n", screenshot_path);
+            dml_draw_buffer_cleanup(&g_display_table);
+            return 1;
+        }
     } else {
         dml_describe(&runtime);
         handle_key(&runtime, &menu, 0, 'm');
@@ -146,5 +177,6 @@ int main(int argc, char **argv) {
     }
     printf("simulated shots: %u\n", camera.shots);
     dml_draw_buffer_cleanup(&g_display_table);
-    return interactive || camera.shots == 5 ? 0 : 2;
+    return interactive || screenshot_path || camera.shots == 5 ? 0 : 2;
 }
+

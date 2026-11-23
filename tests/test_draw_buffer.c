@@ -107,10 +107,72 @@ static void test_rasterizer(void) {
     dml_draw_buffer_cleanup(&table);
 }
 
+static void test_screenshot_export(void) {
+    DmlDrawBufferTable table;
+    dml_draw_buffer_init(&table);
+
+    /* Negative tests */
+    assert(dml_draw_buffer_save_bmp(NULL, 0, "test.bmp") == -1);
+    assert(dml_draw_buffer_save_bmp(&table, -1, "test.bmp") == -1);
+    assert(dml_draw_buffer_save_bmp(&table, 0, NULL) == -1);
+    assert(dml_draw_buffer_save_bmp(&table, 0, "test.bmp") == -1); /* not active */
+
+    assert(dml_draw_buffer_save_ppm(NULL, 0, "test.ppm") == -1);
+    assert(dml_draw_buffer_save_ppm(&table, -1, "test.ppm") == -1);
+    assert(dml_draw_buffer_save_ppm(&table, 0, NULL) == -1);
+    assert(dml_draw_buffer_save_ppm(&table, 0, "test.ppm") == -1); /* not active */
+
+    int idx = dml_draw_buffer_create(&table, 64, 32);
+    assert(idx >= 0);
+
+    /* Render pattern */
+    dml_draw_buffer_clear(&table, idx, 0xFF102030u);
+    dml_draw_buffer_fill_rect(&table, idx, 4, 4, 16, 16, 0xFFFF0000u);
+    dml_draw_buffer_draw_text(&table, idx, 24, 8, "TEST", 0xFF00FF00u, 0x00000000u);
+
+    const char *bmp_path = "/tmp/test_d3300_screenshot.bmp";
+    const char *ppm_path = "/tmp/test_d3300_screenshot.ppm";
+
+    assert(dml_draw_buffer_save_bmp(&table, idx, bmp_path) == 0);
+    assert(dml_draw_buffer_save_ppm(&table, idx, ppm_path) == 0);
+
+    /* Verify BMP header */
+    FILE *fbmp = fopen(bmp_path, "rb");
+    assert(fbmp != NULL);
+    uint8_t bmp_hdr[54];
+    assert(fread(bmp_hdr, 1, 54, fbmp) == 54);
+    assert(bmp_hdr[0] == 'B' && bmp_hdr[1] == 'M');
+    uint32_t bmp_width = bmp_hdr[18] | (bmp_hdr[19] << 8) | (bmp_hdr[20] << 16) | (bmp_hdr[21] << 24);
+    uint32_t bmp_height = bmp_hdr[22] | (bmp_hdr[23] << 8) | (bmp_hdr[24] << 16) | (bmp_hdr[25] << 24);
+    uint16_t bmp_bpp = bmp_hdr[28] | (bmp_hdr[29] << 8);
+    assert(bmp_width == 64);
+    assert(bmp_height == 32);
+    assert(bmp_bpp == 24);
+    fclose(fbmp);
+    remove(bmp_path);
+
+    /* Verify PPM header */
+    FILE *fppm = fopen(ppm_path, "rb");
+    assert(fppm != NULL);
+    char ppm_hdr[32];
+    assert(fgets(ppm_hdr, sizeof(ppm_hdr), fppm) != NULL);
+    assert(strcmp(ppm_hdr, "P6\n") == 0);
+    assert(fgets(ppm_hdr, sizeof(ppm_hdr), fppm) != NULL);
+    assert(strcmp(ppm_hdr, "64 32\n") == 0);
+    assert(fgets(ppm_hdr, sizeof(ppm_hdr), fppm) != NULL);
+    assert(strcmp(ppm_hdr, "255\n") == 0);
+    fclose(fppm);
+    remove(ppm_path);
+
+    dml_draw_buffer_cleanup(&table);
+}
+
 int main(void) {
     test_stride_calculation();
     test_table_lifecycle();
     test_rasterizer();
+    test_screenshot_export();
     puts("All DrawBuffer tests passed successfully.");
     return 0;
 }
+

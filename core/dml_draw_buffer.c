@@ -1,4 +1,5 @@
 #include "dml_draw_buffer.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -282,3 +283,151 @@ void dml_draw_buffer_draw_text(DmlDrawBufferTable *table, int index, int x, int 
         text++;
     }
 }
+
+int dml_draw_buffer_save_bmp(const DmlDrawBufferTable *table, int index, const char *filepath) {
+    if (!table || index < 0 || (uint32_t)index >= DML_DRAW_BUFFER_MAX || !filepath) {
+        return -1;
+    }
+    const DmlDrawBufferEntry *entry = &table->entries[index];
+    if (!entry->active || !entry->pixels || entry->width == 0 || entry->height == 0) {
+        return -1;
+    }
+
+    FILE *fp = fopen(filepath, "wb");
+    if (!fp) {
+        return -1;
+    }
+
+    uint32_t width = entry->width;
+    uint32_t height = entry->height;
+    uint32_t row_stride = ((width * 3u + 3u) / 4u) * 4u;
+    uint32_t image_size = row_stride * height;
+    uint32_t file_size = 54u + image_size;
+
+    /* BMP File Header (14 bytes) */
+    uint8_t file_header[14];
+    file_header[0] = 0x42; /* 'B' */
+    file_header[1] = 0x4D; /* 'M' */
+    file_header[2] = (uint8_t)(file_size & 0xFFu);
+    file_header[3] = (uint8_t)((file_size >> 8) & 0xFFu);
+    file_header[4] = (uint8_t)((file_size >> 16) & 0xFFu);
+    file_header[5] = (uint8_t)((file_size >> 24) & 0xFFu);
+    file_header[6] = 0;
+    file_header[7] = 0;
+    file_header[8] = 0;
+    file_header[9] = 0;
+    file_header[10] = 54; /* 54-byte offset to pixel array */
+    file_header[11] = 0;
+    file_header[12] = 0;
+    file_header[13] = 0;
+
+    /* DIB Header (BITMAPINFOHEADER - 40 bytes) */
+    uint8_t dib_header[40];
+    memset(dib_header, 0, sizeof(dib_header));
+    dib_header[0] = 40; /* Header size */
+    dib_header[4] = (uint8_t)(width & 0xFFu);
+    dib_header[5] = (uint8_t)((width >> 8) & 0xFFu);
+    dib_header[6] = (uint8_t)((width >> 16) & 0xFFu);
+    dib_header[7] = (uint8_t)((width >> 24) & 0xFFu);
+    dib_header[8] = (uint8_t)(height & 0xFFu);
+    dib_header[9] = (uint8_t)((height >> 8) & 0xFFu);
+    dib_header[10] = (uint8_t)((height >> 16) & 0xFFu);
+    dib_header[11] = (uint8_t)((height >> 24) & 0xFFu);
+    dib_header[12] = 1;  /* Planes = 1 */
+    dib_header[14] = 24; /* 24 bpp */
+    dib_header[20] = (uint8_t)(image_size & 0xFFu);
+    dib_header[21] = (uint8_t)((image_size >> 8) & 0xFFu);
+    dib_header[22] = (uint8_t)((image_size >> 16) & 0xFFu);
+    dib_header[23] = (uint8_t)((image_size >> 24) & 0xFFu);
+    dib_header[24] = 0x13; /* 2835 ppm (~72 dpi) */
+    dib_header[25] = 0x0B;
+    dib_header[28] = 0x13;
+    dib_header[29] = 0x0B;
+
+    if (fwrite(file_header, 1, sizeof(file_header), fp) != sizeof(file_header) ||
+        fwrite(dib_header, 1, sizeof(dib_header), fp) != sizeof(dib_header)) {
+        fclose(fp);
+        return -1;
+    }
+
+    /* Allocate one padded row buffer */
+    uint8_t *row_buf = (uint8_t *)calloc(1, row_stride);
+    if (!row_buf) {
+        fclose(fp);
+        return -1;
+    }
+
+    uint32_t words_per_stride = entry->stride / 4u;
+    int write_error = 0;
+
+    /* BMP raster data is stored bottom-up */
+    for (int y = (int)height - 1; y >= 0; y--) {
+        const uint32_t *src_row = entry->pixels + y * (int)words_per_stride;
+        for (uint32_t x = 0; x < width; x++) {
+            uint32_t pixel = src_row[x];
+            row_buf[x * 3u + 0u] = (uint8_t)(pixel & 0xFFu);         /* Blue */
+            row_buf[x * 3u + 1u] = (uint8_t)((pixel >> 8) & 0xFFu);  /* Green */
+            row_buf[x * 3u + 2u] = (uint8_t)((pixel >> 16) & 0xFFu); /* Red */
+        }
+        if (fwrite(row_buf, 1, row_stride, fp) != row_stride) {
+            write_error = 1;
+            break;
+        }
+    }
+
+    free(row_buf);
+    fclose(fp);
+    return write_error ? -1 : 0;
+}
+
+int dml_draw_buffer_save_ppm(const DmlDrawBufferTable *table, int index, const char *filepath) {
+    if (!table || index < 0 || (uint32_t)index >= DML_DRAW_BUFFER_MAX || !filepath) {
+        return -1;
+    }
+    const DmlDrawBufferEntry *entry = &table->entries[index];
+    if (!entry->active || !entry->pixels || entry->width == 0 || entry->height == 0) {
+        return -1;
+    }
+
+    FILE *fp = fopen(filepath, "wb");
+    if (!fp) {
+        return -1;
+    }
+
+    /* Netpbm P6 binary RGB format */
+    if (fprintf(fp, "P6\n%u %u\n255\n", (unsigned int)entry->width, (unsigned int)entry->height) < 0) {
+        fclose(fp);
+        return -1;
+    }
+
+    uint32_t width = entry->width;
+    uint32_t height = entry->height;
+    uint32_t row_bytes = width * 3u;
+    uint8_t *row_buf = (uint8_t *)malloc(row_bytes);
+    if (!row_buf) {
+        fclose(fp);
+        return -1;
+    }
+
+    uint32_t words_per_stride = entry->stride / 4u;
+    int write_error = 0;
+
+    for (uint32_t y = 0; y < height; y++) {
+        const uint32_t *src_row = entry->pixels + y * words_per_stride;
+        for (uint32_t x = 0; x < width; x++) {
+            uint32_t pixel = src_row[x];
+            row_buf[x * 3u + 0u] = (uint8_t)((pixel >> 16) & 0xFFu); /* Red */
+            row_buf[x * 3u + 1u] = (uint8_t)((pixel >> 8) & 0xFFu);  /* Green */
+            row_buf[x * 3u + 2u] = (uint8_t)(pixel & 0xFFu);         /* Blue */
+        }
+        if (fwrite(row_buf, 1, row_bytes, fp) != row_bytes) {
+            write_error = 1;
+            break;
+        }
+    }
+
+    free(row_buf);
+    fclose(fp);
+    return write_error ? -1 : 0;
+}
+

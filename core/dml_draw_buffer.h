@@ -72,4 +72,13 @@ void dml_draw_buffer_fill_rect(DmlDrawBufferTable *table, int index, int x, int 
 void dml_draw_buffer_draw_char(DmlDrawBufferTable *table, int index, int x, int y, char c, uint32_t fg_argb, uint32_t bg_argb);
 void dml_draw_buffer_draw_text(DmlDrawBufferTable *table, int index, int x, int y, const char *text, uint32_t fg_argb, uint32_t bg_argb);
 
+/* Export framebuffer to standard 24-bit uncompressed BMP image.
+   Returns 0 on success, -1 on invalid parameter or file I/O error. */
+int dml_draw_buffer_save_bmp(const DmlDrawBufferTable *table, int index, const char *filepath);
+
+/* Export framebuffer to standard binary Netpbm P6 PPM image.
+   Returns 0 on success, -1 on invalid parameter or file I/O error. */
+int dml_draw_buffer_save_ppm(const DmlDrawBufferTable *table, int index, const char *filepath);
+
 #endif /* DML_DRAW_BUFFER_H */
+
