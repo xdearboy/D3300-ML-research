@@ -1,0 +1,14 @@
+{
+  "firmware_sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "rom_base": "0x90020000",
+  "table_start": "0x91025360",
+  "table_kind": "ROM pointer array (resource index; not executable code)",
+  "verified_entries": {
+    "0x91025398": "0x9156B6C4 (TXT_1_Bottom_Line1_Focal_Length)",
+    "0x9102539C": "0x9156B7C8 (TXT_1_Bottom_Line1_ISO_Sensitivity)",
+    "0x910253A0": "0x9156B628 (TXT_1_Bottom_Line1_Aperture)",
+    "0x910253A4": "0x9156B591 (TXT_1_Bottom_Line1_Shutter_Speed)"
+  },
+  "negative_finding": "No direct ARM/Thumb literal references to these resource addresses were found in the indexed xrefs; this table alone does not identify the formatter or its input slot.",
+  "scope": "Static evidence only; no camera access or firmware construction."
+}
