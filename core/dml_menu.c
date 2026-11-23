@@ -190,3 +190,20 @@ const char *dml_menu_get_font_name(uint8_t font_id) {
         default: return "MODERN SANS";
     }
 }
+
+void dml_menu_cycle_fuji_profile(DmlMenu *menu) {
+    if (!menu) return;
+    menu->fuji_profile_id = (uint8_t)((menu->fuji_profile_id + 1) % 6);
+}
+
+const char *dml_menu_get_fuji_profile_name(uint8_t id) {
+    switch (id) {
+        case 0: return "OFF";
+        case 1: return "CLASSIC CHROME";
+        case 2: return "FUJI VELVIA";
+        case 3: return "FUJI ACROS";
+        case 4: return "CLASSIC NEG";
+        case 5: return "FUJI ASTIA";
+        default: return "OFF";
+    }
+}

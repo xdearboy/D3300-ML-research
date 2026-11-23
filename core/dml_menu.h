@@ -55,6 +55,9 @@ typedef struct {
 
     /* Typography setting (defaults to DML_FONT_MODERN_SANS) */
     uint8_t font_id;
+
+    /* Film Simulation profile: 0 = OFF, 1..5 = Fuji profiles */
+    uint8_t fuji_profile_id;
 } DmlMenu;
 
 int dml_menu_add(DmlMenu *menu, DmlMenuItem item);
@@ -67,5 +70,7 @@ size_t dml_menu_tab_item_count(const DmlMenu *menu, DmlMenuTab tab);
 const DmlMenuItem *dml_menu_get_tab_item(const DmlMenu *menu, DmlMenuTab tab, size_t index);
 void dml_menu_cycle_font(DmlMenu *menu);
 const char *dml_menu_get_font_name(uint8_t font_id);
+void dml_menu_cycle_fuji_profile(DmlMenu *menu);
+const char *dml_menu_get_fuji_profile_name(uint8_t id);
 
 #endif /* DML_MENU_H */

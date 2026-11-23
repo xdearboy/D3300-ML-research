@@ -129,10 +129,46 @@ static void test_menu_font_cycling(void) {
     assert(strcmp(dml_menu_get_font_name(menu.font_id), "MODERN SANS") == 0);
 }
 
+static void test_menu_fuji_profile_cycling(void) {
+    DmlMenu menu = {0};
+    assert(menu.fuji_profile_id == 0);
+    assert(strcmp(dml_menu_get_fuji_profile_name(0), "OFF") == 0);
+    assert(strcmp(dml_menu_get_fuji_profile_name(1), "CLASSIC CHROME") == 0);
+    assert(strcmp(dml_menu_get_fuji_profile_name(2), "FUJI VELVIA") == 0);
+    assert(strcmp(dml_menu_get_fuji_profile_name(3), "FUJI ACROS") == 0);
+    assert(strcmp(dml_menu_get_fuji_profile_name(4), "CLASSIC NEG") == 0);
+    assert(strcmp(dml_menu_get_fuji_profile_name(5), "FUJI ASTIA") == 0);
+
+    dml_menu_cycle_fuji_profile(&menu);
+    assert(menu.fuji_profile_id == 1);
+    assert(strcmp(dml_menu_get_fuji_profile_name(menu.fuji_profile_id), "CLASSIC CHROME") == 0);
+
+    dml_menu_cycle_fuji_profile(&menu);
+    assert(menu.fuji_profile_id == 2);
+    assert(strcmp(dml_menu_get_fuji_profile_name(menu.fuji_profile_id), "FUJI VELVIA") == 0);
+
+    dml_menu_cycle_fuji_profile(&menu);
+    assert(menu.fuji_profile_id == 3);
+    assert(strcmp(dml_menu_get_fuji_profile_name(menu.fuji_profile_id), "FUJI ACROS") == 0);
+
+    dml_menu_cycle_fuji_profile(&menu);
+    assert(menu.fuji_profile_id == 4);
+    assert(strcmp(dml_menu_get_fuji_profile_name(menu.fuji_profile_id), "CLASSIC NEG") == 0);
+
+    dml_menu_cycle_fuji_profile(&menu);
+    assert(menu.fuji_profile_id == 5);
+    assert(strcmp(dml_menu_get_fuji_profile_name(menu.fuji_profile_id), "FUJI ASTIA") == 0);
+
+    dml_menu_cycle_fuji_profile(&menu);
+    assert(menu.fuji_profile_id == 0);
+    assert(strcmp(dml_menu_get_fuji_profile_name(menu.fuji_profile_id), "OFF") == 0);
+}
+
 int main(void) {
     test_menu_selection();
     test_independent_modules();
     test_menu_long_press_and_animation();
     test_menu_font_cycling();
+    test_menu_fuji_profile_cycling();
     return 0;
 }

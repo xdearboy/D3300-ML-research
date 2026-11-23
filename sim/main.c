@@ -11,6 +11,7 @@
 #include "../core/dml_info_screen.h"
 #include "../core/dml_menu_screen.h"
 #include "../modules/intervalometer.h"
+#include "../modules/fuji_film_sim.h"
 
 typedef struct { unsigned int shots; } SimCamera;
 static DmlDrawBufferTable g_display_table;
@@ -114,6 +115,28 @@ static void action_cycle_font(void *state, uint32_t millis, const DmlCameraAPI *
             menu->items[i].value_text = dml_menu_get_font_name(menu->font_id);
             break;
         }
+    }
+}
+
+static void action_cycle_fuji_profile(void *state, uint32_t millis, const DmlCameraAPI *api) {
+    (void)millis;
+    (void)api;
+    DmlMenu *menu = (DmlMenu *)state;
+    if (!menu) return;
+    dml_menu_cycle_fuji_profile(menu);
+    for (size_t i = 0; i < menu->count; ++i) {
+        if (strcmp(menu->items[i].label, "FILM SIMULATION") == 0) {
+            menu->items[i].value_text = dml_menu_get_fuji_profile_name(menu->fuji_profile_id);
+            break;
+        }
+    }
+    if (menu->fuji_profile_id > 0) {
+        const DmlFujiProfile *p = dml_fuji_get_profile((DmlFujiProfileId)(menu->fuji_profile_id - 1));
+        dml_fuji_export_to_sd(p, "/tmp", (int)menu->fuji_profile_id);
+        printf("[film sim] Active profile: %s -> exported to /tmp/NIKON/CUSTOMPC/PICCON%02d.NOP\n",
+               p->name, (int)menu->fuji_profile_id);
+    } else {
+        puts("[film sim] Profile set to OFF (Stock Nikon picture control)");
     }
 }
 
@@ -304,6 +327,7 @@ int main(int argc, char **argv) {
     int screenshot_is_hold = 0;
     int initial_tab = -1;
     int font_choice = -1;
+    int fuji_choice = -1;
 
     if (argc == 2 && strcmp(argv[1], "--interactive") == 0) {
         interactive = 1;
@@ -325,8 +349,22 @@ int main(int argc, char **argv) {
         font_choice = atoi(argv[2]);
         screenshot_path = argv[3];
         screenshot_is_info = 0;
+    } else if (argc == 4 && strcmp(argv[1], "--screenshot-fuji") == 0) {
+        fuji_choice = atoi(argv[2]);
+        screenshot_path = argv[3];
+        screenshot_is_info = 0;
+        initial_tab = 0;
+    } else if (argc == 3 && strcmp(argv[1], "--export-fuji-profiles") == 0) {
+        int res = dml_fuji_export_all(argv[2]);
+        if (res == 0) {
+            printf("[fuji_sim] Successfully exported all 5 Fujifilm Picture Control profiles to %s\n", argv[2]);
+            return 0;
+        } else {
+            fprintf(stderr, "[fuji_sim] Failed to export profiles to %s\n", argv[2]);
+            return 1;
+        }
     } else if (argc != 1) {
-        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-hold <path.bmp>] [--screenshot-tab <0..4> <path.bmp>] [--screenshot-font <0..2> <path.bmp>]\n", argv[0]);
+        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-hold <path.bmp>] [--screenshot-tab <0..4> <path.bmp>] [--screenshot-font <0..2> <path.bmp>] [--screenshot-fuji <1..5> <path.bmp>] [--export-fuji-profiles <dir>]\n", argv[0]);
         return 2;
     }
 
@@ -339,6 +377,11 @@ int main(int argc, char **argv) {
 
     if (font_choice >= 0 && font_choice < (int)DML_FONT_COUNT) {
         menu.font_id = (uint8_t)font_choice;
+    }
+
+    if (fuji_choice >= 0 && fuji_choice <= 5) {
+        menu.fuji_profile_id = (uint8_t)fuji_choice;
+        menu.selected = 3;
     }
 
     if (initial_tab >= 0 && initial_tab < (int)DML_TAB_COUNT) {
@@ -408,6 +451,17 @@ int main(int argc, char **argv) {
         .has_val = 0,
         .state = NULL,
         .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "FILM SIMULATION",
+        .desc = "Fujifilm Picture Control profile & tone curve",
+        .tab = DML_TAB_SHOOT,
+        .value_text = dml_menu_get_fuji_profile_name(menu.fuji_profile_id),
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = &menu,
+        .activate = action_cycle_fuji_profile
     });
 
     /* EXPO tab */
