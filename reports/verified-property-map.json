@@ -1,0 +1,1592 @@
+{
+  "table_address": "0x914ED324",
+  "table_getter": "0x903513AC (method 0 of 20CKRRCInfoDispDataGrp)",
+  "vtable": "0x9152826C",
+  "enclosing_class": "17CKRRCInfoDispData (vtable 0x9151F740, offset +0x2BC)",
+  "global_instance_ram": "0x10492714",
+  "total_entries": 79,
+  "block_ram_range": "0x104B9044..0x104B9180",
+  "block_size_bytes": 316,
+  "entries": [
+    {
+      "index": 0,
+      "descriptor_addr": "0x914ED324",
+      "property_id_hex": "0x002A",
+      "property_id_dec": 42,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9044",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 1,
+      "descriptor_addr": "0x914ED330",
+      "property_id_hex": "0x002B",
+      "property_id_dec": 43,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9048",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 2,
+      "descriptor_addr": "0x914ED33C",
+      "property_id_hex": "0x002C",
+      "property_id_dec": 44,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B904C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 3,
+      "descriptor_addr": "0x914ED348",
+      "property_id_hex": "0x005A",
+      "property_id_dec": 90,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9050",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 4,
+      "descriptor_addr": "0x914ED354",
+      "property_id_hex": "0x002D",
+      "property_id_dec": 45,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9054",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 5,
+      "descriptor_addr": "0x914ED360",
+      "property_id_hex": "0x005D",
+      "property_id_dec": 93,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9058",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 6,
+      "descriptor_addr": "0x914ED36C",
+      "property_id_hex": "0x002E",
+      "property_id_dec": 46,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B905C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 7,
+      "descriptor_addr": "0x914ED378",
+      "property_id_hex": "0x0060",
+      "property_id_dec": 96,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9060",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 8,
+      "descriptor_addr": "0x914ED384",
+      "property_id_hex": "0x002F",
+      "property_id_dec": 47,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9064",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 9,
+      "descriptor_addr": "0x914ED390",
+      "property_id_hex": "0x0030",
+      "property_id_dec": 48,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9068",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 10,
+      "descriptor_addr": "0x914ED39C",
+      "property_id_hex": "0x0032",
+      "property_id_dec": 50,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B906C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 11,
+      "descriptor_addr": "0x914ED3A8",
+      "property_id_hex": "0x0033",
+      "property_id_dec": 51,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9070",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 12,
+      "descriptor_addr": "0x914ED3B4",
+      "property_id_hex": "0x0034",
+      "property_id_dec": 52,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9074",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 13,
+      "descriptor_addr": "0x914ED3C0",
+      "property_id_hex": "0x0035",
+      "property_id_dec": 53,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9078",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 14,
+      "descriptor_addr": "0x914ED3CC",
+      "property_id_hex": "0x0339",
+      "property_id_dec": 825,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B907C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 15,
+      "descriptor_addr": "0x914ED3D8",
+      "property_id_hex": "0x0036",
+      "property_id_dec": 54,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9080",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 16,
+      "descriptor_addr": "0x914ED3E4",
+      "property_id_hex": "0x0038",
+      "property_id_dec": 56,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9084",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 17,
+      "descriptor_addr": "0x914ED3F0",
+      "property_id_hex": "0x0039",
+      "property_id_dec": 57,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9088",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 18,
+      "descriptor_addr": "0x914ED3FC",
+      "property_id_hex": "0x003B",
+      "property_id_dec": 59,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B908C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 19,
+      "descriptor_addr": "0x914ED408",
+      "property_id_hex": "0x003C",
+      "property_id_dec": 60,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9090",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 20,
+      "descriptor_addr": "0x914ED414",
+      "property_id_hex": "0x003A",
+      "property_id_dec": 58,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9094",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 21,
+      "descriptor_addr": "0x914ED420",
+      "property_id_hex": "0x003D",
+      "property_id_dec": 61,
+      "size_bytes": 1,
+      "ram_pointer": "0x104B9098",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 22,
+      "descriptor_addr": "0x914ED42C",
+      "property_id_hex": "0x0338",
+      "property_id_dec": 824,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B909C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 23,
+      "descriptor_addr": "0x914ED438",
+      "property_id_hex": "0x003E",
+      "property_id_dec": 62,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90A0",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 24,
+      "descriptor_addr": "0x914ED444",
+      "property_id_hex": "0x0040",
+      "property_id_dec": 64,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90A4",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 25,
+      "descriptor_addr": "0x914ED450",
+      "property_id_hex": "0x0041",
+      "property_id_dec": 65,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90A8",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 26,
+      "descriptor_addr": "0x914ED45C",
+      "property_id_hex": "0x0044",
+      "property_id_dec": 68,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90AC",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 27,
+      "descriptor_addr": "0x914ED468",
+      "property_id_hex": "0x0045",
+      "property_id_dec": 69,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90B0",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 28,
+      "descriptor_addr": "0x914ED474",
+      "property_id_hex": "0x0046",
+      "property_id_dec": 70,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90B4",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 29,
+      "descriptor_addr": "0x914ED480",
+      "property_id_hex": "0x0047",
+      "property_id_dec": 71,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90B8",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 30,
+      "descriptor_addr": "0x914ED48C",
+      "property_id_hex": "0x0048",
+      "property_id_dec": 72,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90BC",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 31,
+      "descriptor_addr": "0x914ED498",
+      "property_id_hex": "0x0049",
+      "property_id_dec": 73,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90C0",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 32,
+      "descriptor_addr": "0x914ED4A4",
+      "property_id_hex": "0x004A",
+      "property_id_dec": 74,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90C4",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 33,
+      "descriptor_addr": "0x914ED4B0",
+      "property_id_hex": "0x004B",
+      "property_id_dec": 75,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90C8",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 34,
+      "descriptor_addr": "0x914ED4BC",
+      "property_id_hex": "0x004C",
+      "property_id_dec": 76,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90CC",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 35,
+      "descriptor_addr": "0x914ED4C8",
+      "property_id_hex": "0x004D",
+      "property_id_dec": 77,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90D0",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 36,
+      "descriptor_addr": "0x914ED4D4",
+      "property_id_hex": "0x0061",
+      "property_id_dec": 97,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90D4",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 37,
+      "descriptor_addr": "0x914ED4E0",
+      "property_id_hex": "0x0062",
+      "property_id_dec": 98,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90D8",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 38,
+      "descriptor_addr": "0x914ED4EC",
+      "property_id_hex": "0x0063",
+      "property_id_dec": 99,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90DC",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 39,
+      "descriptor_addr": "0x914ED4F8",
+      "property_id_hex": "0x0064",
+      "property_id_dec": 100,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90E0",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 40,
+      "descriptor_addr": "0x914ED504",
+      "property_id_hex": "0x0067",
+      "property_id_dec": 103,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90E4",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 41,
+      "descriptor_addr": "0x914ED510",
+      "property_id_hex": "0x0073",
+      "property_id_dec": 115,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90E8",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 42,
+      "descriptor_addr": "0x914ED51C",
+      "property_id_hex": "0x0068",
+      "property_id_dec": 104,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90EC",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 43,
+      "descriptor_addr": "0x914ED528",
+      "property_id_hex": "0x006A",
+      "property_id_dec": 106,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90F0",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 44,
+      "descriptor_addr": "0x914ED534",
+      "property_id_hex": "0x007A",
+      "property_id_dec": 122,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90F4",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 45,
+      "descriptor_addr": "0x914ED540",
+      "property_id_hex": "0x0065",
+      "property_id_dec": 101,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90F8",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 46,
+      "descriptor_addr": "0x914ED54C",
+      "property_id_hex": "0x006D",
+      "property_id_dec": 109,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B90FC",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 47,
+      "descriptor_addr": "0x914ED558",
+      "property_id_hex": "0x0066",
+      "property_id_dec": 102,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9100",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 48,
+      "descriptor_addr": "0x914ED564",
+      "property_id_hex": "0x006E",
+      "property_id_dec": 110,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9104",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 49,
+      "descriptor_addr": "0x914ED570",
+      "property_id_hex": "0x006F",
+      "property_id_dec": 111,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9108",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 50,
+      "descriptor_addr": "0x914ED57C",
+      "property_id_hex": "0x007C",
+      "property_id_dec": 124,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B910C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 51,
+      "descriptor_addr": "0x914ED588",
+      "property_id_hex": "0x007D",
+      "property_id_dec": 125,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9110",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 52,
+      "descriptor_addr": "0x914ED594",
+      "property_id_hex": "0x0069",
+      "property_id_dec": 105,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9114",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 53,
+      "descriptor_addr": "0x914ED5A0",
+      "property_id_hex": "0x0075",
+      "property_id_dec": 117,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9118",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 54,
+      "descriptor_addr": "0x914ED5AC",
+      "property_id_hex": "0x007B",
+      "property_id_dec": 123,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B911C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 55,
+      "descriptor_addr": "0x914ED5B8",
+      "property_id_hex": "0x0077",
+      "property_id_dec": 119,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9120",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 56,
+      "descriptor_addr": "0x914ED5C4",
+      "property_id_hex": "0x0076",
+      "property_id_dec": 118,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9124",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 57,
+      "descriptor_addr": "0x914ED5D0",
+      "property_id_hex": "0x0070",
+      "property_id_dec": 112,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9128",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 58,
+      "descriptor_addr": "0x914ED5DC",
+      "property_id_hex": "0x0071",
+      "property_id_dec": 113,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B912C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 59,
+      "descriptor_addr": "0x914ED5E8",
+      "property_id_hex": "0x005F",
+      "property_id_dec": 95,
+      "size_bytes": 1,
+      "ram_pointer": "0x104B9130",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 60,
+      "descriptor_addr": "0x914ED5F4",
+      "property_id_hex": "0x004E",
+      "property_id_dec": 78,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9134",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 61,
+      "descriptor_addr": "0x914ED600",
+      "property_id_hex": "0x0337",
+      "property_id_dec": 823,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9138",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 62,
+      "descriptor_addr": "0x914ED60C",
+      "property_id_hex": "0x0051",
+      "property_id_dec": 81,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B913C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 63,
+      "descriptor_addr": "0x914ED618",
+      "property_id_hex": "0x0052",
+      "property_id_dec": 82,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9140",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 64,
+      "descriptor_addr": "0x914ED624",
+      "property_id_hex": "0x0053",
+      "property_id_dec": 83,
+      "size_bytes": 1,
+      "ram_pointer": "0x104B9144",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 65,
+      "descriptor_addr": "0x914ED630",
+      "property_id_hex": "0x0054",
+      "property_id_dec": 84,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9148",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 66,
+      "descriptor_addr": "0x914ED63C",
+      "property_id_hex": "0x0055",
+      "property_id_dec": 85,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B914C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 67,
+      "descriptor_addr": "0x914ED648",
+      "property_id_hex": "0x0074",
+      "property_id_dec": 116,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9150",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 68,
+      "descriptor_addr": "0x914ED654",
+      "property_id_hex": "0x005C",
+      "property_id_dec": 92,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9154",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 69,
+      "descriptor_addr": "0x914ED660",
+      "property_id_hex": "0x0072",
+      "property_id_dec": 114,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9158",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 70,
+      "descriptor_addr": "0x914ED66C",
+      "property_id_hex": "0x0078",
+      "property_id_dec": 120,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B915C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 71,
+      "descriptor_addr": "0x914ED678",
+      "property_id_hex": "0x0056",
+      "property_id_dec": 86,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9160",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 72,
+      "descriptor_addr": "0x914ED684",
+      "property_id_hex": "0x0057",
+      "property_id_dec": 87,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9164",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 73,
+      "descriptor_addr": "0x914ED690",
+      "property_id_hex": "0x0058",
+      "property_id_dec": 88,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9168",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 74,
+      "descriptor_addr": "0x914ED69C",
+      "property_id_hex": "0x0059",
+      "property_id_dec": 89,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B916C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 75,
+      "descriptor_addr": "0x914ED6A8",
+      "property_id_hex": "0x0031",
+      "property_id_dec": 49,
+      "size_bytes": 1,
+      "ram_pointer": "0x104B9170",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 76,
+      "descriptor_addr": "0x914ED6B4",
+      "property_id_hex": "0x0050",
+      "property_id_dec": 80,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9174",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 77,
+      "descriptor_addr": "0x914ED6C0",
+      "property_id_hex": "0x0037",
+      "property_id_dec": 55,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B9178",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    },
+    {
+      "index": 78,
+      "descriptor_addr": "0x914ED6CC",
+      "property_id_hex": "0x005E",
+      "property_id_dec": 94,
+      "size_bytes": 4,
+      "ram_pointer": "0x104B917C",
+      "producer": {
+        "mechanism": "bulk_memcpy",
+        "function": "0x9019DE46",
+        "mode": "Thumb-2",
+        "length_bytes": 316,
+        "confidence": "PROVEN"
+      },
+      "consumer": {
+        "function": "unknown",
+        "confidence": "UNPROVEN"
+      },
+      "semantic_name": "UNPROVEN"
+    }
+  ]
+}

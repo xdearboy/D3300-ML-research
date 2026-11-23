@@ -1,0 +1,95 @@
+{
+  "image": "b860_102.bin",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "architecture": "Thumb-2",
+  "seams": [
+    {
+      "name": "RelayEventTask One-Shot Callback Dispatcher",
+      "worker_address": "0x90026FF0",
+      "dispatcher_call": "0x9002702C",
+      "instruction": "blx r0",
+      "slot_table_base_ram": "0x10121D94",
+      "slots_offset": "0x0C (0x10121DA0)",
+      "max_slots": 32,
+      "slot_stride_bytes": 8,
+      "slot_layout": {
+        "0x00": "event_mask_uint32",
+        "0x04": "callback_fn_ptr"
+      },
+      "clearing_store": {
+        "address": "0x9002702A",
+        "instruction": "str r7, [r1, #4]",
+        "cleared_before_call": true,
+        "lifetime": "one-shot"
+      },
+      "callback_abi": {
+        "arguments": "no explicit parameters passed; r0=fn_ptr, r1=slot_ptr",
+        "return_semantics": "ignored; loop continues with adds r4, r4, #1",
+        "preserved_registers": "caller preserves r4, r5, r6, r7, r8, r9"
+      },
+      "hookability": {
+        "passive_observation": "feasible via memory inspection of 0x10121DA0",
+        "safe_hook": "UNPROVEN (lockless concurrent dispatch; re-entrancy risks)"
+      },
+      "confidence": "PROVEN"
+    },
+    {
+      "name": "RelayEventTaskEx Persistent Callback Dispatcher",
+      "worker_address": "0x900271A4",
+      "dispatcher_call": "0x900271DA",
+      "instruction": "blx r0",
+      "slot_table_base_ram": "0x10121EA8",
+      "slots_offset": "0x0C (0x10121EB4)",
+      "max_slots": 32,
+      "slot_stride_bytes": 8,
+      "slot_layout": {
+        "0x00": "event_mask_uint32",
+        "0x04": "callback_fn_ptr"
+      },
+      "clearing_store": {
+        "cleared_before_call": false,
+        "lifetime": "persistent"
+      },
+      "callback_abi": {
+        "arguments": "no explicit parameters passed; r0=fn_ptr",
+        "return_semantics": "ignored; loop continues with adds r4, r4, #1",
+        "preserved_registers": "caller preserves r4, r5, r6, r7, r8"
+      },
+      "hookability": {
+        "passive_observation": "feasible via memory inspection of 0x10121EB4",
+        "safe_hook": "UNPROVEN (persistent slot hijacking alters real-time event distribution)"
+      },
+      "confidence": "PROVEN"
+    },
+    {
+      "name": "Button Event Mailbox Setter",
+      "function_address": "0x903512A0",
+      "instruction": "strd r4, r1, [r0, #56]; strd r2, r3, [r0, #48]",
+      "record_size_bytes": 16,
+      "caller": "0x903276B4 (inside CSYSCAppButtonController)",
+      "flag_offset": "0x10 (has_event = 1)",
+      "hookability": {
+        "passive_observation": "feasible via mailbox inspection",
+        "safe_hook": "UNPROVEN"
+      },
+      "confidence": "PROVEN"
+    },
+    {
+      "name": "Button Event Mailbox Getter",
+      "function_address": "0x9035128C",
+      "instruction": "ldm r2, {r2, r3, r4, r5}; stm r1!, {r2, r3, r4, r5}",
+      "record_size_bytes": 16,
+      "callers": [
+        "0x903292C6",
+        "0x9032936A",
+        "0x90332E58",
+        "0x90332FAC"
+      ],
+      "hookability": {
+        "passive_observation": "feasible",
+        "safe_hook": "UNPROVEN"
+      },
+      "confidence": "PROVEN"
+    }
+  ]
+}
