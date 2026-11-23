@@ -79,6 +79,18 @@
       "confidence": "high"
     },
     {
+      "name": "dynamic application events to manager queue buttons",
+      "path": [
+        "dispatcher table 0x9144B8AC binds raw ID 0x33 to callbacks 0x9032037E and 0x90320392",
+        "dispatcher table 0x9144B8C8 binds raw ID 0x35 to the same callbacks",
+        "0x90320072 maps raw 0x33 to manager ID 0x0B and raw 0x35 to manager ID 0x0C",
+        "0x90322E90 sends state 1 and 0x90322E12 sends state 0 through veneer 0x90241454",
+        "0x90323E24 selects COPNOHandler slot +0x2C or +0x30",
+        "0x90151518 and 0x90151582 create task message 0x20062C13"
+      ],
+      "confidence": "high"
+    },
+    {
       "name": "application button controller",
       "path": [
         "RTTI CSYSCAppButtonController at 0x91510DE3",
@@ -114,11 +126,18 @@
       "role": "application button-controller handoff",
       "assessment": "Observed event-record handoff on the controller loop. Record ABI is only partially inferred.",
       "hook_safety": "unverified"
+    },
+    {
+      "address": "0x90323E24",
+      "role": "application-event to COPNOHandler message gateway",
+      "assessment": "Central state-selecting proxy for task message 0x20062C13. Upstream event ownership, reentrancy and ABI lifetime are not established.",
+      "hook_safety": "unverified"
     }
   ],
   "unresolved": [
     "physical MENU and OK event-code mapping",
-    "producer of manager task messages 0x20062C10..0x20062C1A",
+    "producers of manager task messages other than the verified 0x20062C13 application-event path",
+    "hardware or transport source and physical labels for raw application events 0x33 and 0x35",
     "callback registration public entry point and calling convention",
     "LCD/OSD drawing path",
     "free executable storage and relocation constraints",

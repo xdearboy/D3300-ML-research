@@ -6,7 +6,11 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-from d3300_opno import decode_record, queue_button_policy
+from d3300_opno import (
+    decode_record,
+    normalize_application_event,
+    queue_button_policy,
+)
 
 
 class OPNOTest(unittest.TestCase):
@@ -80,3 +84,14 @@ class OPNOTest(unittest.TestCase):
         confirm = decode_record(struct.pack("<HHIII", 0x0C, 1, 1, 0, 0x200), stage="queue")
         self.assertEqual(menu["queue_button_filter"]["accepted"], True)
         self.assertIsNone(confirm["queue_button_filter"]["accepted"])
+
+    def test_application_event_translation(self):
+        expected = (2, 3, 4, 10, 9, 5, 6, 11, 7, 12, 8, 0, 1)
+        self.assertEqual(
+            tuple(normalize_application_event(event) for event in range(0x2C, 0x39)),
+            expected,
+        )
+        self.assertEqual(normalize_application_event(0x33), 0x0B)
+        self.assertEqual(normalize_application_event(0x35), 0x0C)
+        self.assertEqual(normalize_application_event(0x2B), 0)
+        self.assertEqual(normalize_application_event(0x39), 0)
