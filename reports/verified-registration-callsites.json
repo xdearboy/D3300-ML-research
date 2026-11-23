@@ -582,6 +582,6 @@
     "secondary_control_msg_slot": 4,
     "secondary_control_msg_token_mask": "0x00000010",
     "secondary_control_msg_trigger": "0x900E6C5C",
-    "passive_monitoring_strategy": "A passive menu router should monitor flgptn pattern 0x00000008 to detect physical GPIO switch transitions without mutating any dispatcher pointers."
+    "passive_monitoring_strategy": "UNPROVEN for live camera runtime: no external tk_ref_flg call or safe RAM access path was established. Proven safe scope is offline parsing of a read-only RAM snapshot; mask 0x00000008 remains an input-forwarder candidate."
   }
 }
