@@ -12,9 +12,17 @@ static void test_menu_selection(void) {
     assert(dml_menu_handle(&menu, DML_MENU_NEXT, 0, NULL));
     assert(dml_menu_handle(&menu, DML_MENU_ACTIVATE, 0, NULL));
     assert(menu.selected == 0);
-    assert(!dml_menu_add(&menu, (DmlMenuItem) {0}));
-    assert(dml_menu_add(&menu, (DmlMenuItem) {"First", &first, dml_intervalometer_toggle}));
-    assert(dml_menu_add(&menu, (DmlMenuItem) {"Second", &second, dml_intervalometer_toggle}));
+    assert(!dml_menu_add(&menu, (DmlMenuItem){0}));
+    assert(dml_menu_add(&menu, (DmlMenuItem){
+        .label = "First",
+        .state = &first,
+        .activate = dml_intervalometer_toggle
+    }));
+    assert(dml_menu_add(&menu, (DmlMenuItem){
+        .label = "Second",
+        .state = &second,
+        .activate = dml_intervalometer_toggle
+    }));
     assert(dml_menu_handle(&menu, DML_MENU_PREVIOUS, 10, NULL));
     assert(menu.selected == 1);
     assert(dml_menu_handle(&menu, DML_MENU_ACTIVATE, 10, NULL));
@@ -24,9 +32,17 @@ static void test_menu_selection(void) {
     assert(dml_menu_handle(&menu, DML_MENU_TOGGLE, 10, NULL));
     assert(!dml_menu_handle(&menu, DML_MENU_ACTIVATE, 10, NULL));
     for (size_t i = 2; i < DML_MENU_MAX_ITEMS; ++i) {
-        assert(dml_menu_add(&menu, (DmlMenuItem) {"More", &first, dml_intervalometer_toggle}));
+        assert(dml_menu_add(&menu, (DmlMenuItem){
+            .label = "More",
+            .state = &first,
+            .activate = dml_intervalometer_toggle
+        }));
     }
-    assert(!dml_menu_add(&menu, (DmlMenuItem) {"Full", &first, dml_intervalometer_toggle}));
+    assert(!dml_menu_add(&menu, (DmlMenuItem){
+        .label = "Full",
+        .state = &first,
+        .activate = dml_intervalometer_toggle
+    }));
 }
 
 static void test_independent_modules(void) {

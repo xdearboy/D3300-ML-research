@@ -111,21 +111,8 @@ void dml_payload_render_osd(DmlPayloadEnv *env) {
     }
 
     if (env->menu.visible) {
-        /* Render D3300-ML Menu OSD */
-        dml_draw_buffer_clear(env->draw_table, buf_idx, 0xCC101010u);
-        dml_draw_buffer_fill_rect(env->draw_table, buf_idx, 0, 0, 720, 28, 0xFF1E1E1Eu);
-        dml_draw_buffer_draw_text(env->draw_table, buf_idx, 16, 10, "D3300-ML :: ON-CAMERA PAYLOAD", 0xFFFFFFFFu, 0x00000000u);
-
-        for (size_t i = 0; i < env->menu.count; i++) {
-            int y = 44 + (int)i * 22;
-            if (i == env->menu.selected) {
-                dml_draw_buffer_fill_rect(env->draw_table, buf_idx, 8, y - 2, 704, 18, 0xFF0055AAu);
-                dml_draw_buffer_draw_text(env->draw_table, buf_idx, 14, y + 3, ">", 0xFFFFFFFFu, 0x00000000u);
-                dml_draw_buffer_draw_text(env->draw_table, buf_idx, 28, y + 3, env->menu.items[i].label, 0xFFFFFFFFu, 0x00000000u);
-            } else {
-                dml_draw_buffer_draw_text(env->draw_table, buf_idx, 28, y + 3, env->menu.items[i].label, 0xFFAAAAAAu, 0x00000000u);
-            }
-        }
+        /* Render D3300-ML Flat Cinema Menu OSD */
+        dml_menu_screen_render(env->draw_table, buf_idx, &env->menu, &env->cached_status);
         dml_draw_buffer_swap(env->draw_table, buf_idx, 1);
         return;
     }

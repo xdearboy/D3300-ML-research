@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 #include "../core/dml.h"
@@ -8,6 +9,7 @@
 #include "../core/dml_camera_status.h"
 #include "../core/dml_camera_status_hw.h"
 #include "../core/dml_info_screen.h"
+#include "../core/dml_menu_screen.h"
 #include "../modules/intervalometer.h"
 
 typedef struct { unsigned int shots; } SimCamera;
@@ -17,9 +19,31 @@ static DmlCameraStatus g_camera_status;
 static DmlHwCameraStatusRaw g_hw_raw;
 static int g_info_screen_active = 0;
 
+static DmlMenu *g_active_menu_ptr = NULL;
+
+static void sim_intervalometer_toggle(void *ctx, uint32_t millis, const DmlCameraAPI *api) {
+    dml_intervalometer_toggle(ctx, millis, api);
+    DmlIntervalometer *st = (DmlIntervalometer *)ctx;
+    if (g_active_menu_ptr && st) {
+        for (size_t i = 0; i < g_active_menu_ptr->count; ++i) {
+            if (g_active_menu_ptr->items[i].state == ctx) {
+                g_active_menu_ptr->items[i].is_on = st->active ? 1 : 0;
+                g_active_menu_ptr->items[i].status_text = st->active ? "ON" : "OFF";
+                break;
+            }
+        }
+    }
+}
+
 static void print_msg(void *user, const char *s) {
     (void)user;
     printf("[module] %s\n", s);
+}
+
+static void dummy_menu_action(void *user, uint32_t millis, const DmlCameraAPI *api) {
+    (void)user;
+    (void)millis;
+    (void)api;
 }
 
 static int sim_shutter(void *user) {
@@ -41,24 +65,8 @@ static void render_display(const DmlMenu *menu) {
     if (g_display_buf_idx < 0) return;
 
     if (menu && menu->visible) {
-        /* 720x480 LCD OSD overlay */
-        dml_draw_buffer_clear(&g_display_table, g_display_buf_idx, 0xFF141414u);
-        /* Header bar */
-        dml_draw_buffer_fill_rect(&g_display_table, g_display_buf_idx, 0, 0, 720, 28, 0xFF222222u);
-        dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 12, 10, "D3300-ML :: OSD MENU", 0xFFE0E0E0u, 0x00000000u);
-
-        /* Menu items */
-        for (size_t i = 0; i < menu->count; ++i) {
-            int item_y = 48 + (int)i * 24;
-            if (i == menu->selected) {
-                /* Nikon blue highlight for selected entry */
-                dml_draw_buffer_fill_rect(&g_display_table, g_display_buf_idx, 8, item_y - 3, 704, 20, 0xFF004D99u);
-                dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 14, item_y + 3, ">", 0xFFFFFFFFu, 0x00000000u);
-                dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 28, item_y + 3, menu->items[i].label, 0xFFFFFFFFu, 0x00000000u);
-            } else {
-                dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 28, item_y + 3, menu->items[i].label, 0xFFA0A0A0u, 0x00000000u);
-            }
-        }
+        /* Flat Cinema Settings Menu */
+        dml_menu_screen_render(&g_display_table, g_display_buf_idx, menu, &g_camera_status);
     } else if (g_info_screen_active) {
         /* Custom D3300-ML Shooting Information Screen */
         dml_info_screen_render(&g_display_table, g_display_buf_idx, &g_camera_status);
@@ -75,9 +83,17 @@ static void print_terminal_menu(const DmlMenu *menu) {
         puts("Menu closed");
         return;
     }
-    puts("D3300-ML menu");
-    for (size_t i = 0; i < menu->count; ++i) {
-        printf("%c %s\n", i == menu->selected ? '>' : ' ', menu->items[i].label);
+    printf("=== D3300-ML Cinema OS [%s] ===\n", dml_menu_tab_name((DmlMenuTab)menu->active_tab));
+    size_t count = dml_menu_tab_item_count(menu, (DmlMenuTab)menu->active_tab);
+    for (size_t i = 0; i < count; ++i) {
+        const DmlMenuItem *it = dml_menu_get_tab_item(menu, (DmlMenuTab)menu->active_tab, i);
+        if (!it) continue;
+        const char *val_str = it->value_text ? it->value_text : (it->status_text ? it->status_text : "");
+        printf("%c %-22s  %-10s  %s\n",
+               i == menu->selected ? '>' : ' ',
+               it->label ? it->label : "",
+               val_str,
+               it->desc ? it->desc : "");
     }
 }
 
@@ -180,12 +196,40 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
         return;
     }
 
+    if (menu && menu->visible) {
+        if (key == 'a' || key == 'h' || key == '<') {
+            DmlNikonButtonRecord rec = {.code = DML_NIKON_BTN_CODE_LEFT_CANDIDATE, .value_1 = 1};
+            DmlMenuCommand cmd = 0;
+            DmlEvent ev = {0};
+            if (dml_nikon_translate_record(&rec, &cmd, &ev, millis)) {
+                dml_menu_handle(menu, cmd, millis, runtime->api);
+                render_display(menu);
+                print_terminal_menu(menu);
+                return;
+            }
+        }
+        if (key == 'd' || key == 'l' || key == '>') {
+            DmlNikonButtonRecord rec = {.code = DML_NIKON_BTN_CODE_RIGHT_CANDIDATE, .value_1 = 1};
+            DmlMenuCommand cmd = 0;
+            DmlEvent ev = {0};
+            if (dml_nikon_translate_record(&rec, &cmd, &ev, millis)) {
+                dml_menu_handle(menu, cmd, millis, runtime->api);
+                render_display(menu);
+                print_terminal_menu(menu);
+                return;
+            }
+        }
+    }
+
     DmlNikonButtonRecord record = {0};
     switch (key) {
         case 'm': record.code = DML_NIKON_BTN_CODE_MENU_CANDIDATE; record.value_1 = 1; break;
         case 'w': record.code = DML_NIKON_BTN_CODE_UP_CANDIDATE; record.value_1 = 1; break;
         case 's': record.code = DML_NIKON_BTN_CODE_DOWN_CANDIDATE; record.value_1 = 1; break;
-        case 'e': record.code = DML_NIKON_BTN_CODE_OK_CANDIDATE; record.value_1 = 1; break;
+        case 'e':
+        case '\n':
+        case '\r':
+            record.code = DML_NIKON_BTN_CODE_OK_CANDIDATE; record.value_1 = 1; break;
         default:  record.code = (uint16_t)key; record.value_1 = 1; break;
     }
 
@@ -204,7 +248,7 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
 static void interactive_run(DmlRuntime *runtime, DmlMenu *menu) {
     uint32_t millis = 0;
     int key;
-    puts("m menu, i info screen, [/] shutter, -/= aperture, ,/. iso, f flash, b battery, a focus point, t tick, p screenshot, q quit");
+    puts("m menu, i info screen, w/s nav, a/d tabs, e select, [/] shutter, -/= aperture, ,/. iso, f flash, b battery, t tick, p screenshot, q quit");
     while ((key = getchar()) != EOF && key != 'q') {
         if (key == 't') {
             millis += 500;
@@ -227,6 +271,7 @@ int main(int argc, char **argv) {
     int interactive = 0;
     const char *screenshot_path = NULL;
     int screenshot_is_info = 0;
+    int initial_tab = -1;
 
     if (argc == 2 && strcmp(argv[1], "--interactive") == 0) {
         interactive = 1;
@@ -236,8 +281,12 @@ int main(int argc, char **argv) {
     } else if (argc == 3 && strcmp(argv[1], "--screenshot-info") == 0) {
         screenshot_path = argv[2];
         screenshot_is_info = 1;
+    } else if (argc == 4 && strcmp(argv[1], "--screenshot-tab") == 0) {
+        initial_tab = atoi(argv[2]);
+        screenshot_path = argv[3];
+        screenshot_is_info = 0;
     } else if (argc != 1) {
-        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>]\n", argv[0]);
+        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-tab <0..4> <path.bmp>]\n", argv[0]);
         return 2;
     }
 
@@ -246,6 +295,11 @@ int main(int argc, char **argv) {
     DmlRuntime runtime;
     DmlIntervalometer state;
     DmlMenu menu = {0};
+    g_active_menu_ptr = &menu;
+
+    if (initial_tab >= 0 && initial_tab < (int)DML_TAB_COUNT) {
+        menu.active_tab = (size_t)initial_tab;
+    }
 
     memset(&g_hw_raw, 0, sizeof(g_hw_raw));
     g_hw_raw.vtable = D3300_ADDR_CKRRC_VTABLE;
@@ -275,11 +329,193 @@ int main(int argc, char **argv) {
     dml_init(&runtime, &api);
     dml_intervalometer_config(&state, 2000);
     if (!dml_register(&runtime, dml_intervalometer_module(&state))) return 1;
-    if (!dml_menu_add(&menu, (DmlMenuItem) {"Intervalometer on/off", &state,
-                                           dml_intervalometer_toggle}) ||
-        !dml_menu_add(&menu, (DmlMenuItem) {"Module status", &runtime, describe_modules})) {
-        return 1;
-    }
+
+    /* Populate Cinema OS Menu items across tabs */
+    /* SHOOT tab */
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "INTERVALOMETER",
+        .desc = "Automated timelapse shutter sequence",
+        .tab = DML_TAB_SHOOT,
+        .value_text = "1.0s",
+        .status_text = "OFF",
+        .is_on = 0,
+        .has_val = 1,
+        .state = &state,
+        .activate = sim_intervalometer_toggle
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "BURST RATE LIMIT",
+        .desc = "Continuous shooting frequency",
+        .tab = DML_TAB_SHOOT,
+        .value_text = "5.0 FPS",
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "SILENT SHUTTER",
+        .desc = "Electronic first curtain shutter",
+        .tab = DML_TAB_SHOOT,
+        .value_text = "",
+        .status_text = "OFF",
+        .is_on = 0,
+        .has_val = 0,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+
+    /* EXPO tab */
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "AUTO-ISO MAXIMUM",
+        .desc = "Sensitivity upper threshold",
+        .tab = DML_TAB_EXPO,
+        .value_text = "6400",
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "EXPOSURE OVERRIDE",
+        .desc = "Bypass 30s shutter speed limit",
+        .tab = DML_TAB_EXPO,
+        .value_text = "",
+        .status_text = "ON",
+        .is_on = 1,
+        .has_val = 0,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "ZEBRA LEVEL",
+        .desc = "Overexposure warning threshold",
+        .tab = DML_TAB_EXPO,
+        .value_text = "100%",
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+
+    /* OVERLAY tab */
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "FOCUS PEAKING",
+        .desc = "Edge contrast detection outline",
+        .tab = DML_TAB_OVERLAY,
+        .value_text = "CYAN",
+        .status_text = "ON",
+        .is_on = 1,
+        .has_val = 1,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "HISTOGRAM",
+        .desc = "Realtime RGB luma distribution",
+        .tab = DML_TAB_OVERLAY,
+        .value_text = "",
+        .status_text = "OFF",
+        .is_on = 0,
+        .has_val = 0,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "CROP MARKS",
+        .desc = "Cinema 2.39:1 aspect guidelines",
+        .tab = DML_TAB_OVERLAY,
+        .value_text = "2.39:1",
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+
+    /* MOVIE tab (H.264 Full HD video pipeline enhancements) */
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "REMOVE TIME LIMIT",
+        .desc = "Bypass factory 20-minute video recording cap",
+        .tab = DML_TAB_MOVIE,
+        .value_text = "",
+        .status_text = "ON",
+        .is_on = 1,
+        .has_val = 0,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "BITRATE OVERRIDE",
+        .desc = "H.264 video encoding quality (stock 24 Mbps)",
+        .tab = DML_TAB_MOVIE,
+        .value_text = "48 Mbps",
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "CLEAN HDMI OUT",
+        .desc = "Hide HUD overlays on external HDMI recorder",
+        .tab = DML_TAB_MOVIE,
+        .value_text = "",
+        .status_text = "OFF",
+        .is_on = 0,
+        .has_val = 0,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "AUDIO METERS",
+        .desc = "Live dual channel audio dB monitor",
+        .tab = DML_TAB_MOVIE,
+        .value_text = "",
+        .status_text = "ON",
+        .is_on = 1,
+        .has_val = 0,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+
+    /* SYSTEM tab */
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "TASK MONITOR",
+        .desc = "Realtime T-Kernel thread scheduler status",
+        .tab = DML_TAB_SYSTEM,
+        .value_text = "6 ACT",
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "SD BENCHMARK",
+        .desc = "Card write speed test (/sd0/)",
+        .tab = DML_TAB_SYSTEM,
+        .value_text = "",
+        .status_text = "READY",
+        .is_on = 0,
+        .has_val = 0,
+        .state = NULL,
+        .activate = dummy_menu_action
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "MODULE STATUS",
+        .desc = "Loaded C modules and memory usage",
+        .tab = DML_TAB_SYSTEM,
+        .value_text = "",
+        .status_text = "OK",
+        .is_on = 0,
+        .has_val = 0,
+        .state = &runtime,
+        .activate = describe_modules
+    });
     puts("D3300 ML host simulator (NOT running on a Nikon camera)");
 
     if (interactive) {

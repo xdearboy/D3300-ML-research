@@ -11,6 +11,7 @@
 #include "../core/dml_camera_status.h"
 #include "../core/dml_camera_status_hw.h"
 #include "../core/dml_info_screen.h"
+#include "../core/dml_menu_screen.h"
 
 /* Magic signature for D3300-ML relocatable payload */
 #define DML_PAYLOAD_MAGIC   0x4433334Du /* "D33M" */

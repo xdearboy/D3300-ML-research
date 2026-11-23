@@ -126,6 +126,14 @@ static void test_record_translation(void) {
     DmlNikonButtonRecord rec_down = {.code = DML_NIKON_BTN_CODE_DOWN_CANDIDATE, .value_1 = 1};
     assert(dml_nikon_translate_record(&rec_down, &menu_cmd, &event, 400) == 1);
     assert(menu_cmd == DML_MENU_NEXT);
+
+    DmlNikonButtonRecord rec_left = {.code = DML_NIKON_BTN_CODE_LEFT_CANDIDATE, .value_1 = 1};
+    assert(dml_nikon_translate_record(&rec_left, &menu_cmd, &event, 500) == 1);
+    assert(menu_cmd == DML_MENU_PREV_TAB);
+
+    DmlNikonButtonRecord rec_right = {.code = DML_NIKON_BTN_CODE_RIGHT_CANDIDATE, .value_1 = 1};
+    assert(dml_nikon_translate_record(&rec_right, &menu_cmd, &event, 600) == 1);
+    assert(menu_cmd == DML_MENU_NEXT_TAB);
 }
 
 int main(void) {

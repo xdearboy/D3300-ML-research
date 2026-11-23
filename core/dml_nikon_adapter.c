@@ -115,6 +115,14 @@ int dml_nikon_translate_record(
             *out_menu_cmd = DML_MENU_NEXT;
             return 1;
 
+        case DML_NIKON_BTN_CODE_LEFT_CANDIDATE:
+            *out_menu_cmd = DML_MENU_PREV_TAB;
+            return 1;
+
+        case DML_NIKON_BTN_CODE_RIGHT_CANDIDATE:
+            *out_menu_cmd = DML_MENU_NEXT_TAB;
+            return 1;
+
         default:
             break;
     }
