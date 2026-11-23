@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../core/dml.h"
 #include "../core/dml_menu.h"
+#include "../core/dml_nikon_adapter.h"
 #include "../modules/intervalometer.h"
 
 typedef struct { unsigned int shots; } SimCamera;
@@ -42,18 +43,24 @@ static void describe_modules(void *ctx, uint32_t millis, const DmlCameraAPI *api
 }
 
 static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int key) {
-    DmlMenuCommand command = 0;
+    DmlNikonButtonRecord record = {0};
     switch (key) {
-        case 'm': command = DML_MENU_TOGGLE; break;
-        case 'w': command = DML_MENU_PREVIOUS; break;
-        case 's': command = DML_MENU_NEXT; break;
-        case 'e': command = DML_MENU_ACTIVATE; break;
+        case 'm': record.code = DML_NIKON_BTN_CODE_MENU_CANDIDATE; record.value_1 = 1; break;
+        case 'w': record.code = DML_NIKON_BTN_CODE_UP_CANDIDATE; record.value_1 = 1; break;
+        case 's': record.code = DML_NIKON_BTN_CODE_DOWN_CANDIDATE; record.value_1 = 1; break;
+        case 'e': record.code = DML_NIKON_BTN_CODE_OK_CANDIDATE; record.value_1 = 1; break;
+        default:  record.code = (uint16_t)key; record.value_1 = 1; break;
     }
-    if (dml_menu_handle(menu, command, millis, runtime->api)) {
-        render_menu(menu);
-    } else {
-        dispatch(runtime, DML_EVENT_BUTTON, millis, key);
+
+    DmlMenuCommand command = 0;
+    DmlEvent event = {0};
+    if (dml_nikon_translate_record(&record, &command, &event, millis)) {
+        if (dml_menu_handle(menu, command, millis, runtime->api)) {
+            render_menu(menu);
+            return;
+        }
     }
+    dml_dispatch(runtime, &event);
 }
 
 static void interactive_run(DmlRuntime *runtime, DmlMenu *menu) {
