@@ -12,6 +12,7 @@
 #include "../core/dml_menu_screen.h"
 #include "../modules/intervalometer.h"
 #include "../modules/fuji_film_sim.h"
+#include "../modules/photo_assist.h"
 
 typedef struct { unsigned int shots; } SimCamera;
 static DmlDrawBufferTable g_display_table;
@@ -137,6 +138,65 @@ static void action_cycle_fuji_profile(void *state, uint32_t millis, const DmlCam
                p->name, (int)menu->fuji_profile_id);
     } else {
         puts("[film sim] Profile set to OFF (Stock Nikon picture control)");
+    }
+}
+
+static void action_cycle_peaking_color(void *state, uint32_t millis, const DmlCameraAPI *api) {
+    (void)millis;
+    (void)api;
+    DmlMenu *menu = (DmlMenu *)state;
+    if (!menu) return;
+    dml_menu_cycle_peaking_color(menu);
+    for (size_t i = 0; i < menu->count; ++i) {
+        if (strcmp(menu->items[i].label, "FOCUS PEAKING") == 0) {
+            menu->items[i].value_text = dml_menu_get_peaking_color_name(menu->peaking_color);
+            menu->items[i].is_on = (menu->peaking_color > 0) ? 1 : 0;
+            break;
+        }
+    }
+}
+
+static void action_cycle_peaking_sens(void *state, uint32_t millis, const DmlCameraAPI *api) {
+    (void)millis;
+    (void)api;
+    DmlMenu *menu = (DmlMenu *)state;
+    if (!menu) return;
+    dml_menu_cycle_peaking_sens(menu);
+    for (size_t i = 0; i < menu->count; ++i) {
+        if (strcmp(menu->items[i].label, "PEAK SENSITIVITY") == 0) {
+            menu->items[i].value_text = dml_menu_get_peaking_sens_name(menu->peaking_sens);
+            break;
+        }
+    }
+}
+
+static void action_cycle_zebra_level(void *state, uint32_t millis, const DmlCameraAPI *api) {
+    (void)millis;
+    (void)api;
+    DmlMenu *menu = (DmlMenu *)state;
+    if (!menu) return;
+    dml_menu_cycle_zebra_level(menu);
+    for (size_t i = 0; i < menu->count; ++i) {
+        if (strcmp(menu->items[i].label, "ZEBRA LEVEL") == 0) {
+            menu->items[i].value_text = dml_menu_get_zebra_level_name(menu->zebra_level);
+            menu->items[i].is_on = (menu->zebra_level > 0) ? 1 : 0;
+            break;
+        }
+    }
+}
+
+static void action_cycle_histogram_mode(void *state, uint32_t millis, const DmlCameraAPI *api) {
+    (void)millis;
+    (void)api;
+    DmlMenu *menu = (DmlMenu *)state;
+    if (!menu) return;
+    dml_menu_cycle_histogram_mode(menu);
+    for (size_t i = 0; i < menu->count; ++i) {
+        if (strcmp(menu->items[i].label, "HISTOGRAM") == 0) {
+            menu->items[i].value_text = dml_menu_get_histogram_mode_name(menu->histogram_mode);
+            menu->items[i].is_on = (menu->histogram_mode > 0) ? 1 : 0;
+            break;
+        }
     }
 }
 
@@ -325,6 +385,7 @@ int main(int argc, char **argv) {
     const char *screenshot_path = NULL;
     int screenshot_is_info = 0;
     int screenshot_is_hold = 0;
+    int screenshot_is_assist = 0;
     int initial_tab = -1;
     int font_choice = -1;
     int fuji_choice = -1;
@@ -341,6 +402,10 @@ int main(int argc, char **argv) {
         screenshot_path = argv[2];
         screenshot_is_info = 0;
         screenshot_is_hold = 1;
+    } else if (argc == 3 && strcmp(argv[1], "--screenshot-assist") == 0) {
+        screenshot_path = argv[2];
+        screenshot_is_info = 0;
+        screenshot_is_assist = 1;
     } else if (argc == 4 && strcmp(argv[1], "--screenshot-tab") == 0) {
         initial_tab = atoi(argv[2]);
         screenshot_path = argv[3];
@@ -364,7 +429,7 @@ int main(int argc, char **argv) {
             return 1;
         }
     } else if (argc != 1) {
-        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-hold <path.bmp>] [--screenshot-tab <0..4> <path.bmp>] [--screenshot-font <0..2> <path.bmp>] [--screenshot-fuji <1..5> <path.bmp>] [--export-fuji-profiles <dir>]\n", argv[0]);
+        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-hold <path.bmp>] [--screenshot-assist <path.bmp>] [--screenshot-tab <0..4> <path.bmp>] [--screenshot-font <0..2> <path.bmp>] [--screenshot-fuji <1..5> <path.bmp>] [--export-fuji-profiles <dir>]\n", argv[0]);
         return 2;
     }
 
@@ -491,12 +556,12 @@ int main(int argc, char **argv) {
         .label = "ZEBRA LEVEL",
         .desc = "Overexposure warning threshold",
         .tab = DML_TAB_EXPO,
-        .value_text = "100%",
+        .value_text = dml_menu_get_zebra_level_name(menu.zebra_level),
         .status_text = "",
-        .is_on = 0,
+        .is_on = (menu.zebra_level > 0) ? 1 : 0,
         .has_val = 1,
-        .state = NULL,
-        .activate = dummy_menu_action
+        .state = &menu,
+        .activate = action_cycle_zebra_level
     });
 
     /* OVERLAY tab */
@@ -504,23 +569,34 @@ int main(int argc, char **argv) {
         .label = "FOCUS PEAKING",
         .desc = "Edge contrast detection outline",
         .tab = DML_TAB_OVERLAY,
-        .value_text = "CYAN",
-        .status_text = "ON",
-        .is_on = 1,
+        .value_text = dml_menu_get_peaking_color_name(menu.peaking_color),
+        .status_text = "",
+        .is_on = (menu.peaking_color > 0) ? 1 : 0,
         .has_val = 1,
-        .state = NULL,
-        .activate = dummy_menu_action
+        .state = &menu,
+        .activate = action_cycle_peaking_color
+    });
+    dml_menu_add(&menu, (DmlMenuItem){
+        .label = "PEAK SENSITIVITY",
+        .desc = "Edge detection threshold level",
+        .tab = DML_TAB_OVERLAY,
+        .value_text = dml_menu_get_peaking_sens_name(menu.peaking_sens),
+        .status_text = "",
+        .is_on = 0,
+        .has_val = 1,
+        .state = &menu,
+        .activate = action_cycle_peaking_sens
     });
     dml_menu_add(&menu, (DmlMenuItem){
         .label = "HISTOGRAM",
         .desc = "Realtime RGB luma distribution",
         .tab = DML_TAB_OVERLAY,
-        .value_text = "",
-        .status_text = "OFF",
-        .is_on = 0,
-        .has_val = 0,
-        .state = NULL,
-        .activate = dummy_menu_action
+        .value_text = dml_menu_get_histogram_mode_name(menu.histogram_mode),
+        .status_text = "",
+        .is_on = (menu.histogram_mode > 0) ? 1 : 0,
+        .has_val = 1,
+        .state = &menu,
+        .activate = action_cycle_histogram_mode
     });
     dml_menu_add(&menu, (DmlMenuItem){
         .label = "CROP MARKS",
@@ -630,7 +706,47 @@ int main(int argc, char **argv) {
     if (interactive) {
         interactive_run(&runtime, &menu);
     } else if (screenshot_path) {
-        if (screenshot_is_info) {
+        if (screenshot_is_assist) {
+            uint8_t *synthetic_luma = (uint8_t *)malloc(720 * 480);
+            if (synthetic_luma) {
+                for (int y = 0; y < 480; y++) {
+                    for (int x = 0; x < 720; x++) {
+                        int dist_cx = (x - 360);
+                        int dist_cy = (y - 240);
+                        int r = (dist_cx * dist_cx + dist_cy * dist_cy) / 1000;
+                        int val = 90 - (r / 2);
+                        if (val < 20) val = 20;
+
+                        if (x < 240 && y < 140) {
+                            int edge = (x + y * 2);
+                            if (edge < 300) val = 255;
+                        }
+
+                        if (x >= 280 && x <= 440 && y >= 160 && y <= 320) {
+                            int cell = ((x - 280) / 16 + (y - 160) / 16);
+                            val = (cell % 2 == 0) ? 210 : 35;
+                        }
+
+                        synthetic_luma[y * 720 + x] = (uint8_t)val;
+                    }
+                }
+
+                for (int y = 0; y < 480; y++) {
+                    for (int x = 0; x < 720; x++) {
+                        uint8_t l = synthetic_luma[y * 720 + x];
+                        uint32_t col = ((uint32_t)l << 16) | ((uint32_t)l << 8) | (uint32_t)l;
+                        dml_draw_buffer_put_pixel(&g_display_table, g_display_buf_idx, x, y, col);
+                    }
+                }
+
+                dml_photo_assist_apply_zebra(&g_display_table, g_display_buf_idx, synthetic_luma, 720, 480, DML_ZEBRA_95, 0);
+                dml_photo_assist_apply_peaking(&g_display_table, g_display_buf_idx, synthetic_luma, 720, 480, DML_PEAK_GREEN, DML_PEAK_SENS_MED);
+                dml_photo_assist_draw_histogram(&g_display_table, g_display_buf_idx, synthetic_luma, 720, 480, 720 - 144, 480 - 72, DML_HISTO_LUMA);
+                dml_draw_buffer_draw_text_font(&g_display_table, g_display_buf_idx, 20, 20, "LIVE VIEW [FOCUS PEAKING: GREEN] [ZEBRA: 95%]", 0x00FF88u, 0x00000000u, DML_FONT_MODERN_SANS);
+
+                free(synthetic_luma);
+            }
+        } else if (screenshot_is_info) {
             /* Render custom info screen */
             g_info_screen_active = 1;
             render_display(&menu);

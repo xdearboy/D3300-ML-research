@@ -219,6 +219,17 @@ void dml_draw_buffer_clear(DmlDrawBufferTable *table, int index, uint32_t argb_c
     }
 }
 
+void dml_draw_buffer_put_pixel(DmlDrawBufferTable *table, int index, int x, int y, uint32_t argb_color) {
+    if (!table || index < 0 || (uint32_t)index >= DML_DRAW_BUFFER_MAX) return;
+    if (!table->entries[index].active || !table->entries[index].pixels) return;
+
+    DmlDrawBufferEntry *entry = &table->entries[index];
+    if (x < 0 || x >= (int)entry->width || y < 0 || y >= (int)entry->height) return;
+
+    uint32_t words_per_stride = entry->stride / 4u;
+    entry->pixels[y * words_per_stride + x] = argb_color;
+}
+
 void dml_draw_buffer_fill_rect(DmlDrawBufferTable *table, int index, int x, int y, int w, int h, uint32_t argb_color) {
     if (!table || index < 0 || (uint32_t)index >= DML_DRAW_BUFFER_MAX || w <= 0 || h <= 0) return;
     if (!table->entries[index].active || !table->entries[index].pixels) return;

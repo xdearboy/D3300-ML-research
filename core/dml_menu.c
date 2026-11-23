@@ -207,3 +207,64 @@ const char *dml_menu_get_fuji_profile_name(uint8_t id) {
         default: return "OFF";
     }
 }
+
+void dml_menu_cycle_peaking_color(DmlMenu *menu) {
+    if (!menu) return;
+    menu->peaking_color = (uint8_t)((menu->peaking_color + 1) % 6);
+}
+
+const char *dml_menu_get_peaking_color_name(uint8_t id) {
+    switch (id) {
+        case 0: return "OFF";
+        case 1: return "GREEN";
+        case 2: return "RED";
+        case 3: return "CYAN";
+        case 4: return "YELLOW";
+        case 5: return "WHITE";
+        default: return "OFF";
+    }
+}
+
+void dml_menu_cycle_peaking_sens(DmlMenu *menu) {
+    if (!menu) return;
+    menu->peaking_sens = (uint8_t)((menu->peaking_sens + 1) % 3);
+}
+
+const char *dml_menu_get_peaking_sens_name(uint8_t id) {
+    switch (id) {
+        case 0: return "LOW";
+        case 1: return "MEDIUM";
+        case 2: return "HIGH";
+        default: return "MEDIUM";
+    }
+}
+
+void dml_menu_cycle_zebra_level(DmlMenu *menu) {
+    if (!menu) return;
+    menu->zebra_level = (uint8_t)((menu->zebra_level + 1) % 5);
+}
+
+const char *dml_menu_get_zebra_level_name(uint8_t id) {
+    switch (id) {
+        case 0: return "OFF";
+        case 1: return "100%";
+        case 2: return "95%";
+        case 3: return "90%";
+        case 4: return "75%";
+        default: return "OFF";
+    }
+}
+
+void dml_menu_cycle_histogram_mode(DmlMenu *menu) {
+    if (!menu) return;
+    menu->histogram_mode = (uint8_t)((menu->histogram_mode + 1) % 3);
+}
+
+const char *dml_menu_get_histogram_mode_name(uint8_t id) {
+    switch (id) {
+        case 0: return "OFF";
+        case 1: return "LUMA";
+        case 2: return "RGB";
+        default: return "OFF";
+    }
+}

@@ -58,6 +58,12 @@ typedef struct {
 
     /* Film Simulation profile: 0 = OFF, 1..5 = Fuji profiles */
     uint8_t fuji_profile_id;
+
+    /* Photo Assist Live View Overlays */
+    uint8_t peaking_color;   /* 0: OFF, 1: GREEN, 2: RED, 3: CYAN, 4: YELLOW, 5: WHITE */
+    uint8_t peaking_sens;    /* 0: LOW, 1: MEDIUM, 2: HIGH */
+    uint8_t zebra_level;     /* 0: OFF, 1: 100%, 2: 95%, 3: 90%, 4: 75% */
+    uint8_t histogram_mode;  /* 0: OFF, 1: LUMA, 2: RGB */
 } DmlMenu;
 
 int dml_menu_add(DmlMenu *menu, DmlMenuItem item);
@@ -72,5 +78,13 @@ void dml_menu_cycle_font(DmlMenu *menu);
 const char *dml_menu_get_font_name(uint8_t font_id);
 void dml_menu_cycle_fuji_profile(DmlMenu *menu);
 const char *dml_menu_get_fuji_profile_name(uint8_t id);
+void dml_menu_cycle_peaking_color(DmlMenu *menu);
+const char *dml_menu_get_peaking_color_name(uint8_t id);
+void dml_menu_cycle_peaking_sens(DmlMenu *menu);
+const char *dml_menu_get_peaking_sens_name(uint8_t id);
+void dml_menu_cycle_zebra_level(DmlMenu *menu);
+const char *dml_menu_get_zebra_level_name(uint8_t id);
+void dml_menu_cycle_histogram_mode(DmlMenu *menu);
+const char *dml_menu_get_histogram_mode_name(uint8_t id);
 
 #endif /* DML_MENU_H */

@@ -83,6 +83,7 @@ int dml_draw_buffer_get_text_width(const char *text, DmlFontId font_id);
 
 /* UI & OSD rasterizer primitives on ARGB8888 buffer */
 void dml_draw_buffer_clear(DmlDrawBufferTable *table, int index, uint32_t argb_color);
+void dml_draw_buffer_put_pixel(DmlDrawBufferTable *table, int index, int x, int y, uint32_t argb_color);
 void dml_draw_buffer_fill_rect(DmlDrawBufferTable *table, int index, int x, int y, int w, int h, uint32_t argb_color);
 void dml_draw_buffer_draw_rect(DmlDrawBufferTable *table, int index, int x, int y, int w, int h, uint32_t border_argb);
 void dml_draw_buffer_draw_line_h(DmlDrawBufferTable *table, int index, int x, int y, int length, uint32_t argb_color);
