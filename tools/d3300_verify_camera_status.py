@@ -59,6 +59,36 @@ ANCHORS = (
         "bytes": "d10d3590",
         "observation": "vtable slot +0x14 is Thumb target 0x90350DD1",
     },
+    {
+        "name": "info_disp_data_global",
+        "address": 0x9013BED4,
+        "bytes": "14274910",
+        "observation": "literal used by the constructor call resolves to RAM 0x10492714",
+    },
+    {
+        "name": "info_disp_data_constructor",
+        "address": 0x9019CC70,
+        "bytes": "be49c0f8b042c0f8b442c0f8b8420160",
+        "observation": "clears +0x2B0/+0x2B4/+0x2B8 and installs the CKRRCInfoDispData vtable",
+    },
+    {
+        "name": "info_disp_data_ring_initializer",
+        "address": 0x9019CCBE,
+        "bytes": "00f504722946c0f8b4221ce0",
+        "observation": "forms object +0x210, stores it at +0x2B4 and starts the 11-node ring loop",
+    },
+    {
+        "name": "info_disp_data_getter",
+        "address": 0x90350DDE,
+        "bytes": "d0f8b402c0687047",
+        "observation": "returns *( *(object +0x2B4) +0x0C )",
+    },
+    {
+        "name": "info_disp_data_vtable",
+        "address": 0x9151F73C,
+        "bytes": "6829509193cc1990adcc1990bbcc199071302b9077302b90df0d35904bcd199067cd1990",
+        "observation": "RTTI 17CKRRCInfoDispData followed by its primary vtable",
+    },
 )
 
 
@@ -93,7 +123,9 @@ def analyze(data: bytes) -> dict[str, Any]:
         "conclusion": (
             "CKRRCCameraStatus +0x84 selects a ring node whose +0x0C field points "
             "to an 8-byte bitfield snapshot. Bytes +0x8C..+0x98 are transition "
-            "indicators derived by comparing snapshots, not verified exposure fields."
+            "indicators derived by comparing snapshots, not verified exposure fields. "
+            "A separate CKRRCInfoDispData object at 0x10492714 maintains 11 snapshots "
+            "of 52 bytes and is the stronger candidate for displayed shooting data."
         ),
         "anchors": anchors,
     }

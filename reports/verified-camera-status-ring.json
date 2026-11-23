@@ -5,7 +5,7 @@
   "expected_sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
   "sha256_match": true,
   "all_anchors_match": true,
-  "conclusion": "CKRRCCameraStatus +0x84 selects a ring node whose +0x0C field points to an 8-byte bitfield snapshot. Bytes +0x8C..+0x98 are transition indicators derived by comparing snapshots, not verified exposure fields.",
+  "conclusion": "CKRRCCameraStatus +0x84 selects a ring node whose +0x0C field points to an 8-byte bitfield snapshot. Bytes +0x8C..+0x98 are transition indicators derived by comparing snapshots, not verified exposure fields. A separate CKRRCInfoDispData object at 0x10492714 maintains 11 snapshots of 52 bytes and is the stronger candidate for displayed shooting data.",
   "anchors": [
     {
       "name": "constructor_clears_ring_heads",
@@ -62,6 +62,46 @@
       "actual_bytes": "d10d3590",
       "match": true,
       "observation": "vtable slot +0x14 is Thumb target 0x90350DD1"
+    },
+    {
+      "name": "info_disp_data_global",
+      "address": "0x9013BED4",
+      "expected_bytes": "14274910",
+      "actual_bytes": "14274910",
+      "match": true,
+      "observation": "literal used by the constructor call resolves to RAM 0x10492714"
+    },
+    {
+      "name": "info_disp_data_constructor",
+      "address": "0x9019CC70",
+      "expected_bytes": "be49c0f8b042c0f8b442c0f8b8420160",
+      "actual_bytes": "be49c0f8b042c0f8b442c0f8b8420160",
+      "match": true,
+      "observation": "clears +0x2B0/+0x2B4/+0x2B8 and installs the CKRRCInfoDispData vtable"
+    },
+    {
+      "name": "info_disp_data_ring_initializer",
+      "address": "0x9019CCBE",
+      "expected_bytes": "00f504722946c0f8b4221ce0",
+      "actual_bytes": "00f504722946c0f8b4221ce0",
+      "match": true,
+      "observation": "forms object +0x210, stores it at +0x2B4 and starts the 11-node ring loop"
+    },
+    {
+      "name": "info_disp_data_getter",
+      "address": "0x90350DDE",
+      "expected_bytes": "d0f8b402c0687047",
+      "actual_bytes": "d0f8b402c0687047",
+      "match": true,
+      "observation": "returns *( *(object +0x2B4) +0x0C )"
+    },
+    {
+      "name": "info_disp_data_vtable",
+      "address": "0x9151F73C",
+      "expected_bytes": "6829509193cc1990adcc1990bbcc199071302b9077302b90df0d35904bcd199067cd1990",
+      "actual_bytes": "6829509193cc1990adcc1990bbcc199071302b9077302b90df0d35904bcd199067cd1990",
+      "match": true,
+      "observation": "RTTI 17CKRRCInfoDispData followed by its primary vtable"
     }
   ]
 }

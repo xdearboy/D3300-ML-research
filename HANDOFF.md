@@ -10,6 +10,7 @@ No installable firmware, ARM payload image, linker script, relocation loader, or
 
 - `73f8e71`: identifies RAM `0x10491580` as `CKRRCCameraStatus`, not a button producer. The vtable, RTTI and read accessor path are supported by disassembly.
 - `8677c06` and `70e6091`: add and harden derived-reference analysis with unit tests.
+- `reports/D3300_C102_info_disp_data.md`: verifies the separate `CKRRCInfoDispData` instance at `0x10492714` and its eleven 52-byte snapshots. This is the current source candidate for stock shooting-information values.
 - The reports contain useful static traces for RelayEventEx, COPNO objects, the 16-byte AppButton state handoff, menu dispatch and DrawBuffer routines.
 - T-Kernel identification is plausible from firmware strings/configuration. Exact syscall names, veneers and task-management integration must be independently rechecked before being promoted to verified.
 
