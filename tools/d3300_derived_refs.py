@@ -30,10 +30,15 @@ REG_SPLIT_REGEX = re.compile(r"[\s,\[\]#]+")
 
 
 def _parse_immediate(token):
+    if not token:
+        return None
     token = token.strip()
     if token.startswith("#"):
         token = token[1:].strip()
-    return int(token, 0)
+    try:
+        return int(token, 0)
+    except (ValueError, TypeError):
+        return None
 
 
 def _is_ram_address(value):
@@ -167,61 +172,49 @@ def find_derived_refs(
             if len(tokens) == 2:
                 # add reg, #imm
                 reg = tokens[0].lower()
-                try:
-                    imm = _parse_immediate(tokens[1])
-                    if reg in tracked:
-                        tracked[reg]["value"] += imm
-                except ValueError:
-                    if reg in tracked:
-                        del tracked[reg]
+                imm = _parse_immediate(tokens[1])
+                if imm is not None and reg in tracked:
+                    tracked[reg]["value"] += imm
+                elif reg in tracked:
+                    del tracked[reg]
             elif len(tokens) >= 3:
                 # add dest, src, #imm
                 dest_reg = tokens[0].lower()
                 src_reg = tokens[1].lower()
-                try:
-                    imm = _parse_immediate(tokens[2])
-                    if src_reg in tracked:
-                        tracked[dest_reg] = {
-                            "value": tracked[src_reg]["value"] + imm,
-                            "base_literal": tracked[src_reg]["base_literal"],
-                            "start_addr": tracked[src_reg]["start_addr"],
-                            "steps": 0,
-                        }
-                    elif dest_reg in tracked:
-                        del tracked[dest_reg]
-                except ValueError:
-                    if dest_reg in tracked:
-                        del tracked[dest_reg]
+                imm = _parse_immediate(tokens[2])
+                if imm is not None and src_reg in tracked:
+                    tracked[dest_reg] = {
+                        "value": tracked[src_reg]["value"] + imm,
+                        "base_literal": tracked[src_reg]["base_literal"],
+                        "start_addr": tracked[src_reg]["start_addr"],
+                        "steps": 0,
+                    }
+                elif dest_reg in tracked:
+                    del tracked[dest_reg]
             continue
 
         # Check for SUB / SUBS / SUBW
         if mnemonic in ("sub", "subs", "subw", "sub.w"):
             if len(tokens) == 2:
                 reg = tokens[0].lower()
-                try:
-                    imm = _parse_immediate(tokens[1])
-                    if reg in tracked:
-                        tracked[reg]["value"] -= imm
-                except ValueError:
-                    if reg in tracked:
-                        del tracked[reg]
+                imm = _parse_immediate(tokens[1])
+                if imm is not None and reg in tracked:
+                    tracked[reg]["value"] -= imm
+                elif reg in tracked:
+                    del tracked[reg]
             elif len(tokens) >= 3:
                 dest_reg = tokens[0].lower()
                 src_reg = tokens[1].lower()
-                try:
-                    imm = _parse_immediate(tokens[2])
-                    if src_reg in tracked:
-                        tracked[dest_reg] = {
-                            "value": tracked[src_reg]["value"] - imm,
-                            "base_literal": tracked[src_reg]["base_literal"],
-                            "start_addr": tracked[src_reg]["start_addr"],
-                            "steps": 0,
-                        }
-                    elif dest_reg in tracked:
-                        del tracked[dest_reg]
-                except ValueError:
-                    if dest_reg in tracked:
-                        del tracked[dest_reg]
+                imm = _parse_immediate(tokens[2])
+                if imm is not None and src_reg in tracked:
+                    tracked[dest_reg] = {
+                        "value": tracked[src_reg]["value"] - imm,
+                        "base_literal": tracked[src_reg]["base_literal"],
+                        "start_addr": tracked[src_reg]["start_addr"],
+                        "steps": 0,
+                    }
+                elif dest_reg in tracked:
+                    del tracked[dest_reg]
             continue
 
         # Check for STR / STRB / STRH / STR.W
@@ -229,7 +222,7 @@ def find_derived_refs(
             if len(tokens) >= 2:
                 base_reg = tokens[1].lower()
                 imm = _parse_immediate(tokens[2]) if len(tokens) >= 3 else 0
-                if base_reg in tracked:
+                if imm is not None and base_reg in tracked:
                     derived = tracked[base_reg]["value"] + imm
                     if target is None or derived == target:
                         yield {
@@ -250,7 +243,7 @@ def find_derived_refs(
                 dest_reg = tokens[0].lower()
                 base_reg = tokens[1].lower()
                 imm = _parse_immediate(tokens[2]) if len(tokens) >= 3 else 0
-                if base_reg in tracked:
+                if imm is not None and base_reg in tracked:
                     derived = tracked[base_reg]["value"] + imm
                     if target is None or derived == target:
                         yield {

@@ -66,6 +66,13 @@ class DerivedRefsTest(unittest.TestCase):
             "90003008: 4770  bx   lr",
             "9000300a: 6853  ldr  r3, [r2, #4]",
         ]
+    def test_ignores_non_immediate_offsets(self):
+        lines = [
+            "90004000: 4802  ldr  r0, [pc, #8]  @ 0x10000000",
+            "90004002: 1840  adds r0, r0, r1",
+            "90004004: 5882  ldr  r2, [r0, r1]",
+        ]
+        # Should not raise exception and should clobber dynamic r0
         matches = list(find_derived_refs(lines))
         self.assertEqual(len(matches), 0)
 
