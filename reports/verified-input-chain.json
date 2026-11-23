@@ -1,0 +1,16 @@
+{
+  "image": "b860_102.bin",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "chain": [
+    {"address": "0x9011DDA8", "role": "GPIO debouncer", "confidence": "PROVEN"},
+    {"address": "0x9011E738", "role": "input state helper", "confidence": "PROVEN"},
+    {"address": "0x9011E742", "role": "RelayEventEx trigger", "mask": "0x00000008", "confidence": "PROVEN"},
+    {"address": "0x9011DD5C", "role": "input forwarder callback", "confidence": "PROVEN"},
+    {"address": "0x1011FFB4", "role": "input queue state", "confidence": "PROVEN"},
+    {"address": "0x9013DDCC", "role": "COPNOQueueButton dispatcher", "confidence": "PROVEN"},
+    {"address": "0x903276B4", "role": "application button-controller handoff", "confidence": "PROVEN"},
+    {"address": "0x903512A0", "role": "16-byte mailbox setter", "confidence": "PROVEN"}
+  ],
+  "physical_button_identity": "UNPROVEN",
+  "live_runtime_observation": "UNPROVEN"
+}
