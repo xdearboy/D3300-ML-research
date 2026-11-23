@@ -65,6 +65,11 @@ int dml_menu_handle(DmlMenu *menu, DmlMenuCommand command, uint32_t millis,
 
     if (command == DML_MENU_TOGGLE) {
         menu->visible = !menu->visible;
+        if (menu->visible) {
+            menu->anim_progress = 0;
+            menu->hold_progress = 0;
+            menu->is_holding_menu = 0;
+        }
         return 1;
     }
     if (!menu->visible) {
@@ -113,5 +118,61 @@ int dml_menu_handle(DmlMenu *menu, DmlMenuCommand command, uint32_t millis,
 
         default:
             return 0;
+    }
+}
+
+int dml_menu_on_menu_button(DmlMenu *menu, int is_down, uint32_t millis, DmlMenuCommand *out_cmd) {
+    if (!menu || !out_cmd) return 0;
+
+    if (menu->visible) {
+        if (is_down) {
+            *out_cmd = DML_MENU_TOGGLE;
+            return 1;
+        }
+        return 0;
+    }
+
+    if (is_down) {
+        menu->is_holding_menu = 1;
+        menu->hold_start_ms = millis;
+        menu->hold_progress = 0;
+        return 0;
+    } else {
+        if (menu->is_holding_menu) {
+            menu->is_holding_menu = 0;
+            if (menu->hold_progress < 100) {
+                /* Short tap (<500ms): Pass through to factory Nikon menu */
+                menu->hold_progress = 0;
+                *out_cmd = DML_MENU_PASSTHROUGH_FACTORY;
+                return 1;
+            }
+            menu->hold_progress = 0;
+        }
+    }
+    return 0;
+}
+
+void dml_menu_tick(DmlMenu *menu, uint32_t millis) {
+    if (!menu) return;
+
+    if (menu->is_holding_menu && !menu->visible) {
+        uint32_t elapsed = (millis >= menu->hold_start_ms) ? (millis - menu->hold_start_ms) : 0;
+        if (elapsed >= 500) {
+            menu->hold_progress = 100;
+            menu->is_holding_menu = 0;
+            menu->visible = 1;
+            menu->anim_progress = 0;
+            return;
+        } else {
+            menu->hold_progress = (uint8_t)((elapsed * 100) / 500);
+        }
+    }
+
+    if (menu->visible && menu->anim_progress < 100) {
+        if (menu->anim_progress + 25 >= 100) {
+            menu->anim_progress = 100;
+        } else {
+            menu->anim_progress += 25;
+        }
     }
 }

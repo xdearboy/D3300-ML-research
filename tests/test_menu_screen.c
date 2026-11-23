@@ -89,6 +89,15 @@ static void test_menu_screen_rendering(void) {
     res = dml_menu_screen_render(&table, buf_idx, &menu, &status);
     assert(res == 0);
 
+    /* Test hold meter rendering */
+    menu.visible = 0;
+    menu.is_holding_menu = 1;
+    menu.hold_progress = 50;
+    res = dml_menu_screen_render(&table, buf_idx, &menu, &status);
+    assert(res == 0);
+    uint32_t hold_pill_pixel = entry->pixels[420 * entry->stride / 4 + 360];
+    assert(hold_pill_pixel == 0xFF13131Du);
+
     /* Parameter validation checks */
     assert(dml_menu_screen_render(NULL, buf_idx, &menu, &status) == -1);
     assert(dml_menu_screen_render(&table, -1, &menu, &status) == -1);

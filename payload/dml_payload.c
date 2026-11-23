@@ -76,6 +76,26 @@ void dml_payload_on_relay_event(uint32_t event_mask, void *user_context) {
         memset(&event, 0, sizeof(event));
 
         uint32_t current_millis = 0; /* Could be queried from timer */
+        if (record.code == DML_NIKON_BTN_CODE_MENU_CANDIDATE) {
+            int is_down = (record.value_1 == 1);
+            if (dml_menu_on_menu_button(&env->menu, is_down, current_millis, &command)) {
+                if (command == DML_MENU_PASSTHROUGH_FACTORY) {
+                    /* Do not consume: pass through to factory Nikon menu */
+                    dml_dispatch(&env->runtime, &event);
+                    return;
+                }
+                if (command == DML_MENU_TOGGLE) {
+                    dml_menu_handle(&env->menu, command, current_millis, &env->camera_api);
+                    dml_payload_render_osd(env);
+                    return;
+                }
+            } else {
+                /* Holding in progress: update hold meter */
+                dml_payload_render_osd(env);
+                return;
+            }
+        }
+
         if (dml_nikon_translate_record(&record, &command, &event, current_millis)) {
             if (command == DML_MENU_TOGGLE_INFO) {
                 dml_payload_toggle_info_screen(env);
@@ -93,6 +113,10 @@ void dml_payload_on_relay_event(uint32_t event_mask, void *user_context) {
 
 void dml_payload_on_tick(DmlPayloadEnv *env, uint32_t current_millis) {
     if (!env || !env->is_active) return;
+    dml_menu_tick(&env->menu, current_millis);
+    if (env->menu.is_holding_menu || (env->menu.visible && env->menu.anim_progress < 100)) {
+        dml_payload_render_osd(env);
+    }
     DmlEvent event = {
         .type = DML_EVENT_TICK,
         .millis = current_millis,
@@ -110,8 +134,8 @@ void dml_payload_render_osd(DmlPayloadEnv *env) {
         dml_draw_buffer_select(env->draw_table, buf_idx);
     }
 
-    if (env->menu.visible) {
-        /* Render D3300-ML Flat Cinema Menu OSD */
+    if (env->menu.visible || (env->menu.is_holding_menu && env->menu.hold_progress > 0)) {
+        /* Render D3300-ML Flat Cinema Menu OSD or Hold Indicator */
         dml_menu_screen_render(env->draw_table, buf_idx, &env->menu, &env->cached_status);
         dml_draw_buffer_swap(env->draw_table, buf_idx, 1);
         return;

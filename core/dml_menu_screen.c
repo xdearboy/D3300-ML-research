@@ -23,25 +23,26 @@ static void draw_tab(
     DmlDrawBufferTable *table,
     int buf_idx,
     int tx,
+    int ty,
     int tw,
     const char *name,
     int is_active
 ) {
     if (is_active) {
-        dml_draw_buffer_fill_rect(table, buf_idx, tx, 0, tw, 44, COLOR_BASE);
+        dml_draw_buffer_fill_rect(table, buf_idx, tx, ty, tw, 44, COLOR_BASE);
         /* Top and bottom 2px emerald accent lines */
-        dml_draw_buffer_fill_rect(table, buf_idx, tx, 0, tw, 2, COLOR_EMERALD);
-        dml_draw_buffer_fill_rect(table, buf_idx, tx, 42, tw, 2, COLOR_EMERALD);
+        dml_draw_buffer_fill_rect(table, buf_idx, tx, ty, tw, 2, COLOR_EMERALD);
+        dml_draw_buffer_fill_rect(table, buf_idx, tx, ty + 42, tw, 2, COLOR_EMERALD);
         int text_w = (int)strlen(name) * 8;
         int text_x = tx + (tw - text_w) / 2;
-        dml_draw_buffer_draw_text(table, buf_idx, text_x, 18, name, COLOR_WHITE, 0x00000000u);
+        dml_draw_buffer_draw_text(table, buf_idx, text_x, ty + 18, name, COLOR_WHITE, 0x00000000u);
     } else {
         int text_w = (int)strlen(name) * 8;
         int text_x = tx + (tw - text_w) / 2;
-        dml_draw_buffer_draw_text(table, buf_idx, text_x, 18, name, COLOR_MUTED, 0x00000000u);
+        dml_draw_buffer_draw_text(table, buf_idx, text_x, ty + 18, name, COLOR_MUTED, 0x00000000u);
     }
     /* Hairline vertical divider between tabs */
-    dml_draw_buffer_draw_line_v(table, buf_idx, tx + tw, 10, 24, 0xFF252538u);
+    dml_draw_buffer_draw_line_v(table, buf_idx, tx + tw, ty + 10, 24, 0xFF252538u);
 }
 
 static void draw_battery(
@@ -77,15 +78,52 @@ int dml_menu_screen_render(
         return -1;
     }
 
+    if (!menu->visible) {
+        if (menu->is_holding_menu && menu->hold_progress > 0) {
+            /* Render sleek Cinema hold progress overlay */
+            int pill_w = 260;
+            int pill_h = 44;
+            int pill_x = (720 - pill_w) / 2;
+            int pill_y = 416;
+
+            dml_draw_buffer_fill_rect(table, buf_idx, pill_x, pill_y, pill_w, pill_h, COLOR_HDR_BG);
+            dml_draw_buffer_draw_rect(table, buf_idx, pill_x, pill_y, pill_w, pill_h, COLOR_SURF0);
+            dml_draw_buffer_draw_text(table, buf_idx, pill_x + 14, pill_y + 8, "D3300-ML CINEMA OS", COLOR_MAUVE, 0x00000000u);
+
+            char pct_str[8];
+            snprintf(pct_str, sizeof(pct_str), "%u%%", (unsigned int)menu->hold_progress);
+            dml_draw_buffer_draw_text(table, buf_idx, pill_x + pill_w - 44, pill_y + 8, pct_str, COLOR_TEXT, 0x00000000u);
+
+            /* Progress bar track */
+            int bar_x = pill_x + 14;
+            int bar_y = pill_y + 26;
+            int bar_w = pill_w - 28;
+            int bar_h = 6;
+            dml_draw_buffer_fill_rect(table, buf_idx, bar_x, bar_y, bar_w, bar_h, COLOR_SEL_BG);
+            int fill_w = ((int)menu->hold_progress * bar_w) / 100;
+            if (fill_w > 0) {
+                dml_draw_buffer_fill_rect(table, buf_idx, bar_x, bar_y, fill_w, bar_h, COLOR_EMERALD);
+            }
+        }
+        return 0;
+    }
+
+    /* Animation Progress (0..100) */
+    int anim_p = (menu->anim_progress > 0) ? (int)menu->anim_progress : 100;
+    if (anim_p > 100) anim_p = 100;
+
+    int hdr_offset_y = (100 - anim_p) * 44 / 100;
+    int hdr_y = -hdr_offset_y;
+
     /* 1. Base Canvas Clear */
     dml_draw_buffer_clear(table, buf_idx, COLOR_MANTLE);
 
-    /* 2. Top Header Bar (0..44 px) */
-    dml_draw_buffer_fill_rect(table, buf_idx, 0, 0, 720, 44, COLOR_HDR_BG);
-    dml_draw_buffer_draw_line_h(table, buf_idx, 0, 44, 720, COLOR_SURF0);
+    /* 2. Top Header Bar (0..44 px with slide-down) */
+    dml_draw_buffer_fill_rect(table, buf_idx, 0, hdr_y, 720, 44, COLOR_HDR_BG);
+    dml_draw_buffer_draw_line_h(table, buf_idx, 0, hdr_y + 44, 720, COLOR_SURF0);
 
     /* Brand Logo */
-    dml_draw_buffer_draw_text(table, buf_idx, 20, 18, "D3300-ML", COLOR_MAUVE, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 20, hdr_y + 18, "D3300-ML", COLOR_MAUVE, 0x00000000u);
 
     /* Category Tabs */
     static const char *kTabNames[DML_TAB_COUNT] = {
@@ -96,12 +134,12 @@ int dml_menu_screen_render(
 
     for (int t = 0; t < (int)DML_TAB_COUNT; ++t) {
         int is_act = ((size_t)t == menu->active_tab);
-        draw_tab(table, buf_idx, tab_start_x + t * tab_w, tab_w, kTabNames[t], is_act);
+        draw_tab(table, buf_idx, tab_start_x + t * tab_w, hdr_y, tab_w, kTabNames[t], is_act);
     }
 
     /* Battery Meter */
     uint8_t bat_pct = status ? status->battery_pct : 84u;
-    draw_battery(table, buf_idx, 720 - 75, 14, bat_pct);
+    draw_battery(table, buf_idx, 720 - 75, hdr_y + 14, bat_pct);
 
     /* 3. Settings Items Rows (y: 45..435, up to 6 rows, height 65px each) */
     size_t tab_count = dml_menu_tab_item_count(menu, (DmlMenuTab)menu->active_tab);
@@ -124,6 +162,12 @@ int dml_menu_screen_render(
         int y = start_y + (int)k * row_h;
         int is_sel = (k == menu->selected);
 
+        /* Staggered entrance animation per row */
+        int row_delay = (int)k * 6;
+        int row_p = (anim_p > row_delay) ? ((anim_p - row_delay) * 100 / (100 - row_delay)) : 0;
+        if (row_p > 100) row_p = 100;
+        int slide_x = (100 - row_p) * 30 / 100;
+
         /* Row Background */
         if (is_sel) {
             dml_draw_buffer_fill_rect(table, buf_idx, 0, y, 720, row_h, COLOR_SEL_BG);
@@ -139,10 +183,10 @@ int dml_menu_screen_render(
 
         /* Left text */
         uint32_t title_color = is_sel ? COLOR_WHITE : COLOR_TEXT;
-        dml_draw_buffer_draw_text(table, buf_idx, 24, y + 15, it->label ? it->label : "", title_color, 0x00000000u);
+        dml_draw_buffer_draw_text(table, buf_idx, 24 - slide_x, y + 15, it->label ? it->label : "", title_color, 0x00000000u);
 
         uint32_t sub_color = is_sel ? COLOR_MUTED : COLOR_SUB;
-        dml_draw_buffer_draw_text(table, buf_idx, 24, y + 37, it->desc ? it->desc : "", sub_color, 0x00000000u);
+        dml_draw_buffer_draw_text(table, buf_idx, 24 - slide_x, y + 37, it->desc ? it->desc : "", sub_color, 0x00000000u);
 
         /* Right Controls (Flat 90-degree boxes, strictly right-aligned to right_margin) */
         int box_y = y + 17;
@@ -207,22 +251,25 @@ int dml_menu_screen_render(
         }
     }
 
-    /* 4. Bottom Footer Bar (436..480 px) */
-    dml_draw_buffer_fill_rect(table, buf_idx, 0, 436, 720, 44, 0xFF12121Bu);
-    dml_draw_buffer_draw_line_h(table, buf_idx, 0, 436, 720, COLOR_SURF0);
+    /* 4. Bottom Footer Bar (436..480 px with slide-up) */
+    int ftr_offset_y = (100 - anim_p) * 44 / 100;
+    int ftr_y = 436 + ftr_offset_y;
+
+    dml_draw_buffer_fill_rect(table, buf_idx, 0, ftr_y, 720, 44, 0xFF12121Bu);
+    dml_draw_buffer_draw_line_h(table, buf_idx, 0, ftr_y, 720, COLOR_SURF0);
 
     /* Navigation Hints with Color Coding */
-    dml_draw_buffer_draw_text(table, buf_idx, 24, 453, "[UP/DOWN]", COLOR_MAUVE, 0x00000000u);
-    dml_draw_buffer_draw_text(table, buf_idx, 104, 453, "NAVIGATE", COLOR_MUTED, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 24, ftr_y + 17, "[UP/DOWN]", COLOR_MAUVE, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 104, ftr_y + 17, "NAVIGATE", COLOR_MUTED, 0x00000000u);
 
-    dml_draw_buffer_draw_text(table, buf_idx, 184, 453, "[OK]", COLOR_EMERALD, 0x00000000u);
-    dml_draw_buffer_draw_text(table, buf_idx, 222, 453, "TOGGLE/EDIT", COLOR_MUTED, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 184, ftr_y + 17, "[OK]", COLOR_EMERALD, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 222, ftr_y + 17, "TOGGLE/EDIT", COLOR_MUTED, 0x00000000u);
 
-    dml_draw_buffer_draw_text(table, buf_idx, 330, 453, "[LEFT/RIGHT]", COLOR_ORANGE, 0x00000000u);
-    dml_draw_buffer_draw_text(table, buf_idx, 432, 453, "SWITCH TAB", COLOR_MUTED, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 330, ftr_y + 17, "[LEFT/RIGHT]", COLOR_ORANGE, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 432, ftr_y + 17, "SWITCH TAB", COLOR_MUTED, 0x00000000u);
 
-    dml_draw_buffer_draw_text(table, buf_idx, 580, 453, "[MENU]", COLOR_MAUVE, 0x00000000u);
-    dml_draw_buffer_draw_text(table, buf_idx, 634, 453, "RETURN", COLOR_MUTED, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 580, ftr_y + 17, "[MENU]", COLOR_MAUVE, 0x00000000u);
+    dml_draw_buffer_draw_text(table, buf_idx, 634, ftr_y + 17, "RETURN", COLOR_MUTED, 0x00000000u);
 
     return 0;
 }

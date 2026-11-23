@@ -62,6 +62,10 @@ static void test_payload_lifecycle(void) {
 
     /* Fire RelayEvent dispatch with matching token */
     dml_nikon_relay_dispatch(&relay_table, env.relay_token);
+    assert(env.menu.is_holding_menu == 1);
+
+    /* Advance ticks by 500ms: triggers hold threshold and opens menu */
+    dml_payload_on_tick(&env, 500);
 
     /* Menu should now be opened */
     assert(env.menu.visible == 1);

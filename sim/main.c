@@ -64,8 +64,8 @@ static void dispatch(DmlRuntime *runtime, DmlEventType type, uint32_t millis, in
 static void render_display(const DmlMenu *menu) {
     if (g_display_buf_idx < 0) return;
 
-    if (menu && menu->visible) {
-        /* Flat Cinema Settings Menu */
+    if (menu && (menu->visible || (menu->is_holding_menu && menu->hold_progress > 0))) {
+        /* Flat Cinema Settings Menu or Hold Progress Meter */
         dml_menu_screen_render(&g_display_table, g_display_buf_idx, menu, &g_camera_status);
     } else if (g_info_screen_active) {
         /* Custom D3300-ML Shooting Information Screen */
@@ -221,6 +221,22 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
         }
     }
 
+    if (key == 'H') {
+        puts("[menu] Simulating 500ms MENU hold -> Opening D3300-ML with entrance animation");
+        DmlMenuCommand cmd = 0;
+        dml_menu_on_menu_button(menu, 1, millis, &cmd);
+        for (int p = 100; p <= 500; p += 100) {
+            dml_menu_tick(menu, millis + p);
+            render_display(menu);
+        }
+        while (menu->anim_progress < 100) {
+            dml_menu_tick(menu, millis + 600);
+            render_display(menu);
+        }
+        print_terminal_menu(menu);
+        return;
+    }
+
     DmlNikonButtonRecord record = {0};
     switch (key) {
         case 'm': record.code = DML_NIKON_BTN_CODE_MENU_CANDIDATE; record.value_1 = 1; break;
@@ -248,7 +264,7 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
 static void interactive_run(DmlRuntime *runtime, DmlMenu *menu) {
     uint32_t millis = 0;
     int key;
-    puts("m menu, i info screen, w/s nav, a/d tabs, e select, [/] shutter, -/= aperture, ,/. iso, f flash, b battery, t tick, p screenshot, q quit");
+    puts("m menu, H hold menu, i info, w/s nav, a/d tabs, e select, [/] shutter, -/= aperture, ,/. iso, f flash, b battery, t tick, p screenshot, q quit");
     while ((key = getchar()) != EOF && key != 'q') {
         if (key == 't') {
             millis += 500;
@@ -271,6 +287,7 @@ int main(int argc, char **argv) {
     int interactive = 0;
     const char *screenshot_path = NULL;
     int screenshot_is_info = 0;
+    int screenshot_is_hold = 0;
     int initial_tab = -1;
 
     if (argc == 2 && strcmp(argv[1], "--interactive") == 0) {
@@ -281,12 +298,16 @@ int main(int argc, char **argv) {
     } else if (argc == 3 && strcmp(argv[1], "--screenshot-info") == 0) {
         screenshot_path = argv[2];
         screenshot_is_info = 1;
+    } else if (argc == 3 && strcmp(argv[1], "--screenshot-hold") == 0) {
+        screenshot_path = argv[2];
+        screenshot_is_info = 0;
+        screenshot_is_hold = 1;
     } else if (argc == 4 && strcmp(argv[1], "--screenshot-tab") == 0) {
         initial_tab = atoi(argv[2]);
         screenshot_path = argv[3];
         screenshot_is_info = 0;
     } else if (argc != 1) {
-        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-tab <0..4> <path.bmp>]\n", argv[0]);
+        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>] [--screenshot-hold <path.bmp>] [--screenshot-tab <0..4> <path.bmp>]\n", argv[0]);
         return 2;
     }
 
@@ -525,8 +546,15 @@ int main(int argc, char **argv) {
             /* Render custom info screen */
             g_info_screen_active = 1;
             render_display(&menu);
+        } else if (screenshot_is_hold) {
+            /* Render hold progress meter */
+            menu.visible = 0;
+            menu.is_holding_menu = 1;
+            menu.hold_progress = 65;
+            render_display(&menu);
         } else {
             /* Open menu so OSD is rendered onto framebuffer */
+            menu.anim_progress = 100;
             handle_key(&runtime, &menu, 0, 'm');
         }
 
