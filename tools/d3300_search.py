@@ -17,7 +17,9 @@ from d3300_lab import BASE, load
 from d3300_recon import thumb_branches
 
 
-SCHEMA_VERSION = "1"
+SCHEMA_VERSION = "2"
+RAM_START = 0x10000000
+RAM_END = 0x11000000
 
 
 def a32_branches(data):
@@ -36,14 +38,21 @@ def a32_branches(data):
 
 
 def pointer_refs(data):
-    """Yield aligned words that look like ARM or Thumb pointers into this ROM."""
+    """Yield aligned words resembling pointers into this ROM or known RAM."""
     image_end = BASE + len(data)
     for pos in range(0, len(data) - 3, 4):
         raw = struct.unpack_from("<I", data, pos)[0]
         target = raw & ~1
         if BASE <= target < image_end:
-            kind = "rom_pointer_thumb_candidate" if raw & 1 else "rom_pointer_arm_candidate"
-            yield pos, target, kind, raw
+            space = "rom"
+        elif RAM_START <= target < RAM_END:
+            space = "ram"
+        else:
+            continue
+        kind = "%s_pointer_%s_candidate" % (
+            space, "thumb" if raw & 1 else "arm"
+        )
+        yield pos, target, kind, raw
 
 
 def printable_strings(data, minimum=4):

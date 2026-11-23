@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from d3300_lab import BASE
-from d3300_search import backtrace, create_index, find_strings, get_refs
+from d3300_search import RAM_START, backtrace, create_index, find_strings, get_refs
 
 
 class SearchIndexTest(unittest.TestCase):
@@ -18,6 +18,7 @@ class SearchIndexTest(unittest.TestCase):
         target = BASE + 0xA0
         struct.pack_into("<I", blob, 0x20, target | 1)
         struct.pack_into("<I", blob, 0x24, BASE + 0x20)
+        struct.pack_into("<I", blob, 0x28, RAM_START + 0x1234)
         # T32 BL from BASE+0x80 to BASE+0xA0.
         blob[0x80:0x84] = bytes.fromhex("00f00ef8")
         name = b"CSYSCDeviceManager"
@@ -32,6 +33,14 @@ class SearchIndexTest(unittest.TestCase):
                 self.assertEqual(
                     {item["source"] for item in refs},
                     {"0x90020020", "0x90020080"},
+                )
+                self.assertEqual(
+                    get_refs(connection, RAM_START + 0x1234),
+                    [{
+                        "source": "0x90020028",
+                        "kind": "ram_pointer_arm_candidate",
+                        "raw": "0x10001234",
+                    }],
                 )
                 chain = backtrace(connection, target, depth=2)
                 self.assertIn(
