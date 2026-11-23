@@ -1,0 +1,9 @@
+{
+  "firmware_sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "constructor": "0x9013DD94",
+  "registration_block": "0x900FDD6C..0x900FE08C",
+  "verified_ordinal_range": "0x01..0x29",
+  "object_storage_bases": ["0x103E3B14", "0x103E3C1C", "0x103E3D2C"],
+  "evidence": "Each call loads a distinct ordinal into R1 and constructs a record at a base plus a fixed offset; calls use COPNOQueueButton constructor 0x9013DD94 except a small subset using related COPNO constructors.",
+  "negative_finding": "These ordinals are constructor registration IDs, not proven physical MENU/OK event codes. No label or event payload mapping is assigned."
+}
