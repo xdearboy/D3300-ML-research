@@ -1,0 +1,11 @@
+{
+  "firmware_sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "handler": "0x9013DDCC",
+  "shared_query": {"address": "0x9016E0A4", "behavior": "returns 1 iff global object's field +0x18 equals 5"},
+  "operation": {"address": "0x9016E076", "behavior": "submits operation selector 2 through 0x900E6B68"},
+  "gates": [
+    {"event_codes": ["0x04", "0x05"], "condition": "input record field +4 == 1", "action": "operation selector 2"},
+    {"event_codes": ["0x0C", "0x0D", "0x0E", "0x0F", "0x10", "0x11", "0x12", "0x13", "0x14", "0x15"], "condition": "input record field +4 == 1 and global field +0x18 != 5", "action": "operation selector 2"}
+  ],
+  "negative_finding": "The operation selector and state gates are verified, but their physical button labels remain unresolved."
+}
