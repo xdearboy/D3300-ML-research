@@ -78,3 +78,10 @@ RelayEventEx adapter
 
 - `tools/d3300_derived_refs.py`: tracks short sequences starting from PC-relative RAM literals through MOV/ADD/SUB and reports derived LDR/STR accesses (e.g. `0x1049157C` accessed via `0x10491468 + 0xB4 + 0x60`).
 - `tests/test_derived_refs.py`: unit tests for derived reference tracking.
+- `tools/d3300_ptp_service.py`: scans and verifies Nikon PTP vendor service mode command cluster (0x94FE/0x94FF and sub-ops 0xF001, 0xF036, 0xF037).
+
+## Primary Project Milestone (User Target)
+
+**Custom Clean Information Display Screen**:
+The primary user-facing goal is to replace Nikon's stock shooting information screen (shutter speed, aperture, ISO, exposure compensation, battery, shots remaining) with a modern, high-contrast, beautiful custom D3300-ML information screen rendered onto the 720x480 DrawBuffer (`0x104A0868`) using T-Kernel task quieting (`dml_tk_quiet_tasks`) to suppress the stock UI. Detailed architectural specification in `reports/MILESTONE_CUSTOM_INFO_SCREEN.md`.
+

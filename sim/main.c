@@ -5,11 +5,51 @@
 #include "../core/dml_menu.h"
 #include "../core/dml_nikon_adapter.h"
 #include "../core/dml_draw_buffer.h"
+#include "../core/dml_camera_status.h"
+#include "../core/dml_info_screen.h"
 #include "../modules/intervalometer.h"
 
 typedef struct { unsigned int shots; } SimCamera;
 static DmlDrawBufferTable g_display_table;
 static int g_display_buf_idx = -1;
+static DmlCameraStatus g_camera_status;
+static int g_info_screen_active = 0;
+
+static const struct { uint32_t num; uint32_t den; uint8_t bulb; } k_shutter_table[] = {
+    {0, 0, 1},       /* BULB */
+    {30, 1, 0},      /* 30" */
+    {15, 1, 0},      /* 15" */
+    {8, 1, 0},       /* 8" */
+    {4, 1, 0},       /* 4" */
+    {2, 1, 0},       /* 2" */
+    {1, 1, 0},       /* 1" */
+    {1, 2, 0},       /* 1/2 */
+    {1, 4, 0},       /* 1/4 */
+    {1, 8, 0},       /* 1/8 */
+    {1, 15, 0},      /* 1/15 */
+    {1, 30, 0},      /* 1/30 */
+    {1, 60, 0},      /* 1/60 */
+    {1, 125, 0},     /* 1/125 */
+    {1, 250, 0},     /* 1/250 */
+    {1, 500, 0},     /* 1/500 */
+    {1, 1000, 0},    /* 1/1000 */
+    {1, 2000, 0},    /* 1/2000 */
+    {1, 4000, 0}     /* 1/4000 */
+};
+static const size_t k_shutter_count = sizeof(k_shutter_table) / sizeof(k_shutter_table[0]);
+static size_t g_shutter_idx = 14; /* 1/250 */
+
+static const uint16_t k_aperture_table[] = {
+    140, 180, 200, 280, 400, 560, 800, 1100, 1600, 2200
+};
+static const size_t k_aperture_count = sizeof(k_aperture_table) / sizeof(k_aperture_table[0]);
+static size_t g_aperture_idx = 3; /* f/2.8 */
+
+static const uint32_t k_iso_table[] = {
+    100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600
+};
+static const size_t k_iso_count = sizeof(k_iso_table) / sizeof(k_iso_table[0]);
+static size_t g_iso_idx = 2; /* 400 */
 
 static void print_msg(void *user, const char *s) {
     (void)user;
@@ -20,6 +60,9 @@ static int sim_shutter(void *user) {
     SimCamera *camera = (SimCamera *)user;
     camera->shots++;
     printf("[mock camera] shutter # %u\n", camera->shots);
+    if (g_camera_status.shots_remaining > 0) {
+        g_camera_status.shots_remaining--;
+    }
     return 1;
 }
 
@@ -28,35 +71,40 @@ static void dispatch(DmlRuntime *runtime, DmlEventType type, uint32_t millis, in
     dml_dispatch(runtime, &event);
 }
 
-static void render_menu(const DmlMenu *menu) {
-    if (g_display_buf_idx >= 0) {
-        if (!menu->visible) {
-            /* Black display with subtle LiveView standby text */
-            dml_draw_buffer_clear(&g_display_table, g_display_buf_idx, 0xFF000000u);
-            dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 16, 16, "LiveView / Standby", 0xFF666666u, 0x00000000u);
-        } else {
-            /* 720x480 LCD OSD overlay */
-            dml_draw_buffer_clear(&g_display_table, g_display_buf_idx, 0xFF141414u);
-            /* Header bar */
-            dml_draw_buffer_fill_rect(&g_display_table, g_display_buf_idx, 0, 0, 720, 28, 0xFF222222u);
-            dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 12, 10, "D3300-ML :: OSD MENU", 0xFFE0E0E0u, 0x00000000u);
+static void render_display(const DmlMenu *menu) {
+    if (g_display_buf_idx < 0) return;
 
-            /* Menu items */
-            for (size_t i = 0; i < menu->count; ++i) {
-                int item_y = 48 + (int)i * 24;
-                if (i == menu->selected) {
-                    /* Nikon blue highlight for selected entry */
-                    dml_draw_buffer_fill_rect(&g_display_table, g_display_buf_idx, 8, item_y - 3, 704, 20, 0xFF004D99u);
-                    dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 14, item_y + 3, ">", 0xFFFFFFFFu, 0x00000000u);
-                    dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 28, item_y + 3, menu->items[i].label, 0xFFFFFFFFu, 0x00000000u);
-                } else {
-                    dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 28, item_y + 3, menu->items[i].label, 0xFFA0A0A0u, 0x00000000u);
-                }
+    if (menu && menu->visible) {
+        /* 720x480 LCD OSD overlay */
+        dml_draw_buffer_clear(&g_display_table, g_display_buf_idx, 0xFF141414u);
+        /* Header bar */
+        dml_draw_buffer_fill_rect(&g_display_table, g_display_buf_idx, 0, 0, 720, 28, 0xFF222222u);
+        dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 12, 10, "D3300-ML :: OSD MENU", 0xFFE0E0E0u, 0x00000000u);
+
+        /* Menu items */
+        for (size_t i = 0; i < menu->count; ++i) {
+            int item_y = 48 + (int)i * 24;
+            if (i == menu->selected) {
+                /* Nikon blue highlight for selected entry */
+                dml_draw_buffer_fill_rect(&g_display_table, g_display_buf_idx, 8, item_y - 3, 704, 20, 0xFF004D99u);
+                dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 14, item_y + 3, ">", 0xFFFFFFFFu, 0x00000000u);
+                dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 28, item_y + 3, menu->items[i].label, 0xFFFFFFFFu, 0x00000000u);
+            } else {
+                dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 28, item_y + 3, menu->items[i].label, 0xFFA0A0A0u, 0x00000000u);
             }
         }
-        dml_draw_buffer_swap(&g_display_table, g_display_buf_idx, 1);
+    } else if (g_info_screen_active) {
+        /* Custom D3300-ML Shooting Information Screen */
+        dml_info_screen_render(&g_display_table, g_display_buf_idx, &g_camera_status);
+    } else {
+        /* Black display with subtle LiveView standby text */
+        dml_draw_buffer_clear(&g_display_table, g_display_buf_idx, 0xFF000000u);
+        dml_draw_buffer_draw_text(&g_display_table, g_display_buf_idx, 16, 16, "LiveView / Standby", 0xFF666666u, 0x00000000u);
     }
+    dml_draw_buffer_swap(&g_display_table, g_display_buf_idx, 1);
+}
 
+static void print_terminal_menu(const DmlMenu *menu) {
     if (!menu->visible) {
         puts("Menu closed");
         return;
@@ -74,6 +122,73 @@ static void describe_modules(void *ctx, uint32_t millis, const DmlCameraAPI *api
 }
 
 static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int key) {
+    if (key == 'i') {
+        g_info_screen_active = !g_info_screen_active;
+        printf("[display] Custom info screen %s\n", g_info_screen_active ? "OPENED" : "CLOSED");
+        render_display(menu);
+        return;
+    }
+
+    /* Exposure adjustments */
+    if (key == '[') {
+        if (g_shutter_idx > 0) g_shutter_idx--;
+        g_camera_status.shutter_numerator = k_shutter_table[g_shutter_idx].num;
+        g_camera_status.shutter_denominator = k_shutter_table[g_shutter_idx].den;
+        g_camera_status.is_bulb = k_shutter_table[g_shutter_idx].bulb;
+        char s[32];
+        dml_camera_status_format_shutter(&g_camera_status, s, sizeof(s));
+        printf("[status] Shutter: %s\n", s);
+        render_display(menu);
+        return;
+    }
+    if (key == ']') {
+        if (g_shutter_idx + 1 < k_shutter_count) g_shutter_idx++;
+        g_camera_status.shutter_numerator = k_shutter_table[g_shutter_idx].num;
+        g_camera_status.shutter_denominator = k_shutter_table[g_shutter_idx].den;
+        g_camera_status.is_bulb = k_shutter_table[g_shutter_idx].bulb;
+        char s[32];
+        dml_camera_status_format_shutter(&g_camera_status, s, sizeof(s));
+        printf("[status] Shutter: %s\n", s);
+        render_display(menu);
+        return;
+    }
+    if (key == '-') {
+        if (g_aperture_idx > 0) g_aperture_idx--;
+        g_camera_status.aperture_centi = k_aperture_table[g_aperture_idx];
+        char a[32];
+        dml_camera_status_format_aperture(&g_camera_status, a, sizeof(a));
+        printf("[status] Aperture: %s\n", a);
+        render_display(menu);
+        return;
+    }
+    if (key == '=') {
+        if (g_aperture_idx + 1 < k_aperture_count) g_aperture_idx++;
+        g_camera_status.aperture_centi = k_aperture_table[g_aperture_idx];
+        char a[32];
+        dml_camera_status_format_aperture(&g_camera_status, a, sizeof(a));
+        printf("[status] Aperture: %s\n", a);
+        render_display(menu);
+        return;
+    }
+    if (key == ',') {
+        if (g_iso_idx > 0) g_iso_idx--;
+        g_camera_status.iso = k_iso_table[g_iso_idx];
+        char iso[32];
+        dml_camera_status_format_iso(&g_camera_status, iso, sizeof(iso));
+        printf("[status] ISO: %s\n", iso);
+        render_display(menu);
+        return;
+    }
+    if (key == '.') {
+        if (g_iso_idx + 1 < k_iso_count) g_iso_idx++;
+        g_camera_status.iso = k_iso_table[g_iso_idx];
+        char iso[32];
+        dml_camera_status_format_iso(&g_camera_status, iso, sizeof(iso));
+        printf("[status] ISO: %s\n", iso);
+        render_display(menu);
+        return;
+    }
+
     DmlNikonButtonRecord record = {0};
     switch (key) {
         case 'm': record.code = DML_NIKON_BTN_CODE_MENU_CANDIDATE; record.value_1 = 1; break;
@@ -87,7 +202,8 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
     DmlEvent event = {0};
     if (dml_nikon_translate_record(&record, &command, &event, millis)) {
         if (dml_menu_handle(menu, command, millis, runtime->api)) {
-            render_menu(menu);
+            render_display(menu);
+            print_terminal_menu(menu);
             return;
         }
     }
@@ -97,7 +213,7 @@ static void handle_key(DmlRuntime *runtime, DmlMenu *menu, uint32_t millis, int 
 static void interactive_run(DmlRuntime *runtime, DmlMenu *menu) {
     uint32_t millis = 0;
     int key;
-    puts("m menu, w/s select, e activate, t advance 500 ms, p screenshot, q quit");
+    puts("m menu, i info screen, [/] shutter, -/= aperture, ,/. iso, t advance 500 ms, p screenshot, q quit");
     while ((key = getchar()) != EOF && key != 'q') {
         if (key == 't') {
             millis += 500;
@@ -119,20 +235,29 @@ static void interactive_run(DmlRuntime *runtime, DmlMenu *menu) {
 int main(int argc, char **argv) {
     int interactive = 0;
     const char *screenshot_path = NULL;
+    int screenshot_is_info = 0;
 
     if (argc == 2 && strcmp(argv[1], "--interactive") == 0) {
         interactive = 1;
     } else if (argc == 3 && strcmp(argv[1], "--screenshot") == 0) {
         screenshot_path = argv[2];
+        screenshot_is_info = 0;
+    } else if (argc == 3 && strcmp(argv[1], "--screenshot-info") == 0) {
+        screenshot_path = argv[2];
+        screenshot_is_info = 1;
     } else if (argc != 1) {
-        fprintf(stderr, "usage: %s [--interactive] [--screenshot <output.bmp|.ppm>]\n", argv[0]);
+        fprintf(stderr, "usage: %s [--interactive] [--screenshot <path.bmp>] [--screenshot-info <path.bmp>]\n", argv[0]);
         return 2;
     }
+
     SimCamera camera = {0};
     DmlCameraAPI api = {&camera, print_msg, sim_shutter};
     DmlRuntime runtime;
     DmlIntervalometer state;
     DmlMenu menu = {0};
+
+    dml_camera_status_init_default(&g_camera_status);
+
     dml_draw_buffer_init(&g_display_table);
     g_display_buf_idx = dml_draw_buffer_create(&g_display_table, 720, 480);
     if (g_display_buf_idx >= 0) {
@@ -147,11 +272,19 @@ int main(int argc, char **argv) {
         return 1;
     }
     puts("D3300 ML host simulator (NOT running on a Nikon camera)");
+
     if (interactive) {
         interactive_run(&runtime, &menu);
     } else if (screenshot_path) {
-        /* Open menu so OSD is rendered onto framebuffer */
-        handle_key(&runtime, &menu, 0, 'm');
+        if (screenshot_is_info) {
+            /* Render custom info screen */
+            g_info_screen_active = 1;
+            render_display(&menu);
+        } else {
+            /* Open menu so OSD is rendered onto framebuffer */
+            handle_key(&runtime, &menu, 0, 'm');
+        }
+
         const char *ext = strrchr(screenshot_path, '.');
         int res;
         if (ext && strcmp(ext, ".ppm") == 0) {
@@ -160,7 +293,7 @@ int main(int argc, char **argv) {
             res = dml_draw_buffer_save_bmp(&g_display_table, g_display_buf_idx, screenshot_path);
         }
         if (res == 0) {
-            printf("[screenshot] Exported OSD menu to %s\n", screenshot_path);
+            printf("[screenshot] Exported %s to %s\n", screenshot_is_info ? "info screen" : "OSD menu", screenshot_path);
         } else {
             fprintf(stderr, "[screenshot] Failed to export to %s\n", screenshot_path);
             dml_draw_buffer_cleanup(&g_display_table);
@@ -179,4 +312,3 @@ int main(int argc, char **argv) {
     dml_draw_buffer_cleanup(&g_display_table);
     return interactive || screenshot_path || camera.shots == 5 ? 0 : 2;
 }
-

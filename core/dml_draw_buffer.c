@@ -239,8 +239,30 @@ void dml_draw_buffer_fill_rect(DmlDrawBufferTable *table, int index, int x, int 
     }
 }
 
+void dml_draw_buffer_draw_rect(DmlDrawBufferTable *table, int index, int x, int y, int w, int h, uint32_t border_argb) {
+    if (w <= 0 || h <= 0) return;
+    dml_draw_buffer_fill_rect(table, index, x, y, w, 1, border_argb);
+    dml_draw_buffer_fill_rect(table, index, x, y + h - 1, w, 1, border_argb);
+    dml_draw_buffer_fill_rect(table, index, x, y, 1, h, border_argb);
+    dml_draw_buffer_fill_rect(table, index, x + w - 1, y, 1, h, border_argb);
+}
+
+void dml_draw_buffer_draw_line_h(DmlDrawBufferTable *table, int index, int x, int y, int length, uint32_t argb_color) {
+    if (length <= 0) return;
+    dml_draw_buffer_fill_rect(table, index, x, y, length, 1, argb_color);
+}
+
+void dml_draw_buffer_draw_line_v(DmlDrawBufferTable *table, int index, int x, int y, int length, uint32_t argb_color) {
+    if (length <= 0) return;
+    dml_draw_buffer_fill_rect(table, index, x, y, 1, length, argb_color);
+}
+
 void dml_draw_buffer_draw_char(DmlDrawBufferTable *table, int index, int x, int y, char c, uint32_t fg_argb, uint32_t bg_argb) {
-    if (!table || index < 0 || (uint32_t)index >= DML_DRAW_BUFFER_MAX) return;
+    dml_draw_buffer_draw_char_scaled(table, index, x, y, c, fg_argb, bg_argb, 1);
+}
+
+void dml_draw_buffer_draw_char_scaled(DmlDrawBufferTable *table, int index, int x, int y, char c, uint32_t fg_argb, uint32_t bg_argb, uint8_t scale) {
+    if (!table || index < 0 || (uint32_t)index >= DML_DRAW_BUFFER_MAX || scale == 0) return;
     if (!table->entries[index].active || !table->entries[index].pixels) return;
 
     if (c < 32 || (unsigned char)c > 126) c = '?';
@@ -250,35 +272,57 @@ void dml_draw_buffer_draw_char(DmlDrawBufferTable *table, int index, int x, int 
     uint32_t words_per_stride = entry->stride / 4u;
 
     for (int row = 0; row < 8; row++) {
-        int py = y + row;
-        if (py < 0 || py >= (int)entry->height) continue;
-
         uint8_t bits = glyph[row];
-        uint32_t *row_pixels = entry->pixels + py * words_per_stride;
-
         for (int col = 0; col < 8; col++) {
-            int px = x + col;
-            if (px < 0 || px >= (int)entry->width) continue;
+            int is_fg = (bits & (0x80u >> col)) != 0;
+            if (!is_fg && (bg_argb & 0xFF000000u) == 0) {
+                continue;
+            }
+            uint32_t color = is_fg ? fg_argb : bg_argb;
 
-            if (bits & (0x80u >> col)) {
-                row_pixels[px] = fg_argb;
-            } else if ((bg_argb & 0xFF000000u) != 0) {
-                row_pixels[px] = bg_argb;
+            if (scale == 1) {
+                int px = x + col;
+                int py = y + row;
+                if (px >= 0 && px < (int)entry->width && py >= 0 && py < (int)entry->height) {
+                    entry->pixels[py * words_per_stride + px] = color;
+                }
+            } else {
+                int px_base = x + col * (int)scale;
+                int py_base = y + row * (int)scale;
+                for (int dy = 0; dy < (int)scale; dy++) {
+                    int py = py_base + dy;
+                    if (py < 0 || py >= (int)entry->height) continue;
+                    uint32_t *row_pixels = entry->pixels + py * words_per_stride;
+                    for (int dx = 0; dx < (int)scale; dx++) {
+                        int px = px_base + dx;
+                        if (px >= 0 && px < (int)entry->width) {
+                            row_pixels[px] = color;
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 void dml_draw_buffer_draw_text(DmlDrawBufferTable *table, int index, int x, int y, const char *text, uint32_t fg_argb, uint32_t bg_argb) {
-    if (!table || !text) return;
+    dml_draw_buffer_draw_text_scaled(table, index, x, y, text, fg_argb, bg_argb, 1);
+}
+
+void dml_draw_buffer_draw_text_scaled(DmlDrawBufferTable *table, int index, int x, int y, const char *text, uint32_t fg_argb, uint32_t bg_argb, uint8_t scale) {
+    if (!table || !text || scale == 0) return;
     int cur_x = x;
+    int cur_y = y;
+    int char_w = 8 * (int)scale;
+    int char_h = 8 * (int)scale;
+
     while (*text) {
         if (*text == '\n') {
             cur_x = x;
-            y += 8;
+            cur_y += char_h;
         } else {
-            dml_draw_buffer_draw_char(table, index, cur_x, y, *text, fg_argb, bg_argb);
-            cur_x += 8;
+            dml_draw_buffer_draw_char_scaled(table, index, cur_x, cur_y, *text, fg_argb, bg_argb, scale);
+            cur_x += char_w;
         }
         text++;
     }
