@@ -92,6 +92,17 @@
       "confidence": "high"
     },
     {
+      "name": "direct COPNOHandler consumer audit",
+      "path": [
+        "73 direct Thumb BL references to getter 0x90165CB2 were classified by the subsequent vtable load",
+        "only 0x90323E24 selects sending slots +0x2C or +0x30 among those direct consumers",
+        "all direct calls to veneer 0x90241454 use dynamic selectors 0x33/0x35 or explicit IDs 0x2D, 0x2E, 0x31, 0x32 and 0x4E",
+        "0x90257F1C maps interface IDs 0x0B/0x0C to state selectors 0x16/0x17 and calls read slot +0x10",
+        "0x900FD4E2 and 0x9013B9AA preserve a COPNOHandler alias at RAM 0x1049157C, so indirect alias consumers remain open"
+      ],
+      "confidence": "high for direct ROM consumers; incomplete for RAM aliases"
+    },
+    {
       "name": "application button controller",
       "path": [
         "RTTI CSYSCAppButtonController at 0x91510DE3",
@@ -138,6 +149,7 @@
   "unresolved": [
     "physical MENU and OK event-code mapping",
     "producer of manager input records with IDs 0x0B and 0x0C",
+    "complete interprocedural consumer set for COPNOHandler aliases stored in RAM",
     "physical labels for device-manager state selectors 0x33 and 0x35",
     "callback registration public entry point and calling convention",
     "LCD/OSD drawing path",
