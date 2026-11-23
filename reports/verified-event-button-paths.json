@@ -68,6 +68,17 @@
       "confidence": "high"
     },
     {
+      "name": "operation observer ingress",
+      "path": [
+        "0x900FDBA4 passes the eight-entry array at 0x9144C24C to the manager constructor",
+        "0x90151188 iterates the operation array and passes manager+0x10 to 0x901AA586",
+        "0x901AA586 stores that observer in global 0x101410D4",
+        "0x901AA5C0 invokes observer slot zero with a 12-byte event record",
+        "vtable 0x91524B78 slot zero uses thunk 0x90151EB6 to enter manager method 0x90151CD4"
+      ],
+      "confidence": "high"
+    },
+    {
       "name": "application button controller",
       "path": [
         "RTTI CSYSCAppButtonController at 0x91510DE3",
@@ -107,6 +118,7 @@
   ],
   "unresolved": [
     "physical MENU and OK event-code mapping",
+    "producer of manager task messages 0x20062C10..0x20062C1A",
     "callback registration public entry point and calling convention",
     "LCD/OSD drawing path",
     "free executable storage and relocation constraints",
