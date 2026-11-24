@@ -79,6 +79,11 @@
       "function_address": "0x9035128C",
       "instruction": "ldm r2, {r2, r3, r4, r5}; stm r1!, {r2, r3, r4, r5}",
       "record_size_bytes": 16,
+      "ready_flag_offset": "0x10",
+      "record_offset": "0x30",
+      "copy_condition": "ready_flag != 0 && destination != NULL",
+      "return_value": "ready_flag",
+      "mutation": "none (read-only mailbox access)",
       "callers": [
         "0x903292C6",
         "0x9032936A",
