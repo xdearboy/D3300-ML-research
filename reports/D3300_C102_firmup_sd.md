@@ -95,6 +95,6 @@ At `0x9026F1C2` (called from `CCIPBController` vtable entry at `0x9151AAA0`):
 
 ## 4. Architectural Takeaways for D3300-ML
 
-1. **No Firmware Flashing Required**: The presence of relocatable module hooks and RAM execution (`0x10000000..0x104A0000`) confirms that custom code should be loaded as an in-memory module rather than flashing the camera's SPI flash chip.
+1. **No firmware-flashing conclusion is authorized by this report**: RAM addresses in the analyzed image (`0x10000000..0x104A0000`) and file-service paths do not prove relocatable module hooks, an executable loader, or a safe camera execution path. Any in-memory-module design remains a hypothesis requiring independent ARM/Thumb, relocation, cache, privilege, and lifecycle evidence.
 2. **Standard File Access**: The camera's file system service natively mounts the SD card as `/sd0/` and provides standard open/read/close facilities through `CJAFFSignalEvntPort` and `CGPSCProcedure`.
-3. **OSD Safety**: Framebuffer descriptor table `0x104A0868` operates safely in RAM without persistent modification, allowing instant rollback on reboot.
+3. **OSD boundary**: Framebuffer descriptor table `0x104A0868` is observed as a RAM data structure in the static image. Safe mutation, display ownership, and rollback behavior are not proven by this report.
