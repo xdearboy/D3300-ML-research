@@ -110,6 +110,19 @@ class InputChainTest(unittest.TestCase):
         }
         self.assertEqual(callers, {0x9011DD70, 0x9011E018})
 
+    def test_gpio_type_two_message_bypasses_button_tbb(self):
+        data = firmware()
+        callback = 0x9011DD5C - BASE
+        # The gate is normalized to 0/1 before the tail branch; replacing the
+        # low byte then yields first word 2 for either case.
+        self.assertEqual(data[callback:callback + 22],
+                         bytes.fromhex("10b54bf202eb012800d00020ff494860bde8104000f0"))
+        self.assertEqual({(value & ~0xFF) | 2 for value in (0, 1)}, {2})
+        queue = 0x9013DDCC - BASE
+        # ldrh; subs #4; cmp #0x12; bhs straight-copy (0x9013DE14).
+        self.assertEqual(data[queue + 6:queue + 0x18],
+                         bytes.fromhex("09880746144e4ff070446868091f122917d2"))
+
     def test_non_gpio_sender_caller_register_provenance(self):
         data = firmware()
         caller = 0x9011DFE2 - BASE

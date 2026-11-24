@@ -11,8 +11,8 @@ GPIO debouncer 0x9011DDA8
   -> ARM state gate 0x90369364 (reads global byte +3)
   -> continuation 0x9011E756 (message source of 0x10 bytes; byte 0 set to type 2)
   -> snd_mbf veneer 0x9002EC0E / queue state 0x1011FFB4
-  -> COPNOQueueButton 0x9013DDCC
-  -> 16-byte queue payload
+  -> COPNOQueueButton 0x9013DDCC (type 2 follows straight-copy path, not TBB)
+  -> 16-byte queue payload / application controller
   -> CSYSCAppButtonController 0x903276B4
   -> mailbox setter 0x903512A0
 ```
@@ -42,6 +42,16 @@ The tail branch from `0x9011DD70` and direct `BL` from `0x9011E018` both reach
 this same sender.  The later queue/controller path demonstrably copies 16
 bytes, but it does not establish a normalized field layout or a button ID for
 this source payload.
+
+On the GPIO callback path, `0x9011DD5C` receives the gate result in `r0`,
+reduces it to 0 or 1, records it at `[0x1011FFB4 + 4]`, then tail-branches to
+the sender.  The sender replaces the low byte of that `r0` value with `0x02`;
+the outgoing first word is therefore `0x00000002` for either gate result.
+`COPNOQueueButton` subtracts 4 from the incoming halfword and dispatches only
+the range `4..0x16` through its TBB table.  Halfword 2 takes the same
+straight-copy path at `0x9013DE14` as the secondary static route.  Thus the
+GPIO evidence proves delivery of a type-2 message, but it does **not** prove a
+GPIO-to-logical-button-ID translation at this dispatcher.
 
 The `0x9011E018` caller has a separately verified mechanical shape.  Its
 enclosing routine begins at `0x9011DFE2`; after `r4` is supplied as a non-null
