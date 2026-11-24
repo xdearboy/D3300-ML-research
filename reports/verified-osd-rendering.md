@@ -36,9 +36,9 @@ Routine `0x903111BC` appends a 2D rectangular vector primitive to an active disp
 - **Offset `+0x04` (2 bytes, `u16`)**: Rectangle Width in pixels.
 - **Offset `+0x06` (2 bytes, `u16`)**: Rectangle Height in pixels.
 - **Offset `+0x08` (1 byte, `u8`)**: Color / Palette / Fill attribute index.
-- **Offset `+0x09` (1 byte, `u8`)**: **Reserved / Unwritten byte**.
+- **Offset `+0x09` (1 byte, `u8`)**: not written by `0x903111BC`; consumer semantics UNPROVEN.
   > [!IMPORTANT]
-  > Byte `+0x09` is NOT written by `0x903111BC` (only `strb r4, [r1, #8]` is executed). Byte `+0x09` cannot be proven to be generic alignment padding; its semantics remain **reserved/unwritten; semantics UNPROVEN**.
+  > Byte `+0x09` is NOT written by `0x903111BC` (only `strb r4, [r1, #8]` is executed). Byte `+0x09` cannot be proven to be generic alignment padding or reserved space; its semantics remain **not written by 0x903111BC; consumer semantics UNPROVEN**.
 
 ---
 

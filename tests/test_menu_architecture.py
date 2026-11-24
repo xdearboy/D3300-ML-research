@@ -151,19 +151,19 @@ class MenuArchitectureTest(unittest.TestCase):
         table = self.read_bytes(0x90254E1C, 29)
         base = 0x90254E1C
 
-        # Code 1 -> 0x90254E7E -> slot +0x12C (Confirm / OK)
+        # Code 1 (Logical ID 0x01) -> 0x90254E7E -> slot +0x12C [inferred: Confirm / Action]
         target_code1 = base + table[1] * 2
         self.assertEqual(target_code1, 0x90254E7E)
         slot12c_ldr = self.read_halfwords(target_code1 + 2, 2)
         self.assertEqual((slot12c_ldr[0], slot12c_ldr[1]), (0xF8D0, 0x212C), "ldr.w r2, [r0, #0x12c]")
 
-        # Code 5 -> 0x90254E86 -> slot +0x130 (Nav Right / Enter)
+        # Code 5 (Logical ID 0x05) -> 0x90254E86 -> slot +0x130 [inferred: Nav Right]
         target_code5 = base + table[5] * 2
         self.assertEqual(target_code5, 0x90254E86)
         slot130_ldr = self.read_halfwords(target_code5 + 2, 2)
         self.assertEqual((slot130_ldr[0], slot130_ldr[1]), (0xF8D0, 0x2130), "ldr.w r2, [r0, #0x130]")
 
-        # Code 27 (0x1B) -> 0x90254F1E -> slot +0x17C (Menu Toggle / Back)
+        # Code 27 (Logical ID 0x1B) -> 0x90254F1E -> slot +0x17C [inferred: Menu Toggle / Back]
         target_code27 = base + table[27] * 2
         self.assertEqual(target_code27, 0x90254F1E)
         slot17c_ldr = self.read_halfwords(target_code27 + 2, 2)

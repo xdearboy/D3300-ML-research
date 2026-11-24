@@ -15,9 +15,9 @@ Table `0x914ED324` contains **79 entries** describing the layout of the camera i
 
 ---
 
-## 2. Verified Producer: Bulk Memcpy (`0x9019DE46`)
+## 2. One Confirmed Producer: Bulk Memcpy (`0x9019DE46`)
 
-The sole verified static producer that writes to the entire `0x104B9044..0x104B9180` RAM range is the bulk `memcpy` at `0x9019DE46`:
+One confirmed static producer that writes to the `0x104B9044..0x104B9180` RAM range is the bulk `memcpy` at `0x9019DE46`:
 
 ```arm
 0x9019de44: add   r1, sp, #4           ; r1 = stack source buffer (&stack[4])
@@ -26,7 +26,7 @@ The sole verified static producer that writes to the entire `0x104B9044..0x104B9
 0x9019de4c: blx   0x90274b08           ; memcpy(0x104B9044, &stack[4], 316)
 ```
 
-No individual per-property writer functions exist in ROM for this buffer; all 79 properties are assembled onto the stack frame of `CKRRCInfoDispData::Update` (`0x9019CD66`) and committed in a single 316-byte atomic copy.
+All 79 properties are assembled onto the stack frame of `CKRRCInfoDispData::Update` (`0x9019CD66`) and committed in a 316-byte atomic copy at `0x9019DE46`. Whether additional writers or formatters exist in unanalyzed code remains UNPROVEN.
 
 ---
 
@@ -66,7 +66,7 @@ In `CINFOManager::OnInfoDispUpdated` (`0x90166252`):
 
 ### Strict Consumer Rule
 For all 79 properties:
-- **Producer**: Confirmed ONLY as bulk `memcpy` at `0x9019DE46`.
+- **Producer**: One confirmed producer at `0x9019DE46` (bulk memcpy); other writers UNPROVEN.
 - **Consumer Dispatcher**: Confirmed as `0x90169A28` via `CINFOManager` slot `+0x0C`.
 - **Direct Reader**: Marked `unknown` for any property lacking a dedicated direct call-chain.
 - **Semantic Name**: Kept as `None / UNPROVEN` to avoid guessing or unverified claims.

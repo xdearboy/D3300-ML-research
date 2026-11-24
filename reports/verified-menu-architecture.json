@@ -8,12 +8,30 @@
       "vtable": "0x9151B62C",
       "base_class": "15CJAPFController (0x91501C90)",
       "slots": {
-        "0x3C": {"target": "0x9002A5F0", "name": "TeardownActiveView"},
-        "0x44": {"target": "0x9002A62C", "name": "ActivateView"},
-        "0x48": {"target": "0x9002A6B6", "name": "TransitionScreen"},
-        "0x54": {"target": "0x9002A616", "name": "RefreshView"},
-        "0x60": {"target": "0x90032AF2", "name": "InvokeButtonDispatch"},
-        "0x64": {"target": "0x90032CA4", "name": "ProcessEventQueue"}
+        "0x3C": {
+          "target": "0x9002A5F0",
+          "name": "TeardownActiveView"
+        },
+        "0x44": {
+          "target": "0x9002A62C",
+          "name": "ActivateView"
+        },
+        "0x48": {
+          "target": "0x9002A6B6",
+          "name": "TransitionScreen"
+        },
+        "0x54": {
+          "target": "0x9002A616",
+          "name": "RefreshView"
+        },
+        "0x60": {
+          "target": "0x90032AF2",
+          "name": "InvokeButtonDispatch"
+        },
+        "0x64": {
+          "target": "0x90032CA4",
+          "name": "ProcessEventQueue"
+        }
       },
       "active_screen_getter": "0x90031D2A",
       "active_screen_list_evaluator": "0x9003FF50",
@@ -43,21 +61,74 @@
         "27IGUICSettingValueAccessorIF (0x91507758)"
       ],
       "slots": {
-        "0x10": {"target": "0x9025A85E", "name": "OnEvent", "tbb": "0x9025A86E"},
-        "0x40": {"target": "0x9025AD54", "name": "OnButtonEvent"},
-        "0x44": {"target": "0x90254DD4", "name": "DispatchButtonAction", "tbb": "0x90254E18"},
-        "0x54": {"target": "0x9025A770", "name": "PreActionHook"},
-        "0xC4": {"target": "0x9025A85A", "name": "PreEventHook"},
-        "0x128": {"target": "0x90076E70", "name": "OnAction02"},
-        "0x12C": {"target": "0x90076FF4", "name": "OnActionConfirm"},
-        "0x130": {"target": "0x90077512", "name": "OnActionNavRight"},
-        "0x134": {"target": "0x90077540", "name": "OnActionNavLeft"},
-        "0x138": {"target": "0x90077548", "name": "OnActionNavUp"},
-        "0x13C": {"target": "0x90077550", "name": "OnActionNavDown"},
-        "0x140": {"target": "0x900776EC", "name": "OnAction09"},
-        "0x144": {"target": "0x900776EE", "name": "OnAction10"},
-        "0x17C": {"target": "0x90077CBD", "name": "OnActionMenuToggle"},
-        "0x180": {"target": "0x90255AE6", "name": "OnAction28"}
+        "0x10": {
+          "target": "0x9025A85E",
+          "name": "OnEvent",
+          "tbb": "0x9025A86E"
+        },
+        "0x40": {
+          "target": "0x9025AD54",
+          "name": "OnButtonEvent"
+        },
+        "0x44": {
+          "target": "0x90254DD4",
+          "name": "DispatchButtonAction",
+          "tbb": "0x90254E18"
+        },
+        "0x54": {
+          "target": "0x9025A770",
+          "name": "PreActionHook"
+        },
+        "0xC4": {
+          "target": "0x9025A85A",
+          "name": "PreEventHook"
+        },
+        "0x128": {
+          "target": "0x90076E70",
+          "name": "OnAction02"
+        },
+        "0x12C": {
+          "target": "0x90076FF4",
+          "name": "Slot_12C",
+          "inferred_role": "Confirm / Item Action (INFERENCE)"
+        },
+        "0x130": {
+          "target": "0x90077512",
+          "name": "Slot_130",
+          "inferred_role": "Nav Right (INFERENCE)"
+        },
+        "0x134": {
+          "target": "0x90077540",
+          "name": "Slot_134",
+          "inferred_role": "Nav Left (INFERENCE)"
+        },
+        "0x138": {
+          "target": "0x90077548",
+          "name": "Slot_138",
+          "inferred_role": "Nav Up (INFERENCE)"
+        },
+        "0x13C": {
+          "target": "0x90077550",
+          "name": "Slot_13C",
+          "inferred_role": "Nav Down (INFERENCE)"
+        },
+        "0x140": {
+          "target": "0x900776EC",
+          "name": "OnAction09"
+        },
+        "0x144": {
+          "target": "0x900776EE",
+          "name": "OnAction10"
+        },
+        "0x17C": {
+          "target": "0x90077CBD",
+          "name": "Slot_17C",
+          "inferred_role": "Menu Toggle / Back (INFERENCE)"
+        },
+        "0x180": {
+          "target": "0x90255AE6",
+          "name": "OnAction28"
+        }
       }
     }
   },
@@ -67,9 +138,18 @@
       "table_base": "0x90252DAA",
       "entry_count": 59,
       "key_mappings": {
-        "0x0B": {"logical_id": 27, "name": "Menu Toggle / Back"},
-        "0x0C": {"logical_id": 1, "name": "Confirm / Execute"},
-        "0x10": {"logical_id": 5, "name": "Navigation Right / Enter"}
+        "0x0B": {
+          "logical_id": 27,
+          "inferred_role": "Menu Toggle / Back (INFERENCE)"
+        },
+        "0x0C": {
+          "logical_id": 1,
+          "inferred_role": "Confirm / Item Action (INFERENCE)"
+        },
+        "0x10": {
+          "logical_id": 5,
+          "inferred_role": "Nav Right (INFERENCE)"
+        }
       }
     },
     "screen_event_filter": {
@@ -86,12 +166,36 @@
       "table_base": "0x90254E1C",
       "entry_count": 29,
       "slot_routing": {
-        "1": {"slot_offset": "0x12C", "target": "0x90076FF4", "semantic": "Confirm / Action"},
-        "5": {"slot_offset": "0x130", "target": "0x90077512", "semantic": "Nav Right / Enter"},
-        "6": {"slot_offset": "0x134", "target": "0x90077540", "semantic": "Nav Left / Back"},
-        "7": {"slot_offset": "0x138", "target": "0x90077548", "semantic": "Nav Up"},
-        "8": {"slot_offset": "0x13C", "target": "0x90077550", "semantic": "Nav Down"},
-        "27": {"slot_offset": "0x17C", "target": "0x90077CBD", "semantic": "Menu Toggle / Back"}
+        "1": {
+          "slot_offset": "0x12C",
+          "target": "0x90076FF4",
+          "inferred_semantic": "Confirm / Action (INFERENCE)"
+        },
+        "5": {
+          "slot_offset": "0x130",
+          "target": "0x90077512",
+          "inferred_semantic": "Nav Right (INFERENCE)"
+        },
+        "6": {
+          "slot_offset": "0x134",
+          "target": "0x90077540",
+          "inferred_semantic": "Nav Left (INFERENCE)"
+        },
+        "7": {
+          "slot_offset": "0x138",
+          "target": "0x90077548",
+          "inferred_semantic": "Nav Up (INFERENCE)"
+        },
+        "8": {
+          "slot_offset": "0x13C",
+          "target": "0x90077550",
+          "inferred_semantic": "Nav Down (INFERENCE)"
+        },
+        "27": {
+          "slot_offset": "0x17C",
+          "target": "0x90077CBD",
+          "inferred_semantic": "Menu Toggle / Back (INFERENCE)"
+        }
       }
     }
   },

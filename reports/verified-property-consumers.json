@@ -956,5 +956,6 @@
       "semantic_name": null,
       "semantic_confidence": "UNPROVEN"
     }
-  ]
+  ],
+  "producer_status": "one confirmed producer (bulk memcpy 0x13C bytes at 0x9019DE46); other writers UNPROVEN"
 }

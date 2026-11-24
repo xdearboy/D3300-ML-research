@@ -58,9 +58,9 @@ The verified execution path from queue retrieval to virtual method execution:
 3. Logical Event Translation: 0x90252D9E
    │ TBB at 0x90252DA6 (base 0x90252DAA, 59 entries)
    │ Maps raw input codes:
-   │   0x0C -> 0x01 (Confirm / Item Execute)
-   │   0x0B -> 0x1B (Menu Toggle / Back)
-   │   0x10 -> 0x05 (Navigation Right / Enter)
+   │   0x0C -> 0x01 [inferred role: Confirm / Item Action]
+   │   0x0B -> 0x1B [inferred role: Menu Toggle / Back]
+   │   0x10 -> 0x05 [inferred role: Navigation Right]
    │
    ▼
 4. Param Object Construction: 0x9012B82A
@@ -100,15 +100,15 @@ The verified execution path from queue retrieval to virtual method execution:
 10. Action Method Router: CMENUTopMenuView slot +0x44 (0x90254DD4)
     │ TBB at 0x90254E18 (base 0x90254E1C, 29 entries)
     │ Dispatches to dedicated virtual methods:
-    │   Code  1 (0x01): Slot +0x12C = 0x90076FF4 (ExecuteAction / Confirm)
+    │   Code  1 (0x01): Slot +0x12C = 0x90076FF4 [inferred role: Confirm / Item Action]
     │   Code  2 (0x02): Slot +0x128 = 0x90076E70 (Action 2)
-    │   Code  5 (0x05): Slot +0x130 = 0x90077512 (Nav Right / Enter)
-    │   Code  6 (0x06): Slot +0x134 = 0x90077540 (Nav Left / Back)
-    │   Code  7 (0x07): Slot +0x138 = 0x90077548 (Nav Up)
-    │   Code  8 (0x08): Slot +0x13C = 0x90077550 (Nav Down)
+    │   Code  5 (0x05): Slot +0x130 = 0x90077512 [inferred role: Nav Right]
+    │   Code  6 (0x06): Slot +0x134 = 0x90077540 [inferred role: Nav Left]
+    │   Code  7 (0x07): Slot +0x138 = 0x90077548 [inferred role: Nav Up]
+    │   Code  8 (0x08): Slot +0x13C = 0x90077550 [inferred role: Nav Down]
     │   Code  9 (0x09): Slot +0x140 = 0x900776EC (Action 9)
     │   Code 10 (0x0A): Slot +0x144 = 0x900776EE (Action 10)
-    │   Code 27 (0x1B): Slot +0x17C = 0x90077CBD (Menu Toggle / Back)
+    │   Code 27 (0x1B): Slot +0x17C = 0x90077CBD [inferred role: Menu Toggle / Back]
     │   Code 28 (0x1C): Slot +0x180 = 0x90255AE6 (Action 28)
 ```
 
@@ -158,7 +158,7 @@ An extension framework for custom menus (such as intervalometer, film simulation
 ```
 
 1. **EventAdapter**:
-   - Taps button codes (`0x01` Confirm, `0x05..0x08` Navigation, `0x1B` Menu Toggle).
+   - Taps logical IDs: `0x01` (Slot +0x12C), `0x05..0x08` (Slots +0x130..+0x13C), `0x1B` (Slot +0x17C).
    - While custom menu is inactive, all events pass through unaffected.
    - When custom overlay is engaged, events update the custom `MenuModel`.
 

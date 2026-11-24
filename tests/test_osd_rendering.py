@@ -114,6 +114,17 @@ class OSDRenderingTest(unittest.TestCase):
         self.assertEqual((hw[0], hw[1]), (0xEB05, 0x0045), "add.w r0, r5, r5, lsl #1 (count * 3)")
         self.assertEqual((hw[2], hw[3]), (0xEB06, 0x0180), "add.w r1, r6, r0, lsl #2 (stride 12)")
 
+    def test_osd_byte_0x09_unwritten_semantics(self):
+        """Byte +0x09 is not written by 0x903111BC; consumer semantics remain UNPROVEN."""
+        raw = self.read_bytes(0x903111DE, 6)
+        hw = struct.unpack("<3H", raw)
+        # 0x903111DE: strb r4, [r1, #8] -> 0x720C
+        self.assertEqual(hw[0], 0x720C, "strb r4, [r1, #8]")
+        # 0x903111E0: str r0, [r2] -> 0x6010 (writes count, no write to [r1, #9])
+        self.assertEqual(hw[1], 0x6010, "str r0, [r2]")
+        # 0x903111E2: pop {r4, r5, r6, pc} -> 0xBD70
+        self.assertEqual(hw[2], 0xBD70, "pop {r4, r5, r6, pc}")
+
 
 if __name__ == "__main__":
     unittest.main()
