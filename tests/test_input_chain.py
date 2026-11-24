@@ -94,6 +94,20 @@ class InputChainTest(unittest.TestCase):
         literal = struct.unpack("<I", data[0x903695DC - BASE:0x903695E0 - BASE])[0]
         self.assertEqual(literal, 0x10125160)
 
+        callers = {
+            BASE + pos
+            for pos, target, _kind, _raw in thumb_branches(data)
+            if target == 0x90369364
+        }
+        self.assertEqual(callers, {
+            0x9003D0E6,
+            0x9003D13E,
+            0x9003D298,
+            0x9003D856,
+            0x9011DD5E,
+            0x9011E1FA,
+        })
+
     def test_physical_identity_is_not_inferred(self):
         # This test intentionally checks only the static boundary; no MENU/OK
         # label is assigned to GPIO Pin 8.

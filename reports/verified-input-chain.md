@@ -24,7 +24,10 @@ the queue-button range/TBB, and the application mailbox setter/getter.
 `[0x10125160 + 3]` (the literal pointer is at `0x903695DC`). It does not
 construct a button code. The callback's comparison with `1` is therefore a
 state gate, not proof of MENU/OK/INFO identity. A writer for this global byte
-was not established in the current static pass (**UNPROVEN**).
+was not established in the current static pass (**UNPROVEN**). The helper is
+also called directly from `0x9003D0E6`, `0x9003D13E`, `0x9003D298`,
+`0x9003D856`, and `0x9011E1FA`; it is therefore a shared state predicate, not
+an input-specific function.
 
 What is not proven: which physical camera button is wired to GPIO Pin 8, and
 whether an external observer can safely read the live T-Kernel flag or queue.
