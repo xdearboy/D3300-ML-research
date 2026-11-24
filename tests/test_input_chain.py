@@ -66,6 +66,15 @@ class InputChainTest(unittest.TestCase):
             0x90332FAC,
         })
 
+    def test_mailbox_setter_direct_callers(self):
+        data = firmware()
+        callers = {
+            BASE + pos
+            for pos, target, _kind, _raw in thumb_branches(data)
+            if target == 0x903512A0
+        }
+        self.assertEqual(callers, {0x903276B4, 0x903276EE})
+
     def test_callback_continuation_packs_input_message(self):
         data = firmware()
         continuation = 0x9011E756 - BASE
