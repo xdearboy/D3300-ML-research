@@ -118,6 +118,20 @@ class InputChainTest(unittest.TestCase):
         literal = struct.unpack("<I", data[0x9011E188 - BASE:0x9011E18C - BASE])[0]
         self.assertEqual(literal, 0x10319D2C)
 
+    def test_selector_two_sender_producer_is_static_rom_record(self):
+        data = firmware()
+        producer = 0x9016E0AE - BASE
+        self.assertEqual(data[producer:producer + 22],
+                         bytes.fromhex("0eb502201749d1e9002389680092cde901316946aff7"))
+        literal = struct.unpack("<I", data[0x9016E110 - BASE:0x9016E114 - BASE])[0]
+        self.assertEqual(literal, 0x91478AE8)
+        callers = {
+            BASE + pos
+            for pos, target, _kind, _raw in thumb_branches(data)
+            if target == 0x9011DFE2
+        }
+        self.assertEqual(callers, {0x9016E0C2, 0x9029B772, 0x9029B780, 0x9029B78E})
+
     def test_callback_state_gate_is_a32_byte_getter(self):
         data = firmware()
         gate = 0x90369364 - BASE

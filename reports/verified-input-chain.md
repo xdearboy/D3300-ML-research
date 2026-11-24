@@ -52,6 +52,14 @@ Consequently this caller preserves source-word provenance, but the record's
 type and field meanings remain **UNPROVEN**.  The other caller is the tail
 branch from the GPIO callback and is not assumed to share that record shape.
 
+The only direct caller that reaches this helper with selector `2` is
+`0x9016E0AE`: it copies 12 bytes from ROM `0x91478AE8` into a stack record and
+calls `0x9011DFE2` with `r0 = 2`, `r1 = record`.  The three calls at
+`0x9029B772`, `0x9029B780`, and `0x9029B78E` use selectors `0`, `1`, and `3`;
+their path does not satisfy the helper's `selector == 2` condition and cannot
+reach `0x9011E018`.  This isolates a second statically configured producer of
+the 16-byte queue payload, while leaving its logical event meaning unassigned.
+
 One shared consumer, `0x9003D28C`, is a two-output query called directly from
 `0x9011E0AE` and `0x9011E3F6`. Its state base is `0x101219D4` (literal
 `0x10121A20` at `0x9003D4BC`, minus `0x4C`). On the proven fast path where
