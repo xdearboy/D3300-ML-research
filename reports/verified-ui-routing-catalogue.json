@@ -1,0 +1,1865 @@
+{
+  "metadata": {
+    "firmware": "b860_102.bin",
+    "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+    "rom_base": "0x90020000",
+    "description": "Exhaustive static catalogue of UI event translation, active view routing, vtable dispatch, and CJAPFButtonEventParam lifecycle."
+  },
+  "tbb1_logical_translation": {
+    "branch_instruction": "0x90252DA6",
+    "table_base": "0x90252DAA",
+    "range_check_instruction": "0x90252D9E (cmp r1, #0x3B)",
+    "entry_count": 59,
+    "default_unmapped_target": "0x90252E56",
+    "entries": [
+      {
+        "raw_code": 0,
+        "raw_code_hex": "0x00",
+        "byte_offset": 81,
+        "target_pc": "0x90252E4C",
+        "logical_id": 23,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 1,
+        "raw_code_hex": "0x01",
+        "byte_offset": 55,
+        "target_pc": "0x90252E18",
+        "logical_id": 13,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 2,
+        "raw_code_hex": "0x02",
+        "byte_offset": 57,
+        "target_pc": "0x90252E1C",
+        "logical_id": 15,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 3,
+        "raw_code_hex": "0x03",
+        "byte_offset": 59,
+        "target_pc": "0x90252E20",
+        "logical_id": 16,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 4,
+        "raw_code_hex": "0x04",
+        "byte_offset": 61,
+        "target_pc": "0x90252E24",
+        "logical_id": 17,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 5,
+        "raw_code_hex": "0x05",
+        "byte_offset": 63,
+        "target_pc": "0x90252E28",
+        "logical_id": 18,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 6,
+        "raw_code_hex": "0x06",
+        "byte_offset": 65,
+        "target_pc": "0x90252E2C",
+        "logical_id": 19,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 7,
+        "raw_code_hex": "0x07",
+        "byte_offset": 67,
+        "target_pc": "0x90252E30",
+        "logical_id": 20,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 8,
+        "raw_code_hex": "0x08",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 9,
+        "raw_code_hex": "0x09",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 10,
+        "raw_code_hex": "0x0A",
+        "byte_offset": 69,
+        "target_pc": "0x90252E34",
+        "logical_id": 21,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 11,
+        "raw_code_hex": "0x0B",
+        "byte_offset": 75,
+        "target_pc": "0x90252E40",
+        "logical_id": 27,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 12,
+        "raw_code_hex": "0x0C",
+        "byte_offset": 30,
+        "target_pc": "0x90252DE6",
+        "logical_id": 1,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 13,
+        "raw_code_hex": "0x0D",
+        "byte_offset": 32,
+        "target_pc": "0x90252DEA",
+        "logical_id": 2,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 14,
+        "raw_code_hex": "0x0E",
+        "byte_offset": 35,
+        "target_pc": "0x90252DF0",
+        "logical_id": 3,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 15,
+        "raw_code_hex": "0x0F",
+        "byte_offset": 37,
+        "target_pc": "0x90252DF4",
+        "logical_id": 4,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 16,
+        "raw_code_hex": "0x10",
+        "byte_offset": 39,
+        "target_pc": "0x90252DF8",
+        "logical_id": 5,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 17,
+        "raw_code_hex": "0x11",
+        "byte_offset": 41,
+        "target_pc": "0x90252DFC",
+        "logical_id": 6,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 18,
+        "raw_code_hex": "0x12",
+        "byte_offset": 43,
+        "target_pc": "0x90252E00",
+        "logical_id": 7,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 19,
+        "raw_code_hex": "0x13",
+        "byte_offset": 45,
+        "target_pc": "0x90252E04",
+        "logical_id": 8,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 20,
+        "raw_code_hex": "0x14",
+        "byte_offset": 47,
+        "target_pc": "0x90252E08",
+        "logical_id": 9,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 21,
+        "raw_code_hex": "0x15",
+        "byte_offset": 49,
+        "target_pc": "0x90252E0C",
+        "logical_id": 10,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 22,
+        "raw_code_hex": "0x16",
+        "byte_offset": 51,
+        "target_pc": "0x90252E10",
+        "logical_id": 11,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 23,
+        "raw_code_hex": "0x17",
+        "byte_offset": 53,
+        "target_pc": "0x90252E14",
+        "logical_id": 12,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 24,
+        "raw_code_hex": "0x18",
+        "byte_offset": 73,
+        "target_pc": "0x90252E3C",
+        "logical_id": 26,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 25,
+        "raw_code_hex": "0x19",
+        "byte_offset": 71,
+        "target_pc": "0x90252E38",
+        "logical_id": 25,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 26,
+        "raw_code_hex": "0x1A",
+        "byte_offset": 77,
+        "target_pc": "0x90252E44",
+        "logical_id": 28,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 27,
+        "raw_code_hex": "0x1B",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 28,
+        "raw_code_hex": "0x1C",
+        "byte_offset": 89,
+        "target_pc": "0x90252E5C",
+        "logical_id": 33,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 29,
+        "raw_code_hex": "0x1D",
+        "byte_offset": 91,
+        "target_pc": "0x90252E60",
+        "logical_id": 34,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 30,
+        "raw_code_hex": "0x1E",
+        "byte_offset": 93,
+        "target_pc": "0x90252E64",
+        "logical_id": 35,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 31,
+        "raw_code_hex": "0x1F",
+        "byte_offset": 95,
+        "target_pc": "0x90252E68",
+        "logical_id": 36,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 32,
+        "raw_code_hex": "0x20",
+        "byte_offset": 97,
+        "target_pc": "0x90252E6C",
+        "logical_id": 37,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 33,
+        "raw_code_hex": "0x21",
+        "byte_offset": 99,
+        "target_pc": "0x90252E70",
+        "logical_id": 38,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 34,
+        "raw_code_hex": "0x22",
+        "byte_offset": 101,
+        "target_pc": "0x90252E74",
+        "logical_id": 39,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 35,
+        "raw_code_hex": "0x23",
+        "byte_offset": 103,
+        "target_pc": "0x90252E78",
+        "logical_id": 40,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 36,
+        "raw_code_hex": "0x24",
+        "byte_offset": 105,
+        "target_pc": "0x90252E7C",
+        "logical_id": 41,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 37,
+        "raw_code_hex": "0x25",
+        "byte_offset": 107,
+        "target_pc": "0x90252E80",
+        "logical_id": 42,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 38,
+        "raw_code_hex": "0x26",
+        "byte_offset": 109,
+        "target_pc": "0x90252E84",
+        "logical_id": 43,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 39,
+        "raw_code_hex": "0x27",
+        "byte_offset": 111,
+        "target_pc": "0x90252E88",
+        "logical_id": 44,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 40,
+        "raw_code_hex": "0x28",
+        "byte_offset": 79,
+        "target_pc": "0x90252E48",
+        "logical_id": 14,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 41,
+        "raw_code_hex": "0x29",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 42,
+        "raw_code_hex": "0x2A",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 43,
+        "raw_code_hex": "0x2B",
+        "byte_offset": 83,
+        "target_pc": "0x90252E50",
+        "logical_id": 22,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 44,
+        "raw_code_hex": "0x2C",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 45,
+        "raw_code_hex": "0x2D",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 46,
+        "raw_code_hex": "0x2E",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 47,
+        "raw_code_hex": "0x2F",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 48,
+        "raw_code_hex": "0x30",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 49,
+        "raw_code_hex": "0x31",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 50,
+        "raw_code_hex": "0x32",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 51,
+        "raw_code_hex": "0x33",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 52,
+        "raw_code_hex": "0x34",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 53,
+        "raw_code_hex": "0x35",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 54,
+        "raw_code_hex": "0x36",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 55,
+        "raw_code_hex": "0x37",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 56,
+        "raw_code_hex": "0x38",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 57,
+        "raw_code_hex": "0x39",
+        "byte_offset": 86,
+        "target_pc": "0x90252E56",
+        "logical_id": null,
+        "status": "unmapped",
+        "confidence": "PROVEN"
+      },
+      {
+        "raw_code": 58,
+        "raw_code_hex": "0x3A",
+        "byte_offset": 87,
+        "target_pc": "0x90252E58",
+        "logical_id": 24,
+        "status": "mapped",
+        "confidence": "PROVEN"
+      }
+    ]
+  },
+  "tbb2_screen_event_filter": {
+    "branch_instruction": "0x9025A86A",
+    "table_base": "0x9025A86E",
+    "range_check_instruction": "0x9025A860 (cmp r1, #0x64)",
+    "entry_count": 100,
+    "primary_button_dispatcher_target": "0x9025A8D2",
+    "handled_button_logical_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44
+    ],
+    "default_unhandled_target": "0x9025AA2E",
+    "entries": [
+      {
+        "logical_id": 0,
+        "logical_id_hex": "0x00",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 1,
+        "logical_id_hex": "0x01",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 2,
+        "logical_id_hex": "0x02",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 3,
+        "logical_id_hex": "0x03",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 4,
+        "logical_id_hex": "0x04",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 5,
+        "logical_id_hex": "0x05",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 6,
+        "logical_id_hex": "0x06",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 7,
+        "logical_id_hex": "0x07",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 8,
+        "logical_id_hex": "0x08",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 9,
+        "logical_id_hex": "0x09",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 10,
+        "logical_id_hex": "0x0A",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 11,
+        "logical_id_hex": "0x0B",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 12,
+        "logical_id_hex": "0x0C",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 13,
+        "logical_id_hex": "0x0D",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 14,
+        "logical_id_hex": "0x0E",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 15,
+        "logical_id_hex": "0x0F",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 16,
+        "logical_id_hex": "0x10",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 17,
+        "logical_id_hex": "0x11",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 18,
+        "logical_id_hex": "0x12",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 19,
+        "logical_id_hex": "0x13",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 20,
+        "logical_id_hex": "0x14",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 21,
+        "logical_id_hex": "0x15",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 22,
+        "logical_id_hex": "0x16",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 23,
+        "logical_id_hex": "0x17",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 24,
+        "logical_id_hex": "0x18",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 25,
+        "logical_id_hex": "0x19",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 26,
+        "logical_id_hex": "0x1A",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 27,
+        "logical_id_hex": "0x1B",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 28,
+        "logical_id_hex": "0x1C",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 29,
+        "logical_id_hex": "0x1D",
+        "byte_offset": 61,
+        "target_pc": "0x9025A8E8",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 30,
+        "logical_id_hex": "0x1E",
+        "byte_offset": 71,
+        "target_pc": "0x9025A8FC",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 31,
+        "logical_id_hex": "0x1F",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 32,
+        "logical_id_hex": "0x20",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 33,
+        "logical_id_hex": "0x21",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 34,
+        "logical_id_hex": "0x22",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 35,
+        "logical_id_hex": "0x23",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 36,
+        "logical_id_hex": "0x24",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 37,
+        "logical_id_hex": "0x25",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 38,
+        "logical_id_hex": "0x26",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 39,
+        "logical_id_hex": "0x27",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 40,
+        "logical_id_hex": "0x28",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 41,
+        "logical_id_hex": "0x29",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 42,
+        "logical_id_hex": "0x2A",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 43,
+        "logical_id_hex": "0x2B",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 44,
+        "logical_id_hex": "0x2C",
+        "byte_offset": 50,
+        "target_pc": "0x9025A8D2",
+        "category": "button_event_dispatcher",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 45,
+        "logical_id_hex": "0x2D",
+        "byte_offset": 82,
+        "target_pc": "0x9025A912",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 46,
+        "logical_id_hex": "0x2E",
+        "byte_offset": 82,
+        "target_pc": "0x9025A912",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 47,
+        "logical_id_hex": "0x2F",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 48,
+        "logical_id_hex": "0x30",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 49,
+        "logical_id_hex": "0x31",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 50,
+        "logical_id_hex": "0x32",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 51,
+        "logical_id_hex": "0x33",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 52,
+        "logical_id_hex": "0x34",
+        "byte_offset": 106,
+        "target_pc": "0x9025A942",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 53,
+        "logical_id_hex": "0x35",
+        "byte_offset": 92,
+        "target_pc": "0x9025A926",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 54,
+        "logical_id_hex": "0x36",
+        "byte_offset": 92,
+        "target_pc": "0x9025A926",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 55,
+        "logical_id_hex": "0x37",
+        "byte_offset": 92,
+        "target_pc": "0x9025A926",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 56,
+        "logical_id_hex": "0x38",
+        "byte_offset": 92,
+        "target_pc": "0x9025A926",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 57,
+        "logical_id_hex": "0x39",
+        "byte_offset": 100,
+        "target_pc": "0x9025A936",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 58,
+        "logical_id_hex": "0x3A",
+        "byte_offset": 100,
+        "target_pc": "0x9025A936",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 59,
+        "logical_id_hex": "0x3B",
+        "byte_offset": 100,
+        "target_pc": "0x9025A936",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 60,
+        "logical_id_hex": "0x3C",
+        "byte_offset": 100,
+        "target_pc": "0x9025A936",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 61,
+        "logical_id_hex": "0x3D",
+        "byte_offset": 100,
+        "target_pc": "0x9025A936",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 62,
+        "logical_id_hex": "0x3E",
+        "byte_offset": 100,
+        "target_pc": "0x9025A936",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 63,
+        "logical_id_hex": "0x3F",
+        "byte_offset": 100,
+        "target_pc": "0x9025A936",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 64,
+        "logical_id_hex": "0x40",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 65,
+        "logical_id_hex": "0x41",
+        "byte_offset": 115,
+        "target_pc": "0x9025A954",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 66,
+        "logical_id_hex": "0x42",
+        "byte_offset": 156,
+        "target_pc": "0x9025A9A6",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 67,
+        "logical_id_hex": "0x43",
+        "byte_offset": 126,
+        "target_pc": "0x9025A96A",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 68,
+        "logical_id_hex": "0x44",
+        "byte_offset": 126,
+        "target_pc": "0x9025A96A",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 69,
+        "logical_id_hex": "0x45",
+        "byte_offset": 126,
+        "target_pc": "0x9025A96A",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 70,
+        "logical_id_hex": "0x46",
+        "byte_offset": 132,
+        "target_pc": "0x9025A976",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 71,
+        "logical_id_hex": "0x47",
+        "byte_offset": 139,
+        "target_pc": "0x9025A984",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 72,
+        "logical_id_hex": "0x48",
+        "byte_offset": 149,
+        "target_pc": "0x9025A998",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 73,
+        "logical_id_hex": "0x49",
+        "byte_offset": 156,
+        "target_pc": "0x9025A9A6",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 74,
+        "logical_id_hex": "0x4A",
+        "byte_offset": 156,
+        "target_pc": "0x9025A9A6",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 75,
+        "logical_id_hex": "0x4B",
+        "byte_offset": 156,
+        "target_pc": "0x9025A9A6",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 76,
+        "logical_id_hex": "0x4C",
+        "byte_offset": 162,
+        "target_pc": "0x9025A9B2",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 77,
+        "logical_id_hex": "0x4D",
+        "byte_offset": 162,
+        "target_pc": "0x9025A9B2",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 78,
+        "logical_id_hex": "0x4E",
+        "byte_offset": 162,
+        "target_pc": "0x9025A9B2",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 79,
+        "logical_id_hex": "0x4F",
+        "byte_offset": 162,
+        "target_pc": "0x9025A9B2",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 80,
+        "logical_id_hex": "0x50",
+        "byte_offset": 156,
+        "target_pc": "0x9025A9A6",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 81,
+        "logical_id_hex": "0x51",
+        "byte_offset": 168,
+        "target_pc": "0x9025A9BE",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 82,
+        "logical_id_hex": "0x52",
+        "byte_offset": 168,
+        "target_pc": "0x9025A9BE",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 83,
+        "logical_id_hex": "0x53",
+        "byte_offset": 168,
+        "target_pc": "0x9025A9BE",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 84,
+        "logical_id_hex": "0x54",
+        "byte_offset": 175,
+        "target_pc": "0x9025A9CC",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 85,
+        "logical_id_hex": "0x55",
+        "byte_offset": 175,
+        "target_pc": "0x9025A9CC",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 86,
+        "logical_id_hex": "0x56",
+        "byte_offset": 182,
+        "target_pc": "0x9025A9DA",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 87,
+        "logical_id_hex": "0x57",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 88,
+        "logical_id_hex": "0x58",
+        "byte_offset": 189,
+        "target_pc": "0x9025A9E8",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 89,
+        "logical_id_hex": "0x59",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 90,
+        "logical_id_hex": "0x5A",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 91,
+        "logical_id_hex": "0x5B",
+        "byte_offset": 196,
+        "target_pc": "0x9025A9F6",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 92,
+        "logical_id_hex": "0x5C",
+        "byte_offset": 203,
+        "target_pc": "0x9025AA04",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 93,
+        "logical_id_hex": "0x5D",
+        "byte_offset": 203,
+        "target_pc": "0x9025AA04",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 94,
+        "logical_id_hex": "0x5E",
+        "byte_offset": 203,
+        "target_pc": "0x9025AA04",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 95,
+        "logical_id_hex": "0x5F",
+        "byte_offset": 224,
+        "target_pc": "0x9025AA2E",
+        "category": "unhandled_nop",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 96,
+        "logical_id_hex": "0x60",
+        "byte_offset": 210,
+        "target_pc": "0x9025AA12",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 97,
+        "logical_id_hex": "0x61",
+        "byte_offset": 210,
+        "target_pc": "0x9025AA12",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 98,
+        "logical_id_hex": "0x62",
+        "byte_offset": 210,
+        "target_pc": "0x9025AA12",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 99,
+        "logical_id_hex": "0x63",
+        "byte_offset": 217,
+        "target_pc": "0x9025AA20",
+        "category": "other_view_event",
+        "confidence": "PROVEN"
+      }
+    ]
+  },
+  "tbb3_view_action_router": {
+    "branch_instruction": "0x90254E18",
+    "table_base": "0x90254E1C",
+    "range_check_instruction": "0x90254E14 (cmp r5, #0x1D)",
+    "entry_count": 29,
+    "default_unhandled_target": "0x90254E70",
+    "entries": [
+      {
+        "logical_id": 0,
+        "logical_id_hex": "0x00",
+        "byte_offset": 42,
+        "target_pc": "0x90254E70",
+        "vtable_slot_offset": null,
+        "top_menu_view_handler": null,
+        "name": "OnActionBypass00",
+        "semantic_role": "Bypass / Ignored (PROVEN)",
+        "rationale": "Branches directly to 0x90254E70 returning 1",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 1,
+        "logical_id_hex": "0x01",
+        "byte_offset": 49,
+        "target_pc": "0x90254E7E",
+        "vtable_slot_offset": "+0x212C",
+        "top_menu_view_handler": "0x902566FE",
+        "name": "OnActionConfirm",
+        "semantic_role": "Confirm / Select / OK (INFERENCE)",
+        "rationale": "Primary item selection handler in menu navigation tree",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 2,
+        "logical_id_hex": "0x02",
+        "byte_offset": 45,
+        "target_pc": "0x90254E76",
+        "vtable_slot_offset": "+0x2128",
+        "top_menu_view_handler": "0x902566CA",
+        "name": "OnAction02",
+        "semantic_role": "Action 02 (UNPROVEN)",
+        "rationale": "Secondary selection action",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 3,
+        "logical_id_hex": "0x03",
+        "byte_offset": 20,
+        "target_pc": "0x90254E44",
+        "vtable_slot_offset": "+0x2120",
+        "top_menu_view_handler": "0x90256442",
+        "name": "OnAction03",
+        "semantic_role": "Action 03 (UNPROVEN)",
+        "rationale": "Alternate view interaction",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 4,
+        "logical_id_hex": "0x04",
+        "byte_offset": 24,
+        "target_pc": "0x90254E4C",
+        "vtable_slot_offset": "+0x2124",
+        "top_menu_view_handler": "0x90256696",
+        "name": "OnAction04",
+        "semantic_role": "Action 04 (UNPROVEN)",
+        "rationale": "Alternate view interaction",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 5,
+        "logical_id_hex": "0x05",
+        "byte_offset": 53,
+        "target_pc": "0x90254E86",
+        "vtable_slot_offset": "+0x2130",
+        "top_menu_view_handler": "0x90256702",
+        "name": "OnActionNavRight",
+        "semantic_role": "Navigation Right / Enter Sublevel (INFERENCE)",
+        "rationale": "Traverses deeper into menu hierarchy at 0x90077512",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 6,
+        "logical_id_hex": "0x06",
+        "byte_offset": 57,
+        "target_pc": "0x90254E8E",
+        "vtable_slot_offset": "+0x2134",
+        "top_menu_view_handler": "0x9007F43E",
+        "name": "OnActionNavLeft",
+        "semantic_role": "Navigation Left / Return Level (INFERENCE)",
+        "rationale": "Delegates to slot +0x130 with left navigation context",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 7,
+        "logical_id_hex": "0x07",
+        "byte_offset": 61,
+        "target_pc": "0x90254E96",
+        "vtable_slot_offset": "+0x2138",
+        "top_menu_view_handler": "0x90256768",
+        "name": "OnActionNavUp",
+        "semantic_role": "Navigation Up (INFERENCE)",
+        "rationale": "Delegates to slot +0x130 with vertical up navigation context",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 8,
+        "logical_id_hex": "0x08",
+        "byte_offset": 65,
+        "target_pc": "0x90254E9E",
+        "vtable_slot_offset": "+0x213C",
+        "top_menu_view_handler": "0x9025676A",
+        "name": "OnActionNavDown",
+        "semantic_role": "Navigation Down (INFERENCE)",
+        "rationale": "Delegates to slot +0x130 with vertical down navigation context",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 9,
+        "logical_id_hex": "0x09",
+        "byte_offset": 69,
+        "target_pc": "0x90254EA6",
+        "vtable_slot_offset": "+0x2140",
+        "top_menu_view_handler": "0x902567EE",
+        "name": "OnAction09",
+        "semantic_role": "Action 09 (UNPROVEN)",
+        "rationale": "Tab switch / mode toggle",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 10,
+        "logical_id_hex": "0x0A",
+        "byte_offset": 73,
+        "target_pc": "0x90254EAE",
+        "vtable_slot_offset": "+0x2144",
+        "top_menu_view_handler": "0x902567F0",
+        "name": "OnAction10",
+        "semantic_role": "Action 10 (UNPROVEN)",
+        "rationale": "Tab switch / mode toggle",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 11,
+        "logical_id_hex": "0x0B",
+        "byte_offset": 77,
+        "target_pc": "0x90254EB6",
+        "vtable_slot_offset": "+0x2148",
+        "top_menu_view_handler": "0x90256866",
+        "name": "OnAction11",
+        "semantic_role": "Action 11 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 12,
+        "logical_id_hex": "0x0C",
+        "byte_offset": 81,
+        "target_pc": "0x90254EBE",
+        "vtable_slot_offset": "+0x214C",
+        "top_menu_view_handler": "0x90256868",
+        "name": "OnAction12",
+        "semantic_role": "Action 12 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 13,
+        "logical_id_hex": "0x0D",
+        "byte_offset": 85,
+        "target_pc": "0x90254EC6",
+        "vtable_slot_offset": "+0x2150",
+        "top_menu_view_handler": "0x9025686A",
+        "name": "OnAction13",
+        "semantic_role": "Action 13 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 14,
+        "logical_id_hex": "0x0E",
+        "byte_offset": 89,
+        "target_pc": "0x90254ECE",
+        "vtable_slot_offset": "+0x2154",
+        "top_menu_view_handler": "0x9025686C",
+        "name": "OnAction14",
+        "semantic_role": "Action 14 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 15,
+        "logical_id_hex": "0x0F",
+        "byte_offset": 93,
+        "target_pc": "0x90254ED6",
+        "vtable_slot_offset": "+0x2158",
+        "top_menu_view_handler": "0x90256940",
+        "name": "OnAction15",
+        "semantic_role": "Action 15 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 16,
+        "logical_id_hex": "0x10",
+        "byte_offset": 97,
+        "target_pc": "0x90254EDE",
+        "vtable_slot_offset": "+0x215C",
+        "top_menu_view_handler": "0x90256942",
+        "name": "OnAction16",
+        "semantic_role": "Action 16 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 17,
+        "logical_id_hex": "0x11",
+        "byte_offset": 101,
+        "target_pc": "0x90254EE6",
+        "vtable_slot_offset": "+0x2160",
+        "top_menu_view_handler": "0x9025694A",
+        "name": "OnAction17",
+        "semantic_role": "Action 17 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 18,
+        "logical_id_hex": "0x12",
+        "byte_offset": 105,
+        "target_pc": "0x90254EEE",
+        "vtable_slot_offset": "+0x2164",
+        "top_menu_view_handler": "0x90256958",
+        "name": "OnAction18",
+        "semantic_role": "Action 18 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 19,
+        "logical_id_hex": "0x13",
+        "byte_offset": 109,
+        "target_pc": "0x90254EF6",
+        "vtable_slot_offset": "+0x2168",
+        "top_menu_view_handler": "0x9025695A",
+        "name": "OnAction19",
+        "semantic_role": "Action 19 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 20,
+        "logical_id_hex": "0x14",
+        "byte_offset": 113,
+        "target_pc": "0x90254EFE",
+        "vtable_slot_offset": "+0x216C",
+        "top_menu_view_handler": "0x9025695C",
+        "name": "OnAction20",
+        "semantic_role": "Action 20 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 21,
+        "logical_id_hex": "0x15",
+        "byte_offset": 117,
+        "target_pc": "0x90254F06",
+        "vtable_slot_offset": "+0x2170",
+        "top_menu_view_handler": "0x9025695E",
+        "name": "OnAction21",
+        "semantic_role": "Action 21 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 22,
+        "logical_id_hex": "0x16",
+        "byte_offset": 137,
+        "target_pc": "0x90254F2E",
+        "vtable_slot_offset": "+0x2184",
+        "top_menu_view_handler": "0x902569A6",
+        "name": "OnAction22",
+        "semantic_role": "Action 22 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 23,
+        "logical_id_hex": "0x17",
+        "byte_offset": 42,
+        "target_pc": "0x90254E70",
+        "vtable_slot_offset": null,
+        "top_menu_view_handler": null,
+        "name": "OnActionBypass23",
+        "semantic_role": "Bypass / Ignored (PROVEN)",
+        "rationale": "Branches directly to 0x90254E70 returning 1",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 24,
+        "logical_id_hex": "0x18",
+        "byte_offset": 42,
+        "target_pc": "0x90254E70",
+        "vtable_slot_offset": null,
+        "top_menu_view_handler": null,
+        "name": "OnActionBypass24",
+        "semantic_role": "Bypass / Ignored (PROVEN)",
+        "rationale": "Branches directly to 0x90254E70 returning 1",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 25,
+        "logical_id_hex": "0x19",
+        "byte_offset": 121,
+        "target_pc": "0x90254F0E",
+        "vtable_slot_offset": "+0x2174",
+        "top_menu_view_handler": "0x90256960",
+        "name": "OnAction25",
+        "semantic_role": "Action 25 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 26,
+        "logical_id_hex": "0x1A",
+        "byte_offset": 125,
+        "target_pc": "0x90254F16",
+        "vtable_slot_offset": "+0x2178",
+        "top_menu_view_handler": "0x90256962",
+        "name": "OnAction26",
+        "semantic_role": "Action 26 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 27,
+        "logical_id_hex": "0x1B",
+        "byte_offset": 129,
+        "target_pc": "0x90254F1E",
+        "vtable_slot_offset": "+0x217C",
+        "top_menu_view_handler": "0x902569A2",
+        "name": "OnActionMenuBack",
+        "semantic_role": "Menu Toggle / Back (INFERENCE)",
+        "rationale": "Exits active menu page or toggles menu display state",
+        "confidence": "PROVEN"
+      },
+      {
+        "logical_id": 28,
+        "logical_id_hex": "0x1C",
+        "byte_offset": 133,
+        "target_pc": "0x90254F26",
+        "vtable_slot_offset": "+0x2180",
+        "top_menu_view_handler": "0x902569A4",
+        "name": "OnAction28",
+        "semantic_role": "Action 28 (UNPROVEN)",
+        "rationale": "Sub-action handler",
+        "confidence": "PROVEN"
+      }
+    ]
+  },
+  "controller_vtable_slots": {
+    "class_name": "CMENUController",
+    "vtable": "0x9151B62C",
+    "slots": {
+      "+0x3C": {
+        "target": "0x9002A5F0",
+        "name": "TeardownActiveView",
+        "confidence": "PROVEN"
+      },
+      "+0x44": {
+        "target": "0x9002A62C",
+        "name": "ActivateView",
+        "confidence": "PROVEN"
+      },
+      "+0x48": {
+        "target": "0x9002A6B6",
+        "name": "TransitionScreen",
+        "confidence": "PROVEN"
+      },
+      "+0x54": {
+        "target": "0x9002A616",
+        "name": "RefreshView",
+        "confidence": "PROVEN"
+      },
+      "+0x60": {
+        "target": "0x90032AF2",
+        "name": "InvokeButtonDispatch",
+        "confidence": "PROVEN"
+      },
+      "+0x64": {
+        "target": "0x90032CA4",
+        "name": "ProcessEventQueue",
+        "confidence": "PROVEN"
+      }
+    }
+  },
+  "top_menu_view_control_slots": {
+    "class_name": "CMENUTopMenuView",
+    "vtable": "0x9151D874",
+    "slots": {
+      "+0x10": {
+        "target": "0x9025A85E",
+        "name": "OnEvent",
+        "tbb_table": "0x9025A86E",
+        "confidence": "PROVEN"
+      },
+      "+0x40": {
+        "target": "0x9025AD54",
+        "name": "OnButtonEvent",
+        "confidence": "PROVEN"
+      },
+      "+0x44": {
+        "target": "0x90254DD4",
+        "name": "DispatchButtonAction",
+        "tbb_table": "0x90254E1C",
+        "confidence": "PROVEN"
+      },
+      "+0x54": {
+        "target": "0x9025AF34",
+        "name": "PreActionHook",
+        "confidence": "PROVEN"
+      },
+      "+0xC4": {
+        "target": "0x9025B62A",
+        "name": "PreEventHook",
+        "confidence": "PROVEN"
+      }
+    }
+  },
+  "event_param_lifecycle": {
+    "class_name": "CJAPFButtonEventParam",
+    "base_class": "CJAPFParam",
+    "rtti_descriptor": "0x91504930",
+    "vtable": "0x9152BD0C",
+    "constructor": "0x9012B810",
+    "factory": "0x9012B82A",
+    "destructor": "0x9012B868",
+    "deleting_destructor": "0x9012B882",
+    "allocation_callsites": [
+      "0x90032C18",
+      "0x90032C46"
+    ],
+    "deallocation_callsite": "0x90032C80..0x90032C86",
+    "lifetime_scope": "SYNCHRONOUS_EVENT_PUMP_FRAME",
+    "async_safety": "UNSAFE_FOR_ASYNC_CAPTURE",
+    "lifetime_details": "Param object is instantiated dynamically via factory 0x9012B82A during CMENUController::ProcessEventQueue. It is passed synchronously down the dispatch chain in register r2. Immediately upon return from InvokeButtonDispatch (0x90032AF8), the destructor is invoked at 0x90032C86 and memory is released. Asynchronous modules must copy value payload (param + 0x0C) rather than storing the pointer.",
+    "confidence": "PROVEN"
+  },
+  "semantic_evidence_boundary": {
+    "proven_facts": [
+      "TBB1 at 0x90252DAA decodes 59 raw codes into 40 logical IDs (1..28 and 33..44) and routes unmapped codes to 0x90252E56.",
+      "TBB2 at 0x9025A86E routes all 40 logical IDs to target 0x9025A8D2 which calls slot +0xC4 and then slot +0x40.",
+      "TBB3 at 0x90254E1C routes logical IDs 1..28 to distinct vtable slots +0x120..+0x184 on active view.",
+      "CMENUTopMenuView vtable (0x9151D874) populates all slots +0x120..+0x184 with concrete ROM functions.",
+      "CJAPFButtonEventParam is allocated in ProcessEventQueue (0x90032C18/0x90032C46) and destructed at 0x90032C86 immediately after InvokeButtonDispatch returns.",
+      "GPIO Type-2 transport (0x9011DD5C / 0x9011E756) is decoupled from this queue and routes via dynamic RAM table 0x10319D2C."
+    ],
+    "inferences": [
+      "Slot +0x12C (Logical ID 0x01) functions as Confirm / OK / Action selection based on menu execution hierarchy.",
+      "Slots +0x130, +0x134, +0x138, +0x13C (Logical IDs 0x05..0x08) function as 4-way Navigation (Right, Left, Up, Down).",
+      "Slot +0x17C (Logical ID 0x1B) functions as Menu Toggle / Back based on menu page transition routines."
+    ],
+    "unproven_boundaries": [
+      "Physical switch/pin mapping for raw input codes 0..58 is UNPROVEN from firmware disassembly alone.",
+      "Vendor semantics of action slots +0x140..+0x178 and +0x180..+0x184 remain UNPROVEN.",
+      "The multi-byte meaning of record.value_1 in CJAPFButtonEventParam offset +0x0C is UNPROVEN."
+    ]
+  }
+}
