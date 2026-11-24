@@ -235,6 +235,34 @@ In strict compliance with verified static analysis rules:
 
 ---
 
+
+---
+
+## 4. Phase 2 Deep Audit: Exhaustive Search for Remaining 77 Properties
+
+An exhaustive scan across all 1,174 `CINFOManager::GetInstance()` call sites in the firmware binary was conducted to trace direct consumers of the remaining 77 `CKRRCInfoDispData` property IDs:
+
+### Core Photography Subsystem Separation
+The analysis revealed a crucial structural boundary:
+1. **Internal Photography Properties (`0x066X` / `0x051F`)**:
+   - Shutter Speed: `0x066C` (step index) and `0x066D` (fine step) via helper `0x902FD8F8`.
+   - Aperture: `0x066E` (F-number APEX step) via helper `0x90301B50`.
+   - White Balance: `0x066A` via `CPTPCWhiteBalance` (`0x90302864`).
+   - Metering Mode: `0x0668` via `CPTPCExposureMeteringMode` (`0x9030096E`).
+   - Focus Mode: `0x067A` via `CPTPCFocusMode` (`0x9030216A`).
+   - Image Compression: `0x051F` via `CPTPCCompressionSetting` (`0x902FFDBE`).
+   - **Crucial Finding**: None of these properties belong to table `0x914ED324`. They reside exclusively in the internal `CINFOManager` model.
+
+2. **UI State Gate Properties (`0x005A`, `0x005C`, etc.)**:
+   - Properties such as `0x005A` (Index 3, queried at 51 sites) and `0x005C` (Index 68, queried at 29 sites) have dedicated getter thunks in `CSTBLModelFacade` (`0x90258648` and `0x90258668`).
+   - Callers perform internal UI state machine comparisons (e.g. `cmp r6, #13`, `cmp r0, #12` in view router `0x9004F320`), but neither property terminates in a human-readable format string, APEX conversion table, or standard PTP serializer.
+   - Per the strict evidence standard, these properties must remain `UNPROVEN` to prevent ungrounded inferences.
+
+3. **Status**:
+   - `0x0040`: **PROVEN** (`battery_power_source_status`)
+   - `0x0054`: **PROVEN** (`iso_control_sensitivity`)
+   - Remaining 77 properties: **UNPROVEN** (`semantic_name = null`).
+
 ## 5. Architectural Summary & Conclusions
 1. **Two Properties Proven**: Exactly 2 of 79 properties (`0x0040` -> `battery_power_source_status` and `0x0054` -> `iso_control_sensitivity`) possess complete, unbroken static chains to standard PTP serializations and format lookup tables.
 2. **77 Properties Kept Unproven**: All other 77 properties remain strictly `UNPROVEN` per the zero-speculation mandate.
