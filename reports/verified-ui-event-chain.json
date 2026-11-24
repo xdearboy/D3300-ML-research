@@ -1,0 +1,339 @@
+{
+  "firmware": {
+    "version": "D3300 C 1.02",
+    "binary": "b860_102.bin",
+    "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+    "rom_base": "0x90020000"
+  },
+  "chain_summary": {
+    "sender_callback": "0x9011DD5C",
+    "sender_helper": "0x9011E756",
+    "receiver_task_loop": "0x9011DD88",
+    "receiver_queue_mbfid_ptr": "0x1011FFCC",
+    "receiver_queue_mbfid_offset": "[0x1011FFB4 + 0x18]",
+    "type2_handler": "0x9011E2B4",
+    "ram_dispatch_table": "0x10319D2C",
+    "rom_translation_table1": "0x91281278",
+    "rom_translation_table2": "0x91281287",
+    "record_assembly_site": "0x902AE122",
+    "copno_queue_button_handler": "0x9013DDCC",
+    "copno_queue_button_vtable": "0x9151DE6C",
+    "copno_queue_button_slot": "+0x2C"
+  },
+  "stages": [
+    {
+      "stage": 1,
+      "name": "gpio_pin8_debouncer",
+      "address": "0x9011DDA8",
+      "mode": "Thumb-2",
+      "function_purpose": "Read physical GPIO Pin 8 via hardware driver and maintain debounce shift history",
+      "hardware_pin": 8,
+      "gpio_read_call": "0x902742C2",
+      "state_object": "0x1011FFB4",
+      "forwarder_callsites": [
+        {
+          "site": "0x9011DDFA",
+          "action": "bl 0x9011E738",
+          "condition": "pin asserted"
+        },
+        {
+          "site": "0x9011DE0E",
+          "action": "bl 0x9011E738",
+          "condition": "pin deasserted"
+        }
+      ],
+      "forwarder_function": {
+        "address": "0x9011E738",
+        "instructions": [
+          "push {r4, lr}",
+          "mov r4, r0",
+          "ldr r0, [0x9011e8b8] ; [0x1011FFB4]",
+          "ldr r0, [r0, #8] ; Slot 3 token (0x00000008)",
+          "cbz r0, 0x9011e746",
+          "bl 0x90027316 ; SignalPersistentDispatcher"
+        ]
+      },
+      "confidence": "PROVEN"
+    },
+    {
+      "stage": 2,
+      "name": "persistent_callback_slot3",
+      "address": "0x9011DD5C",
+      "mode": "Thumb-2",
+      "registered_slot": 3,
+      "event_mask": "0x00000008",
+      "token_storage": "[0x1011FFB4 + 0x08]",
+      "instructions": [
+        "push {r4, lr}",
+        "blx 0x90369364 ; query hardware pin state",
+        "cmp r0, #1",
+        "beq 0x9011dd68",
+        "movs r0, #0",
+        "ldr r1, [0x9011e168] ; [0x1011FFB4]",
+        "str r0, [r1, #4] ; save pin state",
+        "pop.w {r4, lr}",
+        "b.w 0x9011e756 ; tail-call sender helper"
+      ],
+      "confidence": "PROVEN"
+    },
+    {
+      "stage": 3,
+      "name": "message_buffer_sender",
+      "address": "0x9011E756",
+      "mode": "Thumb-2",
+      "function_purpose": "Assemble 16-byte T-Kernel message buffer payload and enqueue via tk_snd_mbf",
+      "message_format": {
+        "total_size": 16,
+        "byte_0": {
+          "field": "event_type",
+          "value": "0x02",
+          "type": "u8"
+        },
+        "bytes_1_to_15": {
+          "field": "payload_padding",
+          "semantics": "uninitialized stack / reserved for type 2",
+          "type": "u8[15]"
+        }
+      },
+      "syscall": {
+        "api": "tk_snd_mbf(ID mbfid, void *msg, INT msgsz, TMO tmout)",
+        "wrapper_address": "0x9002EC0E",
+        "stub_address": "0x90224DBC",
+        "kernel_handler": "0x10039F18",
+        "arguments": {
+          "r0": "mbfid loaded from [0x1011FFB4 + 0x18]",
+          "r1": "msg pointer (sp)",
+          "r2": 16,
+          "r3": 100
+        }
+      },
+      "confidence": "PROVEN"
+    },
+    {
+      "stage": 4,
+      "name": "receiver_task_loop",
+      "address": "0x9011DD88",
+      "mode": "Thumb-2",
+      "function_purpose": "T-Kernel task loop receiving from message buffer and dispatching by message type byte",
+      "syscall": {
+        "api": "tk_rcv_mbf(ID mbfid, void *msg, TMO tmout)",
+        "stub_address": "0x90225E54",
+        "kernel_handler": "0x10039F40",
+        "arguments": {
+          "r0": "mbfid loaded from [0x1011FFB4 + 0x18]",
+          "r1": "sp (16-byte stack receive buffer)",
+          "r2": -1
+        }
+      },
+      "validation": {
+        "size_check": "cmp r0, #0x10 ; msgsz must be 16 bytes",
+        "type_bound": "cmp r0, #3 ; type byte must be < 3"
+      },
+      "dispatch_table": {
+        "address": "0x9128126C",
+        "entries": [
+          {
+            "type_code": 0,
+            "handler_address": "0x9011E1F6",
+            "pointer_word": "0x9011E1F7",
+            "purpose": "input event type 0 handler"
+          },
+          {
+            "type_code": 1,
+            "handler_address": "0x9011E284",
+            "pointer_word": "0x9011E285",
+            "purpose": "input event type 1 handler"
+          },
+          {
+            "type_code": 2,
+            "handler_address": "0x9011E2B4",
+            "pointer_word": "0x9011E2B5",
+            "purpose": "input event type 2 handler (matches callback 0x9011DD5C)"
+          }
+        ]
+      },
+      "confidence": "PROVEN"
+    },
+    {
+      "stage": 5,
+      "name": "message_type2_handler",
+      "address": "0x9011E2B4",
+      "mode": "Thumb-2",
+      "function_purpose": "Process state transitions for type 2 message, look up channel 2 callback, and invoke via bx r1",
+      "state_evaluation": {
+        "state_pointer": "[0x1011FFB4 + 4]",
+        "transition_gate": "valid state transitions: 1, 2, 0x80, 0x81",
+        "callback_parameter": "r0 = state & 1 (0 or 1)"
+      },
+      "table_lookup": {
+        "lookup_function": "0x9011E7F8",
+        "channel_index": 2,
+        "ram_table_base": "0x10319D2C",
+        "entry_stride": 12,
+        "entry_address": "0x10319D44",
+        "function_pointer_address": "0x10319D48",
+        "instructions": [
+          "ldr r1, [0x9011e8c0] ; [0x10319D2C]",
+          "add.w r0, r0, r0, lsl #1 ; r0 = channel * 3",
+          "add.w r0, r1, r0, lsl #2 ; r0 = table + channel * 12",
+          "ldr r0, [r0, #4] ; load function pointer at offset +4",
+          "bx lr"
+        ]
+      },
+      "dispatch": "bx r1 with r0 in {0, 1}",
+      "confidence": "PROVEN"
+    },
+    {
+      "stage": 6,
+      "name": "event_code_translation_tables",
+      "translation_function": "0x9011E08E",
+      "mode": "Thumb-2",
+      "table_1": {
+        "address": "0x91281278",
+        "size_bytes": 16,
+        "raw_bytes": [11, 11, 11, 11, 0, 1, 2, 4, 6, 3, 5, 7, 8, 9, 10, 4],
+        "input_domain": "raw hardware index 0..15",
+        "output_domain": "intermediate index 0..11"
+      },
+      "table_2": {
+        "address": "0x91281287",
+        "size_bytes": 11,
+        "raw_bytes": [4, 5, 6, 9, 7, 10, 8, 11, 12, 13, 14],
+        "input_domain": "intermediate index 0..10",
+        "output_domain": "logical button event codes 4..14 (0x04..0x0E)"
+      },
+      "output_codes_hex": [
+        "0x04", "0x05", "0x06", "0x09", "0x07", "0x0A", "0x08", "0x0B", "0x0C", "0x0D", "0x0E"
+      ],
+      "confidence": "PROVEN"
+    },
+    {
+      "stage": 7,
+      "name": "queue_record_assembler",
+      "enclosing_function": "0x902AE0DA",
+      "assembly_site": "0x902AE122",
+      "mode": "Thumb-2",
+      "record_size": 16,
+      "struct_format": "<HHIII",
+      "fields": [
+        {
+          "offset": 0,
+          "size": 2,
+          "type": "u16",
+          "name": "event_id",
+          "instructions": [
+            "0x902AE122: strh.w r6, [sp]"
+          ],
+          "source": "input_record[0..1] or 0xFFFF if threshold tripped at 0x902AE0FE"
+        },
+        {
+          "offset": 2,
+          "size": 2,
+          "type": "u16",
+          "name": "tag",
+          "instructions": [
+            "0x902AE126: ldrh r0, [r5, #2]",
+            "0x902AE12C: strh.w r0, [sp, #2]"
+          ],
+          "source": "input_record[2..3] (overwritten with object+0x12 by COPNOProductManager/COPNOQueueButton)"
+        },
+        {
+          "offset": 4,
+          "size": 4,
+          "type": "u32",
+          "name": "value_1",
+          "instructions": [
+            "0x902AE130: ldr r0, [r5, #4]",
+            "0x902AE132: str r0, [sp, #4]"
+          ],
+          "source": "input_record[4..7]"
+        },
+        {
+          "offset": 8,
+          "size": 4,
+          "type": "u32",
+          "name": "value_2",
+          "instructions": [
+            "0x902AE134: ldr r0, [r5, #8]",
+            "0x902AE136: str r0, [sp, #8]"
+          ],
+          "source": "input_record[8..11]"
+        },
+        {
+          "offset": 12,
+          "size": 4,
+          "type": "u32",
+          "name": "mask",
+          "instructions": [
+            "0x902AE138: ldr r0, [r4, #0x10]",
+            "0x902AE13A: str r0, [sp, #0xc]"
+          ],
+          "source": "queue object bitmask [queue + 0x10]"
+        }
+      ],
+      "enqueue_copy": {
+        "site": "0x902AE13C",
+        "instruction": "blx 0x90274BBC ; memcpy(dest_slot, sp, 16)",
+        "dest_slot": "r7 (allocated from queue buffer by 0x902AE092)"
+      },
+      "confidence": "PROVEN"
+    },
+    {
+      "stage": 8,
+      "name": "copno_queue_button_handler",
+      "address": "0x9013DDCC",
+      "mode": "Thumb-2",
+      "vtable": {
+        "address": "0x9151DE6C",
+        "slot_offset": "0x2C",
+        "slot_target": "0x9013DDCD",
+        "rtti_name": "16COPNOQueueButton"
+      },
+      "range_check": {
+        "instructions": [
+          "ldrh r1, [r1] ; read event_id",
+          "subs r1, r1, #4 ; subtract 4",
+          "cmp r1, #0x12 ; range check < 18",
+          "bhs 0x9013de14 ; out-of-range branch"
+        ],
+        "accepted_range": "0x04..0x15"
+      },
+      "tbb_dispatch": {
+        "tbb_address": "0x9013DDE4",
+        "branch_table_base": "0x9013DDE8",
+        "groups": [
+          {
+            "codes": ["0x04", "0x05"],
+            "target": "0x9013DDFA",
+            "condition": "value_1 == 1"
+          },
+          {
+            "codes": ["0x06", "0x07", "0x08", "0x09", "0x0A", "0x0B"],
+            "target": "0x9013DE14",
+            "condition": "unconditionally accepted (direct-copy)"
+          },
+          {
+            "codes": ["0x0C", "0x0D", "0x0E", "0x0F", "0x10", "0x11", "0x12", "0x13", "0x14", "0x15"],
+            "target": "0x9013DE00",
+            "condition": "value_1 == 1 AND 0x9016E0A4() == 0 AND 0x9016E076() == success"
+          }
+        ]
+      },
+      "confidence": "PROVEN"
+    }
+  ],
+  "unproven_boundaries": [
+    {
+      "boundary": "gpio_pin8_to_event_id",
+      "description": "Static mapping from physical GPIO Pin 8 to specific logical event IDs (0x0B..0x15)",
+      "status": "UNPROVEN",
+      "reason": "Callback 0x9011DD5C sends message type 2 to message buffer [0x1011FFB4 + 0x18]. Handler 0x9011E2B4 calls the channel 2 callback from RAM table 0x10319D2C + 0x18. Table 0x10319D2C is dynamically populated at runtime in RAM; no static ROM structure or array ties channel 2 or Pin 8 specifically to code 0x0B, 0x0C, or any individual code in 0x0B..0x15."
+    },
+    {
+      "boundary": "gpio_pin8_to_physical_button_legends",
+      "description": "Naming GPIO Pin 8 as MENU, OK, INFO, or any user-facing button label",
+      "status": "UNPROVEN",
+      "reason": "Zero static ROM strings, RTTI symbols, or diagnostic logs associate physical GPIO Pin 8 with a specific camera button label. Such associations cannot be confirmed without hardware schematics or runtime I/O logging."
+    }
+  ]
+}

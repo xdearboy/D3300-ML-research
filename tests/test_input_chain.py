@@ -1,9 +1,9 @@
 import hashlib
 import os
+from pathlib import Path
 import struct
 import sys
 import unittest
-from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from d3300_recon import thumb_branches
@@ -12,7 +12,7 @@ BASE = 0x90020000
 SHA256 = "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff"
 
 
-def firmware():
+def firmware() -> bytes:
     path = os.environ.get("D3300_FIRMWARE")
     if not path:
         path = "/Users/devo/Desktop/d3300-analysis/b860_102.bin"
@@ -25,6 +25,24 @@ def firmware():
 
 
 class InputChainTest(unittest.TestCase):
+    def read_bytes(self, addr: int, size: int) -> bytes:
+        data = firmware()
+        off = addr - BASE
+        return data[off : off + size]
+
+    def read_halfwords(self, addr: int, count: int) -> tuple[int, ...]:
+        raw = self.read_bytes(addr, count * 2)
+        return struct.unpack(f"<{count}H", raw)
+
+    def read_words(self, addr: int, count: int) -> tuple[int, ...]:
+        raw = self.read_bytes(addr, count * 4)
+        return struct.unpack(f"<{count}I", raw)
+
+    def test_firmware_sha256(self):
+        data = firmware()
+        digest = hashlib.sha256(data).hexdigest()
+        self.assertEqual(digest, SHA256)
+
     def test_gpio_helper_and_trigger(self):
         data = firmware()
         helper = 0x9011E738 - BASE
@@ -193,6 +211,139 @@ class InputChainTest(unittest.TestCase):
             if target == 0x90369358
         }
         self.assertEqual(setter_callers, {0x9011DDF4, 0x9011DE08})
+
+    def test_sender_message_format_0x9011e756(self):
+        """0x9011E756 builds 16-byte message on stack with msg[0] = 0x02."""
+        raw = self.read_bytes(0x9011E756, 20)
+        hw = struct.unpack("<10H", raw)
+        self.assertEqual(hw[0], 0xB51F, "push {r0..r4, lr}")
+        self.assertEqual(hw[1], 0x2002, "movs r0, #2")
+        self.assertEqual(hw[2], 0x2364, "movs r3, #0x64 (100 ms timeout)")
+        self.assertEqual(hw[3], 0x2210, "movs r2, #0x10 (16 bytes size)")
+        self.assertEqual((hw[4], hw[5]), (0xF88D, 0x0000), "strb.w r0, [sp]")
+        self.assertEqual(hw[6], 0x4669, "mov r1, sp")
+        self.assertEqual(hw[8], 0x6980, "ldr r0, [r0, #0x18] (mbfid)")
+
+    def test_receiver_task_loop_0x9011dd88(self):
+        """0x9011DD88 receives from message buffer and validates msgsz == 16, msg[0] < 3."""
+        raw = self.read_bytes(0x9011DD88, 32)
+        hw = struct.unpack("<16H", raw)
+        self.assertEqual(hw[0], 0x4669, "mov r1, sp")
+        self.assertEqual(hw[1], 0x69A0, "ldr r0, [r4, #0x18]")
+        self.assertEqual(hw[2], 0x462A, "mov r2, r5 (TMO_FEVR = -1)")
+        self.assertEqual(hw[5], 0x2810, "cmp r0, #0x10 (check msgsz == 16)")
+        self.assertEqual(hw[6], 0xD1F8, "bne 0x9011DD88")
+        self.assertEqual((hw[7], hw[8]), (0xF89D, 0x0000), "ldrb.w r0, [sp]")
+        self.assertEqual(hw[9], 0x2803, "cmp r0, #3 (check type < 3)")
+        self.assertEqual(hw[10], 0xDAF4, "bge 0x9011DD88")
+        self.assertEqual((hw[11], hw[12]), (0xF857, 0x1020), "ldr.w r1, [r7, r0, lsl #2]")
+
+    def test_dispatch_table_0x9128126c(self):
+        """Table 0x9128126C contains 3 function pointers for types 0, 1, 2."""
+        entries = self.read_words(0x9128126C, 3)
+        self.assertEqual(entries[0], 0x9011E1F7, "Type 0 handler (0x9011E1F6)")
+        self.assertEqual(entries[1], 0x9011E285, "Type 1 handler (0x9011E284)")
+        self.assertEqual(entries[2], 0x9011E2B5, "Type 2 handler (0x9011E2B4)")
+
+    def test_event_translation_tables_0x91281278_and_0x91281287(self):
+        """Tables 0x91281278 and 0x91281287 map raw events to logical codes."""
+        table1 = list(self.read_bytes(0x91281278, 16))
+        expected_table1 = [11, 11, 11, 11, 0, 1, 2, 4, 6, 3, 5, 7, 8, 9, 10, 4]
+        self.assertEqual(table1, expected_table1)
+
+        table2 = list(self.read_bytes(0x91281287, 11))
+        expected_table2 = [4, 5, 6, 9, 7, 10, 8, 11, 12, 13, 14]
+        self.assertEqual(table2, expected_table2)
+
+        self.assertIn(0x0B, table2)
+        self.assertIn(0x0C, table2)
+
+    def test_queue_record_assembly_0x902ae122(self):
+        """0x902AE122..0x902AE13E assembles 16-byte record (<HHIII) before memcpy."""
+        raw = self.read_bytes(0x902AE122, 32)
+        hw = struct.unpack("<16H", raw)
+        self.assertEqual((hw[0], hw[1]), (0xF8AD, 0x6000), "strh.w r6, [sp] (event_id)")
+        self.assertEqual(hw[2], 0x8868, "ldrh r0, [r5, #2] (tag)")
+        self.assertEqual(hw[3], 0x2210, "movs r2, #0x10 (size)")
+        self.assertEqual(hw[4], 0x4669, "mov r1, sp")
+        self.assertEqual((hw[5], hw[6]), (0xF8AD, 0x0002), "strh.w r0, [sp, #2] (tag)")
+        self.assertEqual(hw[7], 0x6868, "ldr r0, [r5, #4] (value_1)")
+        self.assertEqual(hw[8], 0x9001, "str r0, [sp, #4]")
+        self.assertEqual(hw[9], 0x68A8, "ldr r0, [r5, #8] (value_2)")
+        self.assertEqual(hw[10], 0x9002, "str r0, [sp, #8]")
+        self.assertEqual(hw[11], 0x6920, "ldr r0, [r4, #0x10] (mask)")
+        self.assertEqual(hw[12], 0x9003, "str r0, [sp, #0xc]")
+        self.assertEqual(hw[13], 0x4638, "mov r0, r7 (dest)")
+
+    def test_copno_queue_button_0x9013ddcc(self):
+        """COPNOQueueButton filter accepts events 0x04..0x15 and dispatches via TBB."""
+        vtable_word = self.read_words(0x9151DE6C + 0x2C, 1)[0]
+        self.assertEqual(vtable_word, 0x9013DDCD, "Slot +0x2C points to 0x9013DDCC")
+
+        raw = self.read_bytes(0x9013DDDE, 6)
+        hw = struct.unpack("<3H", raw)
+        self.assertEqual(hw[0], 0x1F09, "subs r1, r1, #4")
+        self.assertEqual(hw[1], 0x2912, "cmp r1, #0x12 (18 entries)")
+        self.assertEqual(hw[2], 0xD217, "bhs 0x9013DE14")
+
+    def test_menu_logical_event_translation_0x90252d9e(self):
+        """0x90252D9E maps 59 event IDs to logical menu IDs via TBB table at 0x90252DAA."""
+        hw = self.read_halfwords(0x90252D9E, 4)
+        self.assertEqual(hw[0], 0x293B, "cmp r1, #0x3B (59 entries)")
+        self.assertEqual((hw[1], hw[2]), (0xF04F, 0x30FF), "mov.w r0, #-1")
+
+        tbb_bytes = list(self.read_bytes(0x90252DAA, 59))
+        self.assertEqual(len(tbb_bytes), 59)
+
+        # Input 0x0C -> byte 0x1E -> target 0x90252DE6 -> logical_id = 1 (Confirm / OK)
+        self.assertEqual(tbb_bytes[0x0C], 0x1E)
+        target_0c = 0x90252DAA + tbb_bytes[0x0C] * 2
+        self.assertEqual(target_0c, 0x90252DE6)
+        inst_0c = self.read_halfwords(target_0c, 1)[0]
+        self.assertEqual(inst_0c, 0x2101, "movs r1, #1 (logical_id = 1)")
+
+        # Input 0x0B -> byte 0x4B -> target 0x90252E40 -> logical_id = 0x1B (Back / Menu)
+        self.assertEqual(tbb_bytes[0x0B], 0x4B)
+        target_0b = 0x90252DAA + tbb_bytes[0x0B] * 2
+        self.assertEqual(target_0b, 0x90252E40)
+        inst_0b = self.read_halfwords(target_0b, 1)[0]
+        self.assertEqual(inst_0b, 0x211B, "movs r1, #0x1B (logical_id = 0x1B)")
+
+        # Input 0x10 -> byte 0x27 -> target 0x90252DF8 -> logical_id = 5 (Navigation)
+        self.assertEqual(tbb_bytes[0x10], 0x27)
+        target_10 = 0x90252DAA + tbb_bytes[0x10] * 2
+        self.assertEqual(target_10, 0x90252DF8)
+        inst_10 = self.read_halfwords(target_10, 1)[0]
+        self.assertEqual(inst_10, 0x2105, "movs r1, #5 (logical_id = 5)")
+
+    def test_cmenu_top_menu_view_navigation_slots(self):
+        """CMENUTopMenuView vtable 0x9151D874 routes logical IDs to navigation/confirm slots."""
+        vtable = 0x9151D874
+
+        # Slot +0x10: active view event entry (0x9025A85E)
+        slot10 = self.read_words(vtable + 0x10, 1)[0]
+        self.assertEqual(slot10, 0x9025A85F, "Slot +0x10 points to 0x9025A85E")
+
+        # Slot +0x40: screen event handler (0x9025AD54)
+        slot40 = self.read_words(vtable + 0x40, 1)[0]
+        self.assertEqual(slot40, 0x9025AD55, "Slot +0x40 points to 0x9025AD54")
+
+        # Slot +0x12C: Confirm / Item Action (0x90076FF4)
+        slot12c = self.read_words(vtable + 0x12C, 1)[0]
+        self.assertEqual(slot12c, 0x90076FF5, "Slot +0x12C points to 0x90076FF4 (ExecuteAction)")
+
+        # Slot +0x130: Navigation (0x90077512)
+        slot130 = self.read_words(vtable + 0x130, 1)[0]
+        self.assertEqual(slot130, 0x90077513, "Slot +0x130 points to 0x90077512 (Navigation)")
+
+        # Slot +0x17C: Menu Toggle / Back (0x90077CBD)
+        slot17c = self.read_words(vtable + 0x17C, 1)[0]
+        self.assertEqual(slot17c, 0x90077CBD, "Slot +0x17C points to 0x90077CBD (Menu Toggle)")
+
+    def test_unproven_gpio_pin8_linkage(self):
+        """Static ROM check confirming channel 2 handler in RAM table 0x10319D2C has no static binding."""
+        pool_word = self.read_words(0x9011E8C0, 1)[0]
+        self.assertEqual(pool_word, 0x10319D2C)
 
     def test_physical_identity_is_not_inferred(self):
         # This test intentionally checks only the static boundary; no MENU/OK
