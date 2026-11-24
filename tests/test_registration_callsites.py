@@ -339,6 +339,21 @@ def get_firmware_data():
 
 
 class TestRegistrationCallsites(unittest.TestCase):
+    def test_input_trigger_split_is_explicit(self):
+        """Keep GPIO input distinct from external-control packet input."""
+        input_sites = {
+            item["site"]: item["mask"]
+            for item in TRIGGER_DETAILS
+            if item.get("is_input")
+        }
+        self.assertEqual(
+            input_sites,
+            {
+                0x900E6C5C: 0x00000010,  # external control / CEC path
+                0x9011E742: 0x00000008,  # GPIO Pin 8 forwarder
+            },
+        )
+
     def test_firmware_sha256(self):
         data = get_firmware_data()
         digest = hashlib.sha256(data).hexdigest()
