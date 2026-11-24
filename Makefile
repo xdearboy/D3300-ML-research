@@ -5,7 +5,7 @@ LDFLAGS ?= -lm
 CORE_SOURCES = core/dml.c core/dml_menu.c core/dml_nikon_adapter.c core/dml_nikon_relay_snapshot.c core/dml_draw_buffer.c core/dml_fonts_data.c core/dml_tkernel.c core/dml_camera_status.c core/dml_camera_status_hw.c core/dml_info_screen.c core/dml_menu_screen.c payload/dml_payload.c modules/intervalometer.c modules/fuji_film_sim.c modules/photo_assist.c
 CORE_HEADERS = core/dml.h core/dml_menu.h core/dml_nikon_adapter.h core/dml_nikon_relay_snapshot.h core/dml_draw_buffer.h core/dml_fonts_data.h core/dml_tkernel.h core/dml_camera_status.h core/dml_camera_status_hw.h core/dml_info_screen.h core/dml_menu_screen.h payload/dml_payload.h modules/intervalometer.h modules/fuji_film_sim.h modules/photo_assist.h
 
-.PHONY: all run test clean
+.PHONY: all run test audit-fast clean
 all: build/d3300_sim
 build/d3300_sim: $(CORE_SOURCES) $(CORE_HEADERS) sim/main.c
 	mkdir -p build
@@ -63,5 +63,9 @@ test: all build/test_menu build/test_adapter build/test_draw_buffer build/test_t
 	./build/test_mvp_pipeline
 	./build/test_relay_snapshot
 	python3 -m unittest discover -s tests -v
+audit-fast:
+	@test -n "$(D3300_FIRMWARE)" || (echo "D3300_FIRMWARE=/path/to/b860_102.bin is required" >&2; exit 2)
+	PYTHONPATH=tools python3 tools/d3300_fast_audit.py "$(D3300_FIRMWARE)"
+	D3300_FIRMWARE="$(D3300_FIRMWARE)" python3 -m unittest -q tests.test_input_chain tests.test_registration_callsites tests.test_persistent_dispatcher
 clean:
 	rm -rf build
