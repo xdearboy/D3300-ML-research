@@ -1,0 +1,73 @@
+{
+  "image": "b860_102.bin",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "primitive_appender": {
+    "address": "0x903111BC",
+    "stride_bytes": 10,
+    "stride_calculation": "r5 = count * 5; r1 += r5 << 1 (count * 10)",
+    "fields": [
+      {"offset": 0, "size": 2, "type": "u16", "name": "x", "instruction": "0x903111CA: strh.w r6, [r1, r5, lsl #1]"},
+      {"offset": 2, "size": 2, "type": "u16", "name": "y", "instruction": "0x903111D4: strh r5, [r1, #2]"},
+      {"offset": 4, "size": 2, "type": "u16", "name": "width", "instruction": "0x903111D8: strh r5, [r1, #4]"},
+      {"offset": 6, "size": 2, "type": "u16", "name": "height", "instruction": "0x903111DC: strh r3, [r1, #6]"},
+      {"offset": 8, "size": 1, "type": "u8", "name": "attribute", "instruction": "0x903111DE: strb r4, [r1, #8]"},
+      {"offset": 9, "size": 1, "type": "u8", "name": "reserved_unwritten", "status": "reserved/unwritten; semantics UNPROVEN"}
+    ],
+    "count_update": {
+      "increment": "0x903111C8: adds r0, r0, #1",
+      "store": "0x903111E0: str r0, [r2]"
+    },
+    "confidence": "PROVEN"
+  },
+  "clipping": {
+    "routine": "0x9030C9D0",
+    "parameters": "(rect_ptr, clip_x, clip_y, clip_w, clip_h)",
+    "confidence": "PROVEN"
+  },
+  "cosd_classes": {
+    "COSDDControl": {
+      "rtti_symbol": "12COSDDControl",
+      "rtti_descriptor": "0x91500F70",
+      "vtable": "0x91517260",
+      "slots": {
+        "0x00": "0x902EDE1C (QueryCapability)",
+        "0x04": "0x902EDE22 (SubmitRectList: 12-byte stride)",
+        "0x08": "0x902EDE9A (FlushDisplayPlanes)",
+        "0x14": "0x902EDF32 (SetPlaneVisibility)"
+      }
+    },
+    "COSDCRectInfo": {
+      "rtti_symbol": "13COSDCRectInfo",
+      "rtti_descriptor": "0x91501320",
+      "vtable": "0x91518294",
+      "record_stride": 12
+    },
+    "COSDCColorPalette": {
+      "rtti_symbol": "17COSDCColorPalette",
+      "rtti_descriptor": "0x915029F8",
+      "vtable": "0x9151FBB0"
+    },
+    "COSDDCreateAudioMeter": {
+      "rtti_symbol": "21COSDDCreateAudioMeter",
+      "rtti_descriptor": "0x91504AAC",
+      "vtable": "0x9152D420"
+    },
+    "COSDDCreateAutofocus": {
+      "rtti_symbol": "20COSDDCreateAutofocus",
+      "rtti_descriptor": "0x915041D0",
+      "vtable": "0x915292B4"
+    }
+  },
+  "unproven_boundaries": [
+    {
+      "boundary": "primitive_byte_0x09_padding_semantics",
+      "status": "UNPROVEN",
+      "reason": "Instruction strb r4, [r1, #8] writes byte 8; byte 9 is unwritten. Calling it padding is unproven."
+    },
+    {
+      "boundary": "direct_runtime_osd_injection",
+      "status": "UNPROVEN",
+      "reason": "No safe static ROM API exists for external injection into the display hardware refresh pipeline without display synchronization locks."
+    }
+  ]
+}

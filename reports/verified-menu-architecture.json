@@ -1,0 +1,124 @@
+{
+  "image": "b860_102.bin",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "classes": {
+    "CMENUController": {
+      "rtti_symbol": "15CMENUController",
+      "rtti_descriptor": "0x91501D8C",
+      "vtable": "0x9151B62C",
+      "base_class": "15CJAPFController (0x91501C90)",
+      "slots": {
+        "0x3C": {"target": "0x9002A5F0", "name": "TeardownActiveView"},
+        "0x44": {"target": "0x9002A62C", "name": "ActivateView"},
+        "0x48": {"target": "0x9002A6B6", "name": "TransitionScreen"},
+        "0x54": {"target": "0x9002A616", "name": "RefreshView"},
+        "0x60": {"target": "0x90032AF2", "name": "InvokeButtonDispatch"},
+        "0x64": {"target": "0x90032CA4", "name": "ProcessEventQueue"}
+      },
+      "active_screen_getter": "0x90031D2A",
+      "active_screen_list_evaluator": "0x9003FF50",
+      "active_view_ram_pointer": "0x10123844"
+    },
+    "CGUICEntry": {
+      "rtti_symbol": "10CGUICEntry",
+      "rtti_descriptor": "0x91500AC8",
+      "vtable": "0x91515E84",
+      "field_offsets": {
+        "0x00": "vtable_pointer",
+        "0x08": "view_object_pointer (CGUICView*)",
+        "0x0C": "screen_id"
+      }
+    },
+    "CGUICView": {
+      "rtti_symbol": "9CGUICView",
+      "rtti_descriptor": "0x915085FC",
+      "vtable": "0x9154ADC8"
+    },
+    "CMENUTopMenuView": {
+      "rtti_symbol": "16CMENUTopMenuView",
+      "rtti_descriptor": "0x91502354",
+      "vtable": "0x9151D874",
+      "base_classes": [
+        "13CMENUViewBase (0x915012CC)",
+        "27IGUICSettingValueAccessorIF (0x91507758)"
+      ],
+      "slots": {
+        "0x10": {"target": "0x9025A85E", "name": "OnEvent", "tbb": "0x9025A86E"},
+        "0x40": {"target": "0x9025AD54", "name": "OnButtonEvent"},
+        "0x44": {"target": "0x90254DD4", "name": "DispatchButtonAction", "tbb": "0x90254E18"},
+        "0x54": {"target": "0x9025A770", "name": "PreActionHook"},
+        "0xC4": {"target": "0x9025A85A", "name": "PreEventHook"},
+        "0x128": {"target": "0x90076E70", "name": "OnAction02"},
+        "0x12C": {"target": "0x90076FF4", "name": "OnActionConfirm"},
+        "0x130": {"target": "0x90077512", "name": "OnActionNavRight"},
+        "0x134": {"target": "0x90077540", "name": "OnActionNavLeft"},
+        "0x138": {"target": "0x90077548", "name": "OnActionNavUp"},
+        "0x13C": {"target": "0x90077550", "name": "OnActionNavDown"},
+        "0x140": {"target": "0x900776EC", "name": "OnAction09"},
+        "0x144": {"target": "0x900776EE", "name": "OnAction10"},
+        "0x17C": {"target": "0x90077CBD", "name": "OnActionMenuToggle"},
+        "0x180": {"target": "0x90255AE6", "name": "OnAction28"}
+      }
+    }
+  },
+  "tbb_tables": {
+    "menu_logical_translation": {
+      "branch_instruction": "0x90252DA6",
+      "table_base": "0x90252DAA",
+      "entry_count": 59,
+      "key_mappings": {
+        "0x0B": {"logical_id": 27, "name": "Menu Toggle / Back"},
+        "0x0C": {"logical_id": 1, "name": "Confirm / Execute"},
+        "0x10": {"logical_id": 5, "name": "Navigation Right / Enter"}
+      }
+    },
+    "screen_event_filter": {
+      "branch_instruction": "0x9025A86A",
+      "table_base": "0x9025A86E",
+      "entry_count": 100,
+      "button_range_target": {
+        "target": "0x9025A8D2",
+        "accepted_logical_ids": "0x01..0x1C (1..28)"
+      }
+    },
+    "view_action_router": {
+      "branch_instruction": "0x90254E18",
+      "table_base": "0x90254E1C",
+      "entry_count": 29,
+      "slot_routing": {
+        "1": {"slot_offset": "0x12C", "target": "0x90076FF4", "semantic": "Confirm / Action"},
+        "5": {"slot_offset": "0x130", "target": "0x90077512", "semantic": "Nav Right / Enter"},
+        "6": {"slot_offset": "0x134", "target": "0x90077540", "semantic": "Nav Left / Back"},
+        "7": {"slot_offset": "0x138", "target": "0x90077548", "semantic": "Nav Up"},
+        "8": {"slot_offset": "0x13C", "target": "0x90077550", "semantic": "Nav Down"},
+        "27": {"slot_offset": "0x17C", "target": "0x90077CBD", "semantic": "Menu Toggle / Back"}
+      }
+    }
+  },
+  "observation_seams": [
+    {
+      "seam": "active_view_pointer",
+      "type": "RAM pointer",
+      "address": "0x10123844",
+      "writer": "0x9002A6AC",
+      "safety": "READ_ONLY",
+      "confidence": "PROVEN"
+    },
+    {
+      "seam": "active_screen_container",
+      "type": "Object container list",
+      "offset_from_controller": "0x18 + 0x0C",
+      "accessor": "0x9003FF50",
+      "safety": "READ_ONLY",
+      "confidence": "PROVEN"
+    },
+    {
+      "seam": "input_mailbox_getter",
+      "type": "Function call",
+      "address": "0x9035128C",
+      "state_base": "[0x1012090C] / r0",
+      "safety": "READ_ONLY",
+      "confidence": "PROVEN"
+    }
+  ]
+}
