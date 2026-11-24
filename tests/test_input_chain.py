@@ -37,6 +37,17 @@ class InputChainTest(unittest.TestCase):
         self.assertEqual(data[mailbox:mailbox + 6], bytes.fromhex("012210b50261"))
         self.assertEqual(data[mailbox + 0x0C:mailbox + 0x14], bytes.fromhex("c0e90e41c0e90c23"))
 
+    def test_mailbox_getter_ready_and_copy_contract(self):
+        data = firmware()
+        getter = 0x9035128C - BASE
+        # ready = state+0x10; copy only when ready and destination are non-null.
+        self.assertEqual(data[getter:getter + 12],
+                         bytes.fromhex("30b5026922b119b100f13002"))
+        # Four words from state+0x30 are copied to the caller's buffer, then
+        # the ready flag is loaded for return.
+        self.assertEqual(data[getter + 12:getter + 20],
+                         bytes.fromhex("3cca3cc1006930bd"))
+
     def test_callback_continuation_packs_input_message(self):
         data = firmware()
         continuation = 0x9011E756 - BASE
