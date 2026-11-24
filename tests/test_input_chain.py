@@ -91,6 +91,10 @@ class InputChainTest(unittest.TestCase):
 
     def test_callback_continuation_marks_only_first_message_byte(self):
         data = firmware()
+        # The persistent callback registration and sender share this queue
+        # state; do not conflate it with the separate 0x1012090C controller.
+        queue_literal = struct.unpack("<I", data[0x9011E168 - BASE:0x9011E16C - BASE])[0]
+        self.assertEqual(queue_literal, 0x1011FFB4)
         continuation = 0x9011E756 - BASE
         self.assertEqual(data[continuation:continuation + 12],
                          bytes.fromhex("1fb50220642310228df80000"))

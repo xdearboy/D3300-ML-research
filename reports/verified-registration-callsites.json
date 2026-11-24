@@ -56,7 +56,7 @@
       "assigned_slot": 3,
       "token_mask": "0x00000008",
       "trigger_sites": ["0x9011E742"],
-      "subsystem": "Input Event Queue Forwarder (0x1012090C)",
+      "subsystem": "Input Event Queue Forwarder (0x1011FFB4)",
       "confidence": "PROVEN"
     },
     {
@@ -338,7 +338,7 @@
       "category": "input_gpio_pin",
       "is_button_or_user_input": true,
       "confidence": "PROVEN",
-      "notes": "PRIMARY HARDWARE INPUT FORWARDER: Debouncer 0x9011DDA8 samples GPIO Pin 8 via 0x902742C2. On state change, invokes 0x9011E738 with r0=1 (press) or r0=0 (release), triggering Slot 3. Callback 0x9011DD5C pushes input event type 2 into input mailbox queue [0x1011FFB4 + 0x18]. Specific physical button identity UNPROVEN without hardware schematic."
+      "notes": "PRIMARY HARDWARE INPUT FORWARDER: Debouncer 0x9011DDA8 samples GPIO Pin 8 via 0x902742C2. On state change, invokes 0x9011E738 with r0=1 (press) or r0=0 (release), triggering Slot 3. Callback 0x9011DD5C sends a 0x10-byte stack-sourced message through [0x1011FFB4 + 0x18], explicitly setting only byte 0 to 2. Specific physical button identity and the remaining payload fields are UNPROVEN."
     },
     {
       "trigger_site": "0x9011F198",
