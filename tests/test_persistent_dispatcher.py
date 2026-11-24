@@ -39,8 +39,17 @@ class TestPersistentDispatcher(unittest.TestCase):
         # 0x900271CE: tst r0, r1 (0842)
         self.assertEqual(data[off + 0x2A:off + 0x2C], bytes.fromhex("0842"))
 
+        # 0x900271CC loads the delivered flag pattern into r1; the callback
+        # therefore receives the event mask in r1 at the indirect call.
+        self.assertEqual(data[off + 0x28:off + 0x2C],
+                         bytes.fromhex("01990842"))
+
         # 0x900271DA: blx r0 (8047)
         self.assertEqual(data[off + 0x36:off + 0x38], bytes.fromhex("8047"))
+
+        # 0x900271D6 skips null callbacks immediately before blx r0.
+        self.assertEqual(data[off + 0x32:off + 0x38],
+                         bytes.fromhex("406800b18047"))
 
         # 0x900271DC: adds r4, r4, #1 (1c64) - slot pointer NOT cleared
         self.assertEqual(data[off + 0x38:off + 0x3A], bytes.fromhex("641c"))
