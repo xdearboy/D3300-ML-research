@@ -89,15 +89,22 @@ class InputChainTest(unittest.TestCase):
         }
         self.assertEqual(callers, {0x9011E0AE, 0x9011E3F6})
 
-    def test_callback_continuation_packs_input_message(self):
+    def test_callback_continuation_marks_only_first_message_byte(self):
         data = firmware()
         continuation = 0x9011E756 - BASE
         self.assertEqual(data[continuation:continuation + 12],
                          bytes.fromhex("1fb50220642310228df80000"))
-        # The continuation stores message type 2 and sends 0x10 bytes through
-        # the verified message-buffer veneer; physical button identity remains unknown.
+        # PUSH saves incoming r0-r4/lr.  The subsequent STRB changes only the
+        # low byte of saved r0 before r1=sp and r2=0x10 are passed to send.
+        # This routine therefore cannot prove a normalized 16-byte layout.
         self.assertEqual(data[continuation + 12:continuation + 20],
                          bytes.fromhex("69465448806910f7"))
+        callers = {
+            BASE + pos
+            for pos, target, _kind, _raw in thumb_branches(data)
+            if target == 0x9011E756
+        }
+        self.assertEqual(callers, {0x9011DD70, 0x9011E018})
 
     def test_callback_state_gate_is_a32_byte_getter(self):
         data = firmware()
