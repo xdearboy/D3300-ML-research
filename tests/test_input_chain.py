@@ -1,8 +1,12 @@
 import hashlib
 import os
 import struct
+import sys
 import unittest
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from d3300_recon import thumb_branches
 
 BASE = 0x90020000
 SHA256 = "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff"
@@ -47,6 +51,20 @@ class InputChainTest(unittest.TestCase):
         # the ready flag is loaded for return.
         self.assertEqual(data[getter + 12:getter + 20],
                          bytes.fromhex("3cca3cc1006930bd"))
+
+    def test_mailbox_getter_direct_callers(self):
+        data = firmware()
+        callers = {
+            BASE + pos
+            for pos, target, _kind, _raw in thumb_branches(data)
+            if target == 0x9035128C
+        }
+        self.assertEqual(callers, {
+            0x903292C6,
+            0x9032936A,
+            0x90332E58,
+            0x90332FAC,
+        })
 
     def test_callback_continuation_packs_input_message(self):
         data = firmware()
