@@ -68,6 +68,9 @@
       "record_size_bytes": 16,
       "caller": "0x903276B4 (inside CSYSCAppButtonController)",
       "flag_offset": "0x10 (has_event = 1)",
+      "record_offset": "0x30",
+      "write_order": "set ready flag, copy words 0..2 from source, copy word 3 from source+0x0c",
+      "mutation": "writes mailbox state",
       "hookability": {
         "passive_observation": "feasible via mailbox inspection",
         "safe_hook": "UNPROVEN"
