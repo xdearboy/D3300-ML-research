@@ -43,6 +43,15 @@ this same sender.  The later queue/controller path demonstrably copies 16
 bytes, but it does not establish a normalized field layout or a button ID for
 this source payload.
 
+The `0x9011E018` caller has a separately verified mechanical shape.  Its
+enclosing routine begins at `0x9011DFE2`; after `r4` is supplied as a non-null
+record pointer, it loads `r0`, `r1`, and `r3` from record offsets `+4`, `+0`,
+and `+8`, respectively.  With its local selector equal to `2`, it computes
+`r2 = 0x10319D2C + 0x18` and calls the sender only when record `+4` is nonzero.
+Consequently this caller preserves source-word provenance, but the record's
+type and field meanings remain **UNPROVEN**.  The other caller is the tail
+branch from the GPIO callback and is not assumed to share that record shape.
+
 One shared consumer, `0x9003D28C`, is a two-output query called directly from
 `0x9011E0AE` and `0x9011E3F6`. Its state base is `0x101219D4` (literal
 `0x10121A20` at `0x9003D4BC`, minus `0x4C`). On the proven fast path where

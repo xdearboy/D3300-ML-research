@@ -106,6 +106,18 @@ class InputChainTest(unittest.TestCase):
         }
         self.assertEqual(callers, {0x9011DD70, 0x9011E018})
 
+    def test_non_gpio_sender_caller_register_provenance(self):
+        data = firmware()
+        caller = 0x9011DFE2 - BASE
+        # r4 is the supplied record pointer.  The caller loads r0/r1/r3 from
+        # +4/+0/+8, computes r2 from selector 2, then branches only if +4.
+        self.assertEqual(data[caller:caller + 0x38], bytes.fromhex(
+            "f8b505460c46032168460df784fb5d4e01214ff0ff32f0691af7"
+            "86f96cb194e80b0005eb45025f4f022d07eb82020bc203d1606808"
+            "b100f0"))
+        literal = struct.unpack("<I", data[0x9011E188 - BASE:0x9011E18C - BASE])[0]
+        self.assertEqual(literal, 0x10319D2C)
+
     def test_callback_state_gate_is_a32_byte_getter(self):
         data = firmware()
         gate = 0x90369364 - BASE
