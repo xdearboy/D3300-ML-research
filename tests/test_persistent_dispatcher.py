@@ -45,6 +45,26 @@ class TestPersistentDispatcher(unittest.TestCase):
         # 0x900271DC: adds r4, r4, #1 (1c64) - slot pointer NOT cleared
         self.assertEqual(data[off + 0x38:off + 0x3A], bytes.fromhex("641c"))
 
+    def test_one_shot_worker_clears_before_callback(self):
+        data = get_firmware_data()
+        off = 0x90026FF0 - ROM_BASE
+
+        # 0x9002702A clears slots[r4].func_ptr, then 0x9002702C calls it.
+        self.assertEqual(data[off + 0x3A:off + 0x3E],
+                         bytes.fromhex("4f608047"))
+
+    def test_one_shot_registration_is_semaphore_protected(self):
+        data = get_firmware_data()
+        off = 0x900270F8 - ROM_BASE
+
+        # Acquire before scanning, write callback at +4, signal on exit.
+        self.assertEqual(data[off + 0x18:off + 0x1C],
+                         bytes.fromhex("fef110ef"))
+        self.assertEqual(data[off + 0x44:off + 0x48],
+                         bytes.fromhex("fef1feee"))
+        self.assertEqual(data[off + 0x64:off + 0x68],
+                         bytes.fromhex("c1f80490"))
+
     def test_registration_function_0x900272a6(self):
         data = get_firmware_data()
         off = 0x900272A6 - ROM_BASE
