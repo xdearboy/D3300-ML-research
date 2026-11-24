@@ -23,8 +23,12 @@ the queue-button range/TBB, and the application mailbox setter/getter.
 `0x90369364` is an ARM A32 helper (`ldr`/`ldrb`/`bx lr`) returning byte
 `[0x10125160 + 3]` (the literal pointer is at `0x903695DC`). It does not
 construct a button code. The callback's comparison with `1` is therefore a
-state gate, not proof of MENU/OK/INFO identity. A writer for this global byte
-was not established in the current static pass (**UNPROVEN**). The helper is
+state gate, not proof of MENU/OK/INFO identity. Its direct ARM setter is
+`0x90369358` (`strb r0, [0x10125160 + 3]`). The GPIO debounce path calls that
+setter at `0x9011DDF4` with `r0 = 1` and at `0x9011DE08` with `r0 = 0`, each
+immediately before forwarding the same 1/0 state to `0x9011E738`. This proves
+the state byte follows that GPIO forwarder; it still does not identify the
+physical control. The getter is
 also called directly from `0x9003D0E6`, `0x9003D13E`, `0x9003D298`,
 `0x9003D856`, and `0x9011E1FA`; it is therefore a shared state predicate, not
 an input-specific function.

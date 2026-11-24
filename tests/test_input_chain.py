@@ -122,6 +122,16 @@ class InputChainTest(unittest.TestCase):
             0x9011E1FA,
         })
 
+        setter = 0x90369358 - BASE
+        self.assertEqual(data[setter:setter + 12],
+                         bytes.fromhex("7c129fe50300c1e51eff2fe1"))
+        setter_callers = {
+            BASE + pos
+            for pos, target, _kind, _raw in thumb_branches(data)
+            if target == 0x90369358
+        }
+        self.assertEqual(setter_callers, {0x9011DDF4, 0x9011DE08})
+
     def test_physical_identity_is_not_inferred(self):
         # This test intentionally checks only the static boundary; no MENU/OK
         # label is assigned to GPIO Pin 8.
