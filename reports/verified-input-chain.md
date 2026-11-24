@@ -60,6 +60,15 @@ their path does not satisfy the helper's `selector == 2` condition and cannot
 reach `0x9011E018`.  This isolates a second statically configured producer of
 the 16-byte queue payload, while leaving its logical event meaning unassigned.
 
+Its first three source words are `0x00000000`, `0x9016E0D3`, and
+`0x00000000`.  On this selector-2 path, `0x9011DFE2` loads that second word
+into `r0`; `0x9011E756` replaces its low byte with `0x02`.  Therefore the
+outgoing first halfword is `0xE002`.  `COPNOQueueButton` at `0x9013DDCC`
+subtracts 4 from its incoming halfword and sends values above `0x12` to its
+straight-copy path at `0x9013DE14`; `0xE002` takes that path.  This proves the
+static secondary route bypasses the queue-button TBB mapping.  It must not be
+used as evidence for a physical button or its ID.
+
 One shared consumer, `0x9003D28C`, is a two-output query called directly from
 `0x9011E0AE` and `0x9011E3F6`. Its state base is `0x101219D4` (literal
 `0x10121A20` at `0x9003D4BC`, minus `0x4C`). On the proven fast path where

@@ -132,6 +132,18 @@ class InputChainTest(unittest.TestCase):
         }
         self.assertEqual(callers, {0x9016E0C2, 0x9029B772, 0x9029B780, 0x9029B78E})
 
+    def test_static_secondary_route_bypasses_button_tbb(self):
+        data = firmware()
+        words = struct.unpack("<III", data[0x91478AE8 - BASE:0x91478AF4 - BASE])
+        self.assertEqual(words, (0, 0x9016E0D3, 0))
+        # The sender replaces the low byte of r0 (the middle source word),
+        # so the queue sees halfword 0xE002. After subtracting 4 it is above
+        # 0x12 and takes the straight-copy path, not the TBB button mapping.
+        self.assertEqual((words[1] & ~0xFF) | 2, 0x9016E002)
+        queue = 0x9013DDCC - BASE
+        self.assertEqual(data[queue + 6:queue + 0x18],
+                         bytes.fromhex("09880746144e4ff070446868091f122917d2"))
+
     def test_callback_state_gate_is_a32_byte_getter(self):
         data = firmware()
         gate = 0x90369364 - BASE
