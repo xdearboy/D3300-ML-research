@@ -12,7 +12,8 @@
     {"address": "0x1011FFB4", "role": "input queue state", "confidence": "PROVEN"},
     {"address": "0x9013DDCC", "role": "COPNOQueueButton dispatcher", "confidence": "PROVEN"},
     {"address": "0x903276B4", "role": "application button-controller handoff", "confidence": "PROVEN"},
-    {"address": "0x903512A0", "role": "16-byte mailbox setter", "confidence": "PROVEN"}
+    {"address": "0x903512A0", "role": "16-byte mailbox setter", "callers": ["0x903276B4", "0x903276EE"], "confidence": "PROVEN"},
+    {"address": "0x9035128C", "role": "16-byte mailbox getter", "callers": ["0x903292C6", "0x9032936A", "0x90332E58", "0x90332FAC"], "read_only": true, "confidence": "PROVEN"}
   ],
   "physical_button_identity": "UNPROVEN",
   "live_runtime_observation": "UNPROVEN"
