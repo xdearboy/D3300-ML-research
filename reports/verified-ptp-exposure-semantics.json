@@ -1,0 +1,203 @@
+{
+  "firmware": "Nikon D3300 C 1.02 B-firmware",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "rom_base": "0x90020000",
+  "scope": "PTP exposure, shutter speed, aperture, and white balance subsystem",
+  "infodisp_isolation_confirmed": true,
+  "classes": [
+    {
+      "class_name": "CPTPCExposureTime",
+      "vtable": "0x91520B38",
+      "rtti": "0x91502BCC",
+      "ptp_code": "0x500D",
+      "ptp_name": "ExposureTime",
+      "get_value_method": "0x90300FF8",
+      "table_address": "0x914FE9FC",
+      "units": "microseconds (1/10000 sec)"
+    },
+    {
+      "class_name": "CPTPCShutterSpeed",
+      "vtable": "0x91520F7C",
+      "rtti": "0x9150B431",
+      "ptp_code": "0xD1A2",
+      "ptp_name": "ShutterSpeed",
+      "get_value_method": "0x902E4534",
+      "helper": "0x902FD8F8"
+    },
+    {
+      "class_name": "CPTPCFnumber",
+      "vtable": "0x91517604",
+      "rtti": "0x91501064",
+      "ptp_code": "0x5007",
+      "ptp_name": "FNumber",
+      "get_value_method": "0x90301C14",
+      "helper": "0x90301B50",
+      "table_address": "0x914FED48",
+      "units": "F-number * 100"
+    },
+    {
+      "class_name": "CPTPCWhiteBalance",
+      "vtable": "0x915210C0",
+      "rtti": "0x91502CA0",
+      "ptp_code": "0x5005",
+      "ptp_name": "WhiteBalance",
+      "get_value_method": "0x90302864",
+      "table_address": "0x914FF1EE",
+      "units": "PTP standard WB code enum"
+    }
+  ],
+  "properties": [
+    {
+      "property_id_hex": "0x066C",
+      "property_id_dec": 1644,
+      "size_bytes": 1,
+      "subsystem": "CINFOManager",
+      "consumer": "0x902FD8F8 (CPTPCExposureTime / CPTPCShutterSpeed helper)",
+      "role": "shutter_speed_step_index",
+      "confidence": "PROVEN",
+      "evidence": "0x902FD928: movw r1, 0x66c; CINFOManager::GetProperty(0x066c, &sp[8], 1); offset +30 indexed into 0x914FE9FC"
+    },
+    {
+      "property_id_hex": "0x066D",
+      "property_id_dec": 1645,
+      "size_bytes": 1,
+      "subsystem": "CINFOManager",
+      "consumer": "0x902FD8F8 (CPTPCExposureTime / CPTPCShutterSpeed helper)",
+      "role": "shutter_speed_fine_step_index",
+      "confidence": "PROVEN",
+      "evidence": "0x902FD942: movw r1, 0x66d; CINFOManager::GetProperty(0x066d, sp, 1); offset +32 fine step delta"
+    },
+    {
+      "property_id_hex": "0x02C1",
+      "property_id_dec": 705,
+      "size_bytes": 4,
+      "subsystem": "CINFOManager",
+      "consumer": "0x902FD8F8 / 0x90301DFF",
+      "role": "shutter_mode_range_flags",
+      "confidence": "PROVEN",
+      "evidence": "0x902FD956: movw r1, 0x2c1; CINFOManager::GetProperty(0x02c1, &sp[12], 4); range limits and bulb/time state"
+    },
+    {
+      "property_id_hex": "0x066B",
+      "property_id_dec": 1643,
+      "size_bytes": 1,
+      "subsystem": "CINFOManager",
+      "consumer": "0x902FD542 (called by 0x902FD8F8)",
+      "role": "shutter_speed_gating_mode",
+      "confidence": "PROVEN",
+      "evidence": "0x902FD584: movw r1, 0x66b; CINFOManager::GetProperty(0x066b, &sp[8], 1); tested for +0x20 / +0x1F mode branch"
+    },
+    {
+      "property_id_hex": "0x00BD",
+      "property_id_dec": 189,
+      "size_bytes": 4,
+      "subsystem": "CINFOManager",
+      "consumer": "0x902FD4A0 (called by 0x902FD8F8)",
+      "role": "bulb_time_exposure_mode_flag",
+      "confidence": "PROVEN",
+      "evidence": "0x902FD4CA: movs r1, 0xbd; CINFOManager::GetProperty(0x00bd, &sp[8], 4); checks if bulb mode == 1"
+    },
+    {
+      "property_id_hex": "0x00B9",
+      "property_id_dec": 185,
+      "size_bytes": 4,
+      "subsystem": "CINFOManager",
+      "consumer": "0x902FD4A0 (called by 0x902FD8F8)",
+      "role": "shutter_sync_extended_mode",
+      "confidence": "PROVEN",
+      "evidence": "0x902FD4DC: movs r1, 0xb9; CINFOManager::GetProperty(0x00b9, &sp[12], 4); clamped < 6 and dispatched via TBB [pc, r0]"
+    },
+    {
+      "property_id_hex": "0x02D6",
+      "property_id_dec": 726,
+      "size_bytes": 4,
+      "subsystem": "CINFOManager",
+      "consumer": "0x902FD4A0 (called by 0x902FD8F8)",
+      "role": "flash_sync_shutter_status",
+      "confidence": "PROVEN",
+      "evidence": "0x902FD4F0: movw r1, 0x2d6; CINFOManager::GetProperty(0x02d6, &sp[16], 4); selects sync suffix (0x24/0x22)"
+    },
+    {
+      "property_id_hex": "0x066E",
+      "property_id_dec": 1646,
+      "size_bytes": 1,
+      "subsystem": "CINFOManager",
+      "consumer": "0x90301B50 (CPTPCFnumber helper)",
+      "role": "aperture_fnumber_step_index",
+      "confidence": "PROVEN",
+      "evidence": "0x90301B7C: movw r1, 0x66e; CINFOManager::GetProperty(0x066e, &sp[4], 1); indexes table 0x914FED48 -> PTP 0x5007 FNumber"
+    },
+    {
+      "property_id_hex": "0x066A",
+      "property_id_dec": 1642,
+      "size_bytes": 4,
+      "subsystem": "CINFOManager",
+      "consumer": "0x90302864 (CPTPCWhiteBalance::GetDevicePropValue)",
+      "role": "white_balance_mode_id",
+      "confidence": "PROVEN",
+      "evidence": "0x9030289A: movw r1, 0x66a; CINFOManager::GetProperty(0x066a, sp, 4); mapped via table 0x914FF1EE -> PTP 0x5005 WhiteBalance"
+    },
+    {
+      "property_id_hex": "0x002D",
+      "property_id_dec": 45,
+      "size_bytes": 4,
+      "subsystem": "CKRRCInfoDispData",
+      "consumer": "none (CINFOManager dispatch loop 0x90169A28 only)",
+      "role": null,
+      "confidence": "UNPROVEN",
+      "evidence": "Audited in CPTPCExposureTime/CPTPCShutterSpeed; zero queries from PTP exposure handlers. Shutter speed link is DISPROVEN."
+    }
+  ],
+  "conversion_tables": [
+    {
+      "address": "0x914FE9FC",
+      "name": "exposure_time_microseconds_table",
+      "entry_type": "uint32",
+      "stride": 4,
+      "sample_values": [
+        300000,
+        250000,
+        200000,
+        150000,
+        130000,
+        100000
+      ],
+      "units": "microseconds (1/10000 sec PTP standard)"
+    },
+    {
+      "address": "0x914FED48",
+      "name": "aperture_fnumber_table",
+      "entry_type": "uint16",
+      "stride": 2,
+      "sample_values": [
+        100,
+        110,
+        120,
+        140,
+        200,
+        280,
+        400,
+        560,
+        800
+      ],
+      "units": "F-number * 100 (f/2.8 -> 280, f/4.0 -> 400, f/5.6 -> 560)"
+    },
+    {
+      "address": "0x914FF1EE",
+      "name": "white_balance_ptp_mapping_table",
+      "entry_type": "uint8",
+      "stride": 1,
+      "values": [
+        0,
+        3,
+        2,
+        1,
+        4,
+        5,
+        6,
+        7
+      ],
+      "units": "PTP standard WhiteBalance codes"
+    }
+  ]
+}
