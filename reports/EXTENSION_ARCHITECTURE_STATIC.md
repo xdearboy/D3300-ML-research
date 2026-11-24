@@ -178,7 +178,13 @@ Because on-device payload execution carries brick risk, development proceeds via
    - Accurately models `CMENUController`, `CMENUTopMenuView`, `COSDDControl`, and the 10-byte vector primitive pipeline.
    - Allows fully interactive menu testing, key navigation, and module development on macOS/Linux.
 
-2. **Automated Test Suite (`make test`, `make audit-fast`)**:
+2. **Host-only logical UI route catalogue (`core/dml_ui_logical_event.*`)**:
+   - Records only static ROM facts from the `CMENUTopMenuView` router: logical IDs
+     `0x01`, `0x05`--`0x08`, and `0x1B` with their vtable slots and ROM targets.
+   - Deliberately does not map those IDs to physical buttons, GPIO pins, or camera
+     actions. It is a simulator/tooling aid, not a firmware integration mechanism.
+
+3. **Automated Test Suite (`make test`, `make audit-fast`)**:
    - `tests/test_input_chain.py`: verified input tests, GPIO halfword 0x0002, and TBB bypass verification.
    - `tests/test_menu_architecture.py`: verified menu hierarchy and slot routing tests.
    - `tests/test_osd_rendering.py`: verified OSD primitive tests with unwritten byte +0x09 checks.
@@ -186,4 +192,4 @@ Because on-device payload execution carries brick risk, development proceeds via
    - `tests/test_registration_callsites.py`: callback registration tests.
    - `tests/test_persistent_dispatcher.py`: dispatcher loop tests.
    - `tests/test_proven_tables.py`: ROM anchor tests.
-   - Complete C unit tests: `test_menu`, `test_adapter`, `test_draw_buffer`, `test_tkernel`, `test_payload`, `test_info_screen`, `test_camera_status_hw`, `test_menu_screen`, `test_fuji_film_sim`, `test_photo_assist`, `test_mvp_pipeline`, `test_relay_snapshot`.
+   - Complete C unit tests: `test_menu`, `test_adapter`, `test_draw_buffer`, `test_tkernel`, `test_payload`, `test_info_screen`, `test_camera_status_hw`, `test_menu_screen`, `test_fuji_film_sim`, `test_photo_assist`, `test_mvp_pipeline`, `test_relay_snapshot`, `test_ui_logical_event`.
