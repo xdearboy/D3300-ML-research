@@ -16,5 +16,15 @@
     {"address": "0x9035128C", "role": "16-byte mailbox getter", "callers": ["0x903292C6", "0x9032936A", "0x90332E58", "0x90332FAC"], "read_only": true, "confidence": "PROVEN"}
   ],
   "physical_button_identity": "UNPROVEN",
-  "live_runtime_observation": "UNPROVEN"
+  "live_runtime_observation": "UNPROVEN",
+  "shared_state_query": {
+    "address": "0x9003D28C",
+    "direct_callers": ["0x9011E0AE", "0x9011E3F6"],
+    "state_base": "0x101219D4",
+    "enabled_offset": "0x40",
+    "output_offsets": ["0x30", "0x34"],
+    "fast_path_condition": "enabled != 0 and shared gate == 1",
+    "fast_path_return": 0,
+    "semantics": "UNPROVEN"
+  }
 }

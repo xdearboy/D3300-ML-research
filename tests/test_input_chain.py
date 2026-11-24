@@ -75,6 +75,20 @@ class InputChainTest(unittest.TestCase):
         }
         self.assertEqual(callers, {0x903276B4, 0x903276EE})
 
+    def test_shared_state_query_contract(self):
+        data = firmware()
+        query = 0x9003D28C - BASE
+        self.assertEqual(data[query:query + 20],
+                         bytes.fromhex("2de9f047074688466ff005052cf364e8874c4c3c"))
+        literal = struct.unpack("<I", data[0x9003D4BC - BASE:0x9003D4C0 - BASE])[0]
+        self.assertEqual(literal - 0x4C, 0x101219D4)
+        callers = {
+            BASE + pos
+            for pos, target, _kind, _raw in thumb_branches(data)
+            if target == 0x9003D28C
+        }
+        self.assertEqual(callers, {0x9011E0AE, 0x9011E3F6})
+
     def test_callback_continuation_packs_input_message(self):
         data = firmware()
         continuation = 0x9011E756 - BASE

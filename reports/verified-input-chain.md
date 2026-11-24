@@ -29,6 +29,14 @@ also called directly from `0x9003D0E6`, `0x9003D13E`, `0x9003D298`,
 `0x9003D856`, and `0x9011E1FA`; it is therefore a shared state predicate, not
 an input-specific function.
 
+One shared consumer, `0x9003D28C`, is a two-output query called directly from
+`0x9011E0AE` and `0x9011E3F6`. Its state base is `0x101219D4` (literal
+`0x10121A20` at `0x9003D4BC`, minus `0x4C`). On the proven fast path where
+`[base + 0x40] != 0` and the shared gate returns `1`, it copies words
+`[base + 0x30]` and `[base + 0x34]` to its two pointer arguments and returns
+`0`. The purpose of those words is **UNPROVEN**; they are not assigned a button
+or photographic meaning.
+
 What is not proven: which physical camera button is wired to GPIO Pin 8, and
 whether an external observer can safely read the live T-Kernel flag or queue.
 The host implementation therefore accepts only read-only snapshots and keeps
