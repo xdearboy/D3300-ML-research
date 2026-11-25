@@ -37,6 +37,7 @@ def main() -> int:
     checks = [
         [sys.executable, str(root / "d3300_verify_camera_status.py"), str(fw), "--verify"],
         [sys.executable, str(root / "d3300_info_disp_map.py"), str(fw), "--verify"],
+        [sys.executable, str(root / "d3300_tkernel_veneer_audit.py"), str(fw), "--verify"],
     ]
     results = []
     for cmd in checks:
