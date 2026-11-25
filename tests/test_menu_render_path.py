@@ -75,6 +75,11 @@ class MenuRenderPathTest(unittest.TestCase):
         """0x9012A73C copies selected state then directly invokes 0x90129EFE."""
         self.assertEqual(thumb_bl_target(0x9012A7A4, self.raw(0x9012A7A4, 4)), 0x90129EFE)
 
+    def test_cguicdraw_static_global_is_constructed_in_rom_startup_wrapper(self):
+        """The constructor wrapper supplies the static RAM object 0x10383580."""
+        self.assertEqual(struct.unpack("<I", self.raw(0x9012ADB4, 4))[0], 0x10383580)
+        self.assertEqual(thumb_bl_target(0x9012ADA2, self.raw(0x9012ADA2, 4)), 0x9012AD16)
+
 
 if __name__ == "__main__":
     unittest.main()

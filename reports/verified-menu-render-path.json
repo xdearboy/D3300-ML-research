@@ -27,6 +27,11 @@
       }
     },
     {
+      "from": "startup wrapper 0x9012AD9E",
+      "to": "CGUICDraw constructor 0x9012AD16",
+      "observation": "loads static RAM object 0x10383580 from literal 0x9012ADB4 and directly calls the constructor"
+    },
+    {
       "from": "CGUICDraw state handoff 0x9012A73C",
       "to": "0x90129EFE",
       "observation": "copies selected-state fields into the manager and directly calls the subsequent state-manager routine at 0x9012A7A4"
