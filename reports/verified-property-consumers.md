@@ -26,7 +26,10 @@ One confirmed static producer that writes to the `0x104B9044..0x104B9180` RAM ra
 0x9019de4c: blx   0x90274b08           ; memcpy(0x104B9044, &stack[4], 316)
 ```
 
-All 79 properties are assembled onto the stack frame of `CKRRCInfoDispData::Update` (`0x9019CD66`) and committed in a 316-byte atomic copy at `0x9019DE46`. Whether additional writers or formatters exist in unanalyzed code remains UNPROVEN.
+The observed call passes a 316-byte stack range to `memcpy` at `0x9019DE46`.
+This proves one bulk write covering the table's represented output span. It
+does **not** prove atomicity, update exclusion, the interpretation of every
+source byte, or that no other writer exists.
 
 ---
 
@@ -73,9 +76,11 @@ For all 79 properties:
 
 ---
 
-## 5. Safe Observation Seam
+## 5. Static boundary — not a runtime observation approval
 
-To passively monitor camera status (exposure, aperture, ISO, battery, AF state) without risk of firmware corruption:
-- Read-only inspection of RAM address `0x104B9044 + output_offset`.
-- The buffer is updated synchronously whenever `CKRRCInfoDispData::Update` fires.
-- Zero ROM or RAM mutation is required to observe all 79 camera telemetry fields.
+The static trace identifies addresses and one bulk-copy producer. It does not
+establish cache coherence, task ownership, update timing, camera access method,
+or safety of reading live RAM. Consequently this repository makes **no**
+camera-facing observation recommendation. In the host simulator, consumers may
+model values using the descriptor offsets; on hardware, any observation would
+require separate authorised runtime evidence and a safety review.

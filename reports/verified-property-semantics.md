@@ -12,7 +12,9 @@ Table `0x914ED324` describes the layout and dispatch structure of the camera inf
 - **Entry Count**: 79 (`0x4F`)
 - **Entry Stride**: 12 bytes (`<III`: `property_id`, `size_bytes`, `ram_pointer`)
 - **RAM Output Span**: `0x104B9044` to `0x104B9180` (316 bytes = `0x13C`)
-- **Producer Mechanism**: Atomic bulk `memcpy` at `0x9019DE46` from stack `SP+4` in `CKRRCInfoDispData::Update` (`0x9019CD66`)
+- **Producer Mechanism**: One observed 316-byte `memcpy` call at `0x9019DE46`
+  from stack `SP+4` in `CKRRCInfoDispData::Update` (`0x9019CD66`). Atomicity,
+  exclusion and live-RAM observation safety are unproven.
 - **Consumer Notification**: Vtable slot `+0x0C` on listener `CINFOManager` (`0x103C92DC`, vtable `0x91516DB4`), initiating dispatch loop `0x90169A28` iterating over all 79 properties
 
 ### Strict Semantic Evidence Standard
@@ -266,4 +268,6 @@ The analysis revealed a crucial structural boundary:
 ## 5. Architectural Summary & Conclusions
 1. **Two Properties Proven**: Exactly 2 of 79 properties (`0x0040` -> `battery_power_source_status` and `0x0054` -> `iso_control_sensitivity`) possess complete, unbroken static chains to standard PTP serializations and format lookup tables.
 2. **77 Properties Kept Unproven**: All other 77 properties remain strictly `UNPROVEN` per the zero-speculation mandate.
-3. **Safe Passive Monitor Seam**: Custom OSD or monitor routines may safely read `0x104B90A4` (battery power source status) and `0x104B9148` (raw ISO step index) synchronously after `CKRRCInfoDispData::Update` fires.
+3. **No runtime seam approved**: the static evidence identifies the two output
+   addresses and PTP consumers, but does not establish an allowed/safe way to
+   read them on a camera or a synchronisation point after the update call.
