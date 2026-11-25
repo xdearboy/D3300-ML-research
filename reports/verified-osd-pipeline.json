@@ -3,7 +3,7 @@
     "firmware": "b860_102.bin",
     "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
     "rom_base": "0x90020000",
-    "pipeline_name": "OSD Vector Primitive, Clipping, Batching, and DMA Submit Pipeline"
+    "pipeline_name": "OSD Vector Primitive, Clipping, Batching, and Downstream-Helper Trace"
   },
   "stages": [
     {
@@ -52,7 +52,7 @@
       },
       "bounds_checking": {
         "in_appender": false,
-        "note": "0x903111BC contains NO internal capacity check; increments *count_ptr unconditionally. Bounds checking is enforced by callers."
+        "note": "0x903111BC contains no internal capacity check and increments *count_ptr unconditionally. Whether a caller enforces bounds is not established here."
       },
       "callers_count": 14,
       "callers": [
@@ -89,12 +89,12 @@
       "slots": {
         "+0x00": {
           "target": "0x902EDE1C",
-          "name": "QueryCapability",
-          "confidence": "PROVEN"
+          "name": null,
+          "confidence": "UNPROVEN"
         },
         "+0x04": {
           "target": "0x902EDE22",
-          "name": "SubmitRectList",
+          "name": "12-byte-record handler (semantic name unproven)",
           "stride_bytes": 12,
           "plane_bounds_check": "cmp r0, #7 (bhs 0x902EDE94) enforces max 7 planes",
           "rect_loop": "iterates r5 over rect count r7",
@@ -102,15 +102,15 @@
         },
         "+0x08": {
           "target": "0x902EDE9A",
-          "name": "FlushDisplayPlanes",
+          "name": "downstream record handler (semantic name unproven)",
           "calls_clipping": "0x9030C9D0",
-          "calls_dma_submit": "0x902BC5F4",
+          "calls_downstream_helper": "0x902BC5F4",
           "confidence": "PROVEN"
         },
         "+0x14": {
           "target": "0x902EDF32",
-          "name": "SetPlaneVisibility",
-          "confidence": "PROVEN"
+          "name": null,
+          "confidence": "UNPROVEN"
         }
       }
     },
@@ -123,48 +123,48 @@
       "slots": {
         "+0x10": {
           "target": "0x902AFF16",
-          "name": "BindPalette",
-          "confidence": "PROVEN"
+          "name": null,
+          "confidence": "UNPROVEN"
         },
         "+0x14": {
           "target": "0x902AFF50",
-          "name": "ResetPalette",
-          "confidence": "PROVEN"
+          "name": null,
+          "confidence": "UNPROVEN"
         },
         "+0x18": {
           "target": "0x902AFF78",
-          "name": "GetPaletteTablePtr",
+          "name": "returns [this + 8]",
           "confidence": "PROVEN"
         }
       }
     },
     {
       "stage": 5,
-      "name": "hardware_plane_dma_boundary",
+      "name": "downstream_plane_update_helper",
       "address": "0x902BC5F4",
       "state_structures": {
         "display_controller_state": "0x10348F6C",
         "active_plane_descriptor": "0x10123358"
       },
-      "dma_submit_targets": [
+      "direct_call_targets": [
         "0x902BC24E",
         "0x902BC314"
       ],
-      "synchronization": "Hardware VSYNC / vertical blanking interrupt sync required to prevent tearing / watchdog timeout",
-      "confidence": "PROVEN"
+      "hardware_transfer_and_synchronization": "UNPROVEN from this ROM-only trace",
+      "confidence": "PROVEN_CALL_GRAPH_ONLY"
     }
   ],
   "safety_ledger": {
     "proven_facts": [
-      "Vector primitive appender 0x903111BC appends 10-byte records (<HHHBB) without internal capacity check.",
+      "Vector primitive appender 0x903111BC appends 10-byte records (<HHHHBB) without an internal capacity check.",
       "Clipping routine 0x9030C9D0 clamps coordinates against rectangular viewports.",
       "COSDDControl (vtable 0x91517260) manages 12-byte COSDCRectInfo lists, enforces plane < 7 bounds, and executes FlushDisplayPlanes.",
-      "FlushDisplayPlanes (0x902EDE9A) invokes DMA boundary routine 0x902BC5F4.",
+      "The handler at 0x902EDE9A invokes 0x902BC5F4.",
       "COSDCColorPalette (vtable 0x9151FBB0) slot +0x18 provides 256-color LUT pointer."
     ],
     "unproven_boundaries": [
       "Byte +0x09 of the 10-byte primitive is never written by 0x903111BC; its semantic meaning remains UNPROVEN.",
-      "Direct RAM injection of custom OSD primitives into active display queues is UNPROVEN and unsafe without hardware lock synchronization."
+      "Direct RAM injection of custom OSD primitives into active display queues is UNPROVEN; this trace does not establish a lock or synchronization protocol."
     ]
   }
 }

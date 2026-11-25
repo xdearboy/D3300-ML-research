@@ -1836,11 +1836,11 @@
       "0x90032C18",
       "0x90032C46"
     ],
-    "deallocation_callsite": "0x90032C80..0x90032C86",
-    "lifetime_scope": "SYNCHRONOUS_EVENT_PUMP_FRAME",
-    "async_safety": "UNSAFE_FOR_ASYNC_CAPTURE",
-    "lifetime_details": "Param object is instantiated dynamically via factory 0x9012B82A during CMENUController::ProcessEventQueue. It is passed synchronously down the dispatch chain in register r2. Immediately upon return from InvokeButtonDispatch (0x90032AF8), the destructor is invoked at 0x90032C86 and memory is released. Asynchronous modules must copy value payload (param + 0x0C) rather than storing the pointer.",
-    "confidence": "PROVEN"
+    "post_dispatch_indirect_callsite": "0x90032C80..0x90032C86",
+    "lifetime_scope": "UNPROVEN",
+    "async_safety": "UNPROVEN",
+    "lifetime_details": "The post-dispatch slice loads r0 from r4, loads vtable slot +0x00, and calls it. This does not by itself establish that r4 is CJAPFButtonEventParam, that the slot is a destructor, or that memory is released.",
+    "confidence": "PROVEN_INSTRUCTION_SEQUENCE_ONLY"
   },
   "semantic_evidence_boundary": {
     "proven_facts": [
@@ -1848,7 +1848,7 @@
       "TBB2 at 0x9025A86E routes all 40 logical IDs to target 0x9025A8D2 which calls slot +0xC4 and then slot +0x40.",
       "TBB3 at 0x90254E1C routes logical IDs 1..28 to distinct vtable slots +0x120..+0x184 on active view.",
       "CMENUTopMenuView vtable (0x9151D874) populates all slots +0x120..+0x184 with concrete ROM functions.",
-      "CJAPFButtonEventParam is allocated in ProcessEventQueue (0x90032C18/0x90032C46) and destructed at 0x90032C86 immediately after InvokeButtonDispatch returns.",
+      "A factory call and a post-dispatch indirect call are present in the examined ProcessEventQueue slice; their object identity and lifetime effect remain unproven.",
       "GPIO Type-2 transport (0x9011DD5C / 0x9011E756) is decoupled from this queue and routes via dynamic RAM table 0x10319D2C."
     ],
     "inferences": [

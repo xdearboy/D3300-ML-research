@@ -39,8 +39,8 @@ The menu event processing system on the D3300 follows a 3-stage table-branch (TB
    Routes logical IDs (1..28) to dedicated vtable slots +0x120..+0x184
        │
        ▼
-7. Synchronous Teardown (0x90032C80..0x90032C86)
-   Calls ~CJAPFButtonEventParam() via vtable[0] and frees memory
+7. Post-dispatch virtual call (0x90032C80..0x90032C86)
+   Calls vtable slot +0x00 on the object held in r4; object identity and lifetime effect require a full register trace
 ```
 
 ---
@@ -182,7 +182,7 @@ Out-of-bounds entries branch to `0x90254E70` (returns 1).
 
 ## 5. CJAPFButtonEventParam Architecture & Lifetime Trace
 
-Static analysis of the parameter object demonstrates that it is managed under a strictly synchronous frame lifetime:
+The parameter object and the post-dispatch virtual call are observed, but the available slice does not prove that the call targets this object or frees it:
 
 ### Class Definition & VTable
 - **RTTI Descriptor**: `0x91504930` (`21CJAPFButtonEventParam`, inherits `10CJAPFParam` at `0x9150493C`).
@@ -202,16 +202,15 @@ Static analysis of the parameter object demonstrates that it is managed under a 
 2. **Transfer**:
    Passed as argument `r2` into `CMENUController::InvokeButtonDispatch` (`0x90032AF8`).
    Forwarded unchanged to active view virtual method `OnEvent` (slot `+0x10`) $\rightarrow$ `OnButtonEvent` (slot `+0x40`) $\rightarrow$ `DispatchButtonAction` (slot `+0x44`).
-3. **Destruction**:
-   Immediately upon return from `InvokeButtonDispatch`, the caller at `0x90032C80..0x90032C86` executes:
+3. **Observed post-dispatch virtual call**:
+   Immediately after the dispatch call, code at `0x90032C80..0x90032C86` executes:
    ```arm
    0x90032C80: ldr   r0, [r4]            ; load vtable pointer
-   0x90032C82: ldr   r1, [r0]            ; load destructor slot
+   0x90032C82: ldr   r1, [r0]            ; load vtable slot +0x00
    0x90032C84: mov   r0, r4              ; this = param
-   0x90032C86: blx   r1                  ; invoke destructor
+   0x90032C86: blx   r1                  ; indirect call
    ```
-4. **Safety Consequence**:
-   Because the memory is freed synchronously in `ProcessEventQueue`, **custom extension modules must never store a pointer to `CJAPFButtonEventParam` across async task boundaries**. Value fields must be copied immediately.
+4. **Boundary**: this slice alone does not prove deallocation, a destructor call, or an async-lifetime rule. Treat cross-task pointer retention as **UNPROVEN** until the allocation, register provenance, and deleting-destructor paths are traced end-to-end.
 
 ---
 
@@ -223,7 +222,7 @@ Static analysis of the parameter object demonstrates that it is managed under a 
 | TBB2 Table Layout | 100 entries, routes 40 IDs to 0x9025A8D2 | **PROVEN** | Byte anchor at `0x9025A86E`, bounds `0x9025A860` |
 | TBB3 Table Layout | 29 entries, routes IDs 1..28 to vtable slots | **PROVEN** | Byte anchor at `0x90254E1C`, bounds `0x90254E14` |
 | VTable Target Handlers | All slots +0x120..+0x184 mapped to ROM | **PROVEN** | CMENUTopMenuView vtable `0x9151D874` |
-| Param Synchronous Destruction | Free at 0x90032C86 post-dispatch | **PROVEN** | Code trace in `0x90032B86..0x90032CA4` |
+| Post-dispatch virtual call | `blx [vtable + 0]` at `0x90032C86` | **PROVEN** | Code bytes at `0x90032C80..0x90032C86`; target/object identity unproven |
 | GPIO Type-2 Decoupling | Routes via 0x10319D2C, not UI TBB | **PROVEN** | Disassembly of `0x9011DD5C` and `0x9011E2B4` |
 | Directional Navigation Roles | Slots +0x130..+0x13C as Right/Left/Up/Down | **INFERENCE** | Menu cursor traversal routines at 0x90077512 |
 | Confirm Selection Role | Slot +0x12C as OK / Confirm | **INFERENCE** | Menu item execution tree at 0x90076FF4 |

@@ -100,7 +100,7 @@ Complete static reverse engineering audit of Nikon D3300 Firmware C 1.02 (`b860_
 [Synchronous EventParam Destruction (0x90032C80..0x90032C86)]
              │ Immediately upon return from InvokeButtonDispatch:
              │ ldr r0, [param]; ldr r1, [r0]; mov r0, param; blx r1
-             │ Param object memory freed; UNSAFE to store pointer across async tasks
+             │ Post-dispatch virtual call observed; object lifetime is UNPROVEN
 ```
 
 ---
@@ -111,7 +111,7 @@ Complete static reverse engineering audit of Nikon D3300 Firmware C 1.02 (`b860_
              │
              ▼
 [10-Byte Vector Primitive Appender 0x903111BC]
-             │ Format: <HHHBB (X:u16, Y:u16, W:u16, H:u16, Attr:u8, Byte09:unwritten)
+             │ Format: <HHHHBB (X:u16, Y:u16, W:u16, H:u16, Attr:u8, Byte09:unwritten)
              │ Stride: count * 5 << 1 (exactly 10 bytes)
              │ WARNING: ZERO internal capacity check; increments *count_ptr unconditionally
              ▼
@@ -127,16 +127,16 @@ Complete static reverse engineering audit of Nikon D3300 Firmware C 1.02 (`b860_
              │
              └── Slot +0x08: FlushDisplayPlanes (0x902EDE9A)
                  Verifies clipping at 0x9030C9D0
-                 Passes plane update to hardware DMA submit
+                 Passes plane update to downstream helper (hardware role unproven)
              ▼
 [COSDCColorPalette (VTable 0x9151FBB0)]
              │ Slot +0x18 (0x902AFF78): loads [this + 8] pointing to 256-color LUT
              ▼
-[Hardware Plane DMA Boundary 0x902BC5F4]
+[Downstream Plane-Update Helper 0x902BC5F4]
              │ Reads display controller state at 0x10348F6C
              │ Reads active plane descriptor at 0x10123358
-             │ Dispatches transfer to hardware DMA submit (0x902BC24E / 0x902BC314)
-             │ Synchronized to display VSYNC / vertical refresh interrupt
+             │ Calls 0x902BC24E / 0x902BC314; transfer mechanism unproven
+             │ VSYNC / vertical-refresh synchronization: UNPROVEN
 ```
 
 ---
@@ -193,7 +193,7 @@ For non-destructive extension modules running in the host simulator or host tool
    - No assumptions about physical button wiring or GPIO Pin 8 are made.
 
 2. **OSD Vector Rendering Contract (`core/dml_draw_buffer.*`)**:
-   - Emits 10-byte vector primitive records (`<HHHBB`) compatible with `0x903111BC`.
+   - Emits 10-byte vector primitive records (`<HHHHBB`) compatible with `0x903111BC`.
    - Host bounds checking is strictly enforced upfront (avoiding the buffer overflow risk of `0x903111BC`).
    - Coordinate clipping is applied using the verified logic of `0x9030C9D0`.
 
@@ -202,7 +202,7 @@ For non-destructive extension modules running in the host simulator or host tool
    - Uses core model properties (`0x066C`, `0x066E`, `0x066A`) for shutter, aperture, and white balance without conflating them with InfoDisp display fields.
 
 4. **EventParam Lifetime Contract**:
-   - `CJAPFButtonEventParam` pointers must NEVER be captured across asynchronous task boundaries.
+   - Lifetime of `CJAPFButtonEventParam` across asynchronous task boundaries is UNPROVEN.
    - All event values (`param + 0x0C`) must be copied immediately into module state.
 
 ---
@@ -217,8 +217,8 @@ For non-destructive extension modules running in the host simulator or host tool
    - Uncoordinated packet injection risks deadlocking input task `0x9011DD88` or triggering watchdog resets (`0x90226068`).
 
 2. **Do NOT perform direct writes to display planes without hardware sync**:
-   - Display planes are managed by `COSDDControl` and hardware DMA controllers.
-   - Asynchronous RAM writes cause display engine stalls, tearing, and kernel panics.
+   - The static trace reaches `COSDDControl` and a downstream plane-update helper; hardware-controller ownership is UNPROVEN.
+   - Effects of asynchronous RAM writes are UNPROVEN without runtime evidence.
 
 3. **Do NOT assert GPIO Pin 8 is MENU, OK, or INFO**:
    - Pin 8 triggers persistent callback `0x9011DD5C`, which sends outgoing halfword `0x0002`.

@@ -147,8 +147,8 @@ class UIRoutingCatalogueTest(unittest.TestCase):
             self.assertGreaterEqual(target, 0x90020000, f"Slot +0x{slot:X} target in ROM")
             self.assertLess(target, 0x91600000, f"Slot +0x{slot:X} target in ROM")
 
-    def test_06_event_param_lifecycle_and_synchronous_destruction(self):
-        """CJAPFButtonEventParam must have verified RTTI and be synchronously destructed."""
+    def test_06_event_param_vtable_and_post_dispatch_virtual_call(self):
+        """Only the class vtable and a post-dispatch indirect call are statically proven."""
         # RTTI class name
         rtti_addr = 0x91504930
         self.assertEqual(self.read_rtti_name(rtti_addr), "21CJAPFButtonEventParam")
@@ -158,13 +158,13 @@ class UIRoutingCatalogueTest(unittest.TestCase):
         rtti_ptr = self.read_words(vtable - 4, 1)[0]
         self.assertEqual(rtti_ptr, rtti_addr, "Vtable must point to RTTI descriptor")
 
-        # Synchronous destruction callsite in ProcessEventQueue: 0x90032C86
+        # A post-dispatch indirect virtual call: target/object identity is not asserted here.
         raw_dtor_call = self.read_bytes(0x90032C80, 8)
         hw = struct.unpack("<4H", raw_dtor_call)
         self.assertEqual(hw[0], 0x6820, "ldr r0, [r4] (load vtable)")
-        self.assertEqual(hw[1], 0x6801, "ldr r1, [r0] (load destructor slot)")
+        self.assertEqual(hw[1], 0x6801, "ldr r1, [r0] (load vtable slot +0x00)")
         self.assertEqual(hw[2], 0x4620, "mov r0, r4 (this pointer)")
-        self.assertEqual(hw[3], 0x4788, "blx r1 (synchronous destructor invocation)")
+        self.assertEqual(hw[3], 0x4788, "blx r1 (indirect virtual call)")
 
     def test_07_json_catalogue_consistency(self):
         """JSON catalogue must exist and contain verified complete structures."""
@@ -177,7 +177,7 @@ class UIRoutingCatalogueTest(unittest.TestCase):
         self.assertEqual(data["tbb3_view_action_router"]["entry_count"], 29)
         self.assertEqual(len(data["tbb2_screen_event_filter"]["handled_button_logical_ids"]), 40)
         self.assertEqual(data["event_param_lifecycle"]["class_name"], "CJAPFButtonEventParam")
-        self.assertEqual(data["event_param_lifecycle"]["async_safety"], "UNSAFE_FOR_ASYNC_CAPTURE")
+        self.assertEqual(data["event_param_lifecycle"]["async_safety"], "UNPROVEN")
 
 
 if __name__ == "__main__":

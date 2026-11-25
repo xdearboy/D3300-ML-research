@@ -1,6 +1,6 @@
-# Nikon D3300 C 1.02 — Verified OSD Pipeline & DMA Boundary
+# Nikon D3300 C 1.02 — Verified OSD Queue Path (Partial)
 
-Static reverse engineering analysis of the On-Screen Display (OSD) vector rendering, clipping, batching, palette, and DMA pipeline in Nikon D3300 Firmware C 1.02 (`b860_102.bin`, SHA-256: `c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff`).
+Static reverse-engineering observations for part of the OSD vector-record path in Nikon D3300 Firmware C 1.02 (`b860_102.bin`, SHA-256: `c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff`). Hardware/DMA/VSYNC semantics are not established by this ROM-only trace.
 
 ---
 
@@ -44,10 +44,10 @@ The display rendering architecture connects high-level vector primitives to hard
                             │
                             ▼
 ┌────────────────────────────────────────────────────────┐
-│       Hardware Plane DMA Boundary (0x902BC5F4)         │
+│       Downstream plane-update helper (0x902BC5F4)      │
 │  Reads 0x10348F6C (display state) & 0x10123358 (plane) │
-│  Dispatches to hardware DMA submit (0x902BC24E/314)    │
-│  Synchronized to display VSYNC interrupt               │
+│  Calls 0x902BC24E and 0x902BC314                       │
+│  Hardware transfer and timing semantics: UNPROVEN      │
 └────────────────────────────────────────────────────────┘
 ```
 
@@ -117,7 +117,7 @@ Class `COSDDControl` (RTTI `0x91500F70`, vtable `0x91517260`):
 
 - **Slot `+0x08` (`FlushDisplayPlanes` at `0x902EDE9A`)**:
   - Calls clipping routine `0x9030C9D0` to ensure no out-of-bounds regions are submitted.
-  - Passes plane update records down to `0x902BC5F4` (hardware plane DMA boundary).
+  - Passes plane update records down to `0x902BC5F4` (downstream helper; hardware role unproven).
 
 ---
 
@@ -130,12 +130,12 @@ Class `COSDCColorPalette` (RTTI `0x915029F8`, vtable `0x9151FBB0`):
 
 ---
 
-## 6. Hardware Plane DMA Boundary (`0x902BC5F4`)
+## 6. Downstream Plane-Update Helper (`0x902BC5F4`)
 
 - Reads hardware display controller state from `0x10348F6C`.
 - Reads active display plane descriptor from `0x10123358`.
-- Dispatches DMA transfer requests to `0x902BC24E` and `0x902BC314`.
-- **Synchronization**: Plane switching is gated by vertical blanking interrupts (VSYNC) to prevent tearing and watchdog timeouts.
+- Calls `0x902BC24E` and `0x902BC314`.
+- Its hardware-transfer mechanism, register ownership, and any VSYNC/vertical-blank synchronization are **UNPROVEN** by the inspected static evidence.
 
 ---
 
@@ -144,11 +144,11 @@ Class `COSDCColorPalette` (RTTI `0x915029F8`, vtable `0x9151FBB0`):
 | Pipeline Element | Address / Symbol | Classification | Evidence Basis |
 |---|---|---|---|
 | Primitive Appender | `0x903111BC` | **PROVEN** | Disassembly of `0x903111BC`, 10-byte stride `count * 5 << 1` |
-| Primitive Stride | 10 bytes (`<HHHBB`) | **PROVEN** | Stride math in `0x903111C4` and field stores `0x903111CA..E0` |
+| Primitive Stride | 10 bytes (`<HHHHBB`) | **PROVEN** | Stride math in `0x903111C4` and field stores `0x903111CA..E0` |
 | Unwritten Byte | Offset `+0x09` | **UNPROVEN** | Never written by `0x903111BC`; hardware semantics unknown |
 | No Appender Bounds Check | `0x903111BC` | **PROVEN** | Unconditional count increment in `0x903111C8` |
 | Viewport Clipping | `0x9030C9D0` | **PROVEN** | Disassembly of clamp logic in `0x9030C9D0..0x9030CA3C` |
 | COSDDControl Plane Limit | `plane < 7` | **PROVEN** | `cmp r0, #7; bhs 0x902EDE94` in `0x902EDE58` |
-| DMA Boundary Dispatch | `0x902BC5F4` | **PROVEN** | Called by `FlushDisplayPlanes` (`0x902EDF2C`) |
+| Downstream-helper call | `0x902BC5F4` | **PROVEN** | Called by `FlushDisplayPlanes` (`0x902EDF2C`) |
 | Palette Table Pointer | `0x902AFF78` | **PROVEN** | Slot `+0x18` loads `[this + 8]` in `COSDCColorPalette` |
-| Runtime Injection Feasibility | Custom RAM writes | **UNPROVEN / DANGEROUS** | Risk of tearing / watchdog fault without hardware sync |
+| Runtime Injection Feasibility | Custom RAM writes | **UNPROVEN** | No runtime safety conclusion follows from this static trace |

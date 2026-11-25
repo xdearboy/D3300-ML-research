@@ -40,6 +40,21 @@ def get_firmware_data() -> bytes:
     return data
 
 
+def thumb_bl_target(address: int, raw: bytes) -> int:
+    """Decode a T32 BL and return its absolute target; reject non-BL encodings."""
+    hw1, hw2 = struct.unpack("<HH", raw)
+    if (hw1 & 0xF800) != 0xF000 or (hw2 & 0xD000) != 0xD000:
+        raise AssertionError(f"not a Thumb BL at 0x{address:08X}")
+    s = (hw1 >> 10) & 1
+    i1 = (~(((hw2 >> 13) & 1) ^ s)) & 1
+    i2 = (~(((hw2 >> 11) & 1) ^ s)) & 1
+    displacement = ((s << 24) | (i1 << 23) | (i2 << 22) |
+                    ((hw1 & 0x3FF) << 12) | ((hw2 & 0x7FF) << 1))
+    if s:
+        displacement -= 1 << 25
+    return address + 4 + displacement
+
+
 class PTPExposureSemanticsTest(unittest.TestCase):
     def read_bytes(self, addr: int, size: int) -> bytes:
         data = get_firmware_data()
@@ -57,15 +72,12 @@ class PTPExposureSemanticsTest(unittest.TestCase):
     def test_01_shutter_classes_call_shared_helper(self):
         """Both CPTPCExposureTime and CPTPCShutterSpeed must call helper 0x902FD8F8."""
         # CPTPCExposureTime::GetDevicePropValue at 0x9030100C calls 0x902FD8F8
-        raw_exp = self.read_halfwords(0x9030100C, 2)
-        # bl in Thumb: hw1 & 0xF800 == 0xF000, hw2 & 0xD000 == 0xD000
-        self.assertEqual(raw_exp[0] & 0xF800, 0xF000)
-        self.assertEqual(raw_exp[1] & 0xD000, 0xD000)
+        raw_exp = self.read_bytes(0x9030100C, 4)
+        self.assertEqual(thumb_bl_target(0x9030100C, raw_exp), SHUTTER_HELPER_ADDR)
 
         # CPTPCShutterSpeed::GetDevicePropValue at 0x902E4548 calls 0x902FD8F8
-        raw_shutter = self.read_halfwords(0x902E4548, 2)
-        self.assertEqual(raw_shutter[0] & 0xF800, 0xF000)
-        self.assertEqual(raw_shutter[1] & 0xD000, 0xD000)
+        raw_shutter = self.read_bytes(0x902E4548, 4)
+        self.assertEqual(thumb_bl_target(0x902E4548, raw_shutter), SHUTTER_HELPER_ADDR)
 
     def test_02_shutter_helper_queries_core_properties(self):
         """Helper 0x902FD8F8 must query properties 0x066C, 0x066D, 0x02C1."""

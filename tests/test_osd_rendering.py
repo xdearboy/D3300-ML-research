@@ -134,11 +134,11 @@ class OSDRenderingTest(unittest.TestCase):
         self.assertEqual(hw[5], 0x4294, "cmp r4, r2 (compare X with clip_x)")
 
     def test_06_flush_display_planes_calls_dma_boundary(self):
-        """FlushDisplayPlanes at 0x902EDE9A must call DMA submit helper 0x902BC5F4."""
-        # 0x902EDF2C: bl 0x902BC5F4
+        """The observed handler must call the downstream helper at 0x902BC5F4."""
+        # 0x902EDF2C: bl 0x902BC5F4; hardware transfer semantics are not implied.
         raw_bl = self.read_bytes(0x902EDF2C, 4)
         hw = struct.unpack("<2H", raw_bl)
-        self.assertEqual((hw[0], hw[1]), (0xF7CE, 0xFB62), "bl 0x902BC5F4 (DMA submit boundary)")
+        self.assertEqual((hw[0], hw[1]), (0xF7CE, 0xFB62), "bl 0x902BC5F4 (downstream helper)")
 
     def test_07_cosdc_color_palette_slot_18_getter(self):
         """COSDCColorPalette slot +0x18 at 0x902AFF78 must return [this + 8] LUT pointer."""
