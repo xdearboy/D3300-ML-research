@@ -94,6 +94,12 @@ class MenuRenderPathTest(unittest.TestCase):
         self.assertEqual(self.raw(0x9012A062, 10), bytes.fromhex("30680021426830469047"))  # +0x04
         self.assertEqual(self.raw(0x90129AE6, 16), bytes.fromhex("2868012102aad0f894302846984754f8"))  # +0x94
 
+    def test_pre_output_veneer_has_only_a_dynamic_ram_target(self):
+        """The pre-output veneer target is a RAM literal; no syscall name/ABI is claimed."""
+        self.assertEqual(struct.unpack("<I", self.raw(0x90225EA4, 4))[0], 0xE51FF004)
+        self.assertEqual(struct.unpack("<I", self.raw(0x90225EA8, 4))[0], 0x10099244)
+        self.assertEqual(self.raw(0x90129F48, 4), bytes.fromhex("fbf0acef"))
+
 
 if __name__ == "__main__":
     unittest.main()

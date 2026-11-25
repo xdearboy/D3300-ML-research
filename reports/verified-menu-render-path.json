@@ -56,6 +56,11 @@
         "slot_0x04": "30680021426830469047",
         "slot_0x94": "2868012102aad0f894302846984754f8"
       }
+    },
+    {
+      "from": "state manager 0x90129F48",
+      "to": "A32 veneer 0x90225EA4",
+      "observation": "direct branch reaches an ldr-pc literal veneer whose target is dynamic RAM 0x10099244"
     }
   ],
   "not_proven": [
@@ -63,6 +68,7 @@
     "The concrete output-object implementation, pixel format, scan-out engine, DMA semantics, or vertical-blank synchronization.",
     "The semantic meaning of CGUICDraw state-slot fields or their runtime-selected output-object instances.",
     "The names, calling contracts, side effects or safety of output-object virtual slots +0x04/+0x20/+0x5C/+0x68/+0x70/+0x94.",
+    "The name, ABI, side effects or safety of the veneer at 0x90225EA4 / RAM target 0x10099244.",
     "Safety of inserting records, calling these methods, or writing any firmware memory."
   ]
 }
