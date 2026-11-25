@@ -14,9 +14,9 @@
       "evidence_bytes": ["b26803681b690ae0002da4d0", "b26803685b69984701462868"]
     },
     {
-      "from": "view continuation 0x900EF8D4",
+      "from": "view continuations 0x900EF8D4 and 0x900EFAFC",
       "to": "0x9012A73C",
-      "observation": "direct Thumb BL into draw-state-manager path"
+      "observation": "each has a direct Thumb BL into the draw-state-manager path"
     },
     {
       "from": "CGUICDraw constructor 0x9012AD16",
@@ -35,6 +35,11 @@
       "from": "CGUICDraw state handoff 0x9012A73C",
       "to": "0x90129EFE",
       "observation": "copies selected-state fields into the manager and directly calls the subsequent state-manager routine at 0x9012A7A4"
+    },
+    {
+      "from": "CGUICDraw wrapper 0x9012A106",
+      "to": "0x90129EFE",
+      "observation": "loads static CGUICDraw object 0x10383580 from literal 0x9012A51C and directly calls the same state-manager routine at 0x9012A11E"
     },
     {
       "from": "draw-state path 0x90129FA0",

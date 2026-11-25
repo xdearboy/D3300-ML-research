@@ -58,6 +58,7 @@ class MenuRenderPathTest(unittest.TestCase):
     def test_view_path_calls_draw_state_manager(self):
         """The view continuation directly calls the draw-state manager at 0x9012A73C."""
         self.assertEqual(thumb_bl_target(0x900EF8D4, self.raw(0x900EF8D4, 4)), 0x9012A73C)
+        self.assertEqual(thumb_bl_target(0x900EFAFC, self.raw(0x900EFAFC, 4)), 0x9012A73C)
 
     def test_draw_state_reaches_output_object_and_kernel_veneer(self):
         """Observed path calls output-object slot +0x5C then the kernel veneer at 0x90225D70."""
@@ -79,6 +80,11 @@ class MenuRenderPathTest(unittest.TestCase):
         """The constructor wrapper supplies the static RAM object 0x10383580."""
         self.assertEqual(struct.unpack("<I", self.raw(0x9012ADB4, 4))[0], 0x10383580)
         self.assertEqual(thumb_bl_target(0x9012ADA2, self.raw(0x9012ADA2, 4)), 0x9012AD16)
+
+    def test_cguicdraw_public_wrapper_also_reaches_state_manager(self):
+        """The direct ROM caller at 0x9012A106 supplies the static draw object."""
+        self.assertEqual(struct.unpack("<I", self.raw(0x9012A51C, 4))[0], 0x10383580)
+        self.assertEqual(thumb_bl_target(0x9012A11E, self.raw(0x9012A11E, 4)), 0x90129EFE)
 
 
 if __name__ == "__main__":
