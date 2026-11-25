@@ -147,6 +147,21 @@ class PropertyConsumersTest(unittest.TestCase):
         slot0c = self.read_words(0x91516DB4 + 0x0C, 1)[0]
         self.assertEqual(slot0c, 0x90166253)
 
+    def test_property_loop_passes_descriptor_id_and_ram_pointer_to_dispatcher(self):
+        """0x90169A28 dispatches generic descriptor records; UI ownership is not implied."""
+        raw = self.read_bytes(0x90169A48, 26)
+        hw = struct.unpack("<13H", raw)
+
+        # r0 = index * 3, then r1 = table[index * 3] (property ID).
+        self.assertEqual((hw[1], hw[2]), (0xEB04, 0x0044), "index * 3")
+        self.assertEqual((hw[7], hw[8]), (0xF851, 0x1020), "loads property ID")
+        # r2 becomes &table[index * 3], followed by descriptor +8 (RAM pointer).
+        self.assertEqual((hw[5], hw[6]), (0xEB01, 0x0280), "descriptor address")
+        self.assertEqual(hw[10], 0x6892, "loads descriptor RAM pointer")
+        # r3 is literal 1; BL target is the generic dispatcher 0x9016976C.
+        self.assertEqual(hw[4], 0x2301, "dispatch mode argument is 1")
+        self.assertEqual((hw[11], hw[12]), (0xF7FF, 0xFE85), "BL 0x9016976C")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -50,9 +50,16 @@ In `CINFOManager::OnInfoDispUpdated` (`0x90166252`):
 2. `0x90169A28` queries group vtable slot `+0x00` (`0x903513AC`), which returns count 79 and table base `0x914ED324`.
 3. Iteration loop (`0x90169A48..0x90169A6E`):
    - Loops through `index = 0..78`.
-   - Reads RAM address `table[index].ram_address` (`0x104B9044 + offset`).
-   - Reads `property_id = table[index].property_id`.
-   - Calls `0x9016976C` to dispatch the property value to the active UI widgets on the information screen.
+   - Reads `property_id = table[index].property_id` and
+     `ram_pointer = table[index].ram_address`.
+   - Calls `0x9016976C` with `(CINFOManager, property_id, ram_pointer, 1)` and
+     a fifth stack argument `0xFFFF`.
+
+`0x9016976C` then indexes a manager-owned registry using a byte from the
+resolved record and makes an indirect call. This establishes a generic
+property-dispatch mechanism. It does **not** identify the indirect target as a
+UI widget, prove that every property has a UI listener, or prove that a UI
+screen is active at the time of dispatch.
 
 ---
 
