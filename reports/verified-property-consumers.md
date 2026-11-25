@@ -61,6 +61,13 @@ property-dispatch mechanism. It does **not** identify the indirect target as a
 UI widget, prove that every property has a UI listener, or prove that a UI
 screen is active at the time of dispatch.
 
+The registry itself is a runtime boundary: `0x901697BC` loads literal
+`0x10138B84` from ROM `0x90169B24`, subtracts `0x70`, and indexes 8-byte
+entries from RAM `0x10138B14`. A ROM image contains no post-boot contents for
+that RAM table. Therefore neither its subscriber set nor the indirect callback
+targets can be recovered statically from this image; treating it as an
+information-screen widget table would be unsupported.
+
 ---
 
 ## 4. Specific Property Audit

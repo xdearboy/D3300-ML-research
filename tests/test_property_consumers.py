@@ -162,6 +162,16 @@ class PropertyConsumersTest(unittest.TestCase):
         self.assertEqual(hw[4], 0x2301, "dispatch mode argument is 1")
         self.assertEqual((hw[11], hw[12]), (0xF7FF, 0xFE85), "BL 0x9016976C")
 
+    def test_dispatch_registry_is_dynamic_ram_not_a_static_ui_map(self):
+        """The handler derives its 8-byte dispatch entries from RAM 0x10138B14."""
+        raw = self.read_bytes(0x901697BA, 18)
+        hw = struct.unpack("<9H", raw)
+        self.assertEqual((hw[1], hw[2]), (0xF8DF, 0xE364), "loads registry literal")
+        self.assertEqual((hw[3], hw[4]), (0xF8DF, 0x935C), "loads failure-status literal")
+        registry_literal = self.read_words(0x90169B24, 1)[0]
+        self.assertEqual(registry_literal, 0x10138B84)
+        self.assertEqual(registry_literal - 0x70, 0x10138B14)
+
 
 if __name__ == "__main__":
     unittest.main()
