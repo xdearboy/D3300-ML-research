@@ -12,15 +12,14 @@
 #define DML_DRAW_BUFFER_ENTRY_SIZE 20u
 
 /* Query parameter codes from table at ROM 0x9147FAF4 + 0x28 */
-#define DML_DRAW_BUFFER_QUERY_ADDR   0x3100u /* Framebuffer memory address */
-#define DML_DRAW_BUFFER_QUERY_WIDTH  0x3101u /* Buffer width in pixels */
-#define DML_DRAW_BUFFER_QUERY_HEIGHT 0x3103u /* Buffer height in pixels */
-#define DML_DRAW_BUFFER_QUERY_SYNC   0x3110u /* Vsync synchronization status */
-#define DML_DRAW_BUFFER_QUERY_STRIDE 0x3111u /* Stride / pitch in bytes */
-#define DML_DRAW_BUFFER_QUERY_FORMAT 0x3112u /* Host model returns ARGB8888 */
+#define DML_DRAW_BUFFER_QUERY_ADDR   0x3100u /* Observed selector; host model uses address */
+#define DML_DRAW_BUFFER_QUERY_WIDTH  0x3101u /* Observed selector; host model uses width */
+#define DML_DRAW_BUFFER_QUERY_HEIGHT 0x3103u /* Observed selector; host model uses height */
+#define DML_DRAW_BUFFER_QUERY_SYNC   0x3110u /* Observed selector; hardware meaning unproven */
+#define DML_DRAW_BUFFER_QUERY_STRIDE 0x3111u /* Observed selector; host model uses stride */
+#define DML_DRAW_BUFFER_QUERY_FORMAT 0x3112u /* Observed selector; host model returns ARGB8888 */
 
-/* Stride alignment formula confirmed at 0x9029EA80..0x9029EA92 and 0x901297F2:
-   ((width + 7) / 8) * 32 bytes = ((width + 7) & ~7) * 4 bytes per scanline */
+/* This is a host-model stride, not a recovered firmware pixel ABI. */
 #define DML_DRAW_BUFFER_STRIDE(w) ((((uint32_t)(w) + 7u) & ~7u) * 4u)
 
 /* Simulator entry. This deliberately does not claim ABI compatibility with the
@@ -32,7 +31,7 @@ typedef struct {
     uint16_t width;       /* offset 0x0C: width in pixels */
     uint16_t height;      /* offset 0x0E: height in pixels */
     uint32_t stride;      /* offset 0x10: bytes per scanline */
-    uint32_t *pixels;     /* host/device pixel pointer */
+    uint32_t *pixels;     /* host-only pixel pointer */
 } DmlDrawBufferEntry;
 
 /* Host-side table container. */
@@ -77,7 +76,7 @@ DmlFontId dml_draw_buffer_get_font(void);
 /* Calculate exact width in pixels of text rendered with font_id */
 int dml_draw_buffer_get_text_width(const char *text, DmlFontId font_id);
 
-/* UI & OSD rasterizer primitives on ARGB8888 buffer */
+/* Host-only UI rasterizer primitives on its ARGB8888 buffer. */
 void dml_draw_buffer_clear(DmlDrawBufferTable *table, int index, uint32_t argb_color);
 void dml_draw_buffer_put_pixel(DmlDrawBufferTable *table, int index, int x, int y, uint32_t argb_color);
 void dml_draw_buffer_fill_rect(DmlDrawBufferTable *table, int index, int x, int y, int w, int h, uint32_t argb_color);

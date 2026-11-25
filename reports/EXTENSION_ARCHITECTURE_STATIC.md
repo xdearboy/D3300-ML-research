@@ -192,10 +192,12 @@ For non-destructive extension modules running in the host simulator or host tool
    - Simulator components consume verified logical IDs: `0x01` (Select/OK), `0x05..0x08` (Nav 4-way), `0x1B` (Menu/Back).
    - No assumptions about physical button wiring or GPIO Pin 8 are made.
 
-2. **OSD Vector Rendering Contract (`core/dml_draw_buffer.*`)**:
-   - Emits 10-byte vector primitive records (`<HHHHBB`) compatible with `0x903111BC`.
-   - Host bounds checking is strictly enforced upfront (avoiding the buffer overflow risk of `0x903111BC`).
-   - Coordinate clipping is applied using the verified logic of `0x9030C9D0`.
+2. **OSD host-model contract (`core/dml_draw_buffer.*`)**:
+   - Uses a 10-byte record layout inspired by the stores at `0x903111BC`; this
+     is not an established camera ABI or submission format.
+   - Host bounds checking is enforced in the simulator only.
+   - The simulator's ARGB buffer, dimensions, stride, selectors and clipping
+     are not authorisation to write a camera display plane.
 
 3. **Telemetry Observation Contract (`core/dml_camera_status.*`)**:
    - Reads verified battery power status (`0x0040`) and ISO sensitivity (`0x0054`).

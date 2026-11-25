@@ -5,9 +5,8 @@
 #include "dml_draw_buffer.h"
 #include "dml_camera_status.h"
 
-/* D3300-ML Minimalist Cinema Shooting Information Display Screen
-   Styled with Blackmagic OS minimalism and d3vo.ru (Catppuccin Mocha) palette.
-   Renders onto the 720x480 32bpp ARGB8888 DrawBuffer (0x104A0868). */
+/* Host-only visual mock-up. The 720x480 ARGB8888 target is a simulator
+   choice, not a recovered D3300 framebuffer format, address, or ABI. */
 
 /* Color palette constants (ARGB8888) — Catppuccin Mocha & d3vo.ru */
 #define DML_COLOR_BG            0xFF181825u /* Catppuccin Mocha Mantle #181825 */
@@ -28,7 +27,7 @@
 #define DML_COLOR_ACCENT_AMBER  DML_COLOR_D3VO_ORANGE
 #define DML_COLOR_ACCENT_GREEN  DML_COLOR_D3VO_EMERALD
 
-/* Renders the full 720x480 custom info screen into the specified draw buffer slot.
+/* Renders the host mock-up into the specified host draw-buffer slot.
    Returns 0 on success, -1 on invalid parameter or buffer error. */
 int dml_info_screen_render(DmlDrawBufferTable *table, int buf_idx, const DmlCameraStatus *status);
 
