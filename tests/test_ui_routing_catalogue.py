@@ -175,6 +175,12 @@ class UIRoutingCatalogueTest(unittest.TestCase):
         self.assertEqual(self.read_bytes(0x9012B842, 4), bytes.fromhex("fff7e5ff"))
         self.assertEqual(self.read_bytes(0x90032C18, 8), bytes.fromhex("f8f007fe04003bd0"))
 
+    def test_09_factory_uses_fixed_selector_zero(self):
+        """Factory passes selector 0 to its provider helper; its pool semantics remain unknown."""
+        self.assertEqual(self.read_bytes(0x9012B82C, 6), bytes.fromhex("0020c4f7e5fc"))
+        self.assertEqual(self.read_bytes(0x900F01FC, 8), bytes.fromhex("1cb5052828d2dfe8"))
+        self.assertEqual(self.read_bytes(0x900F020C, 4), bytes.fromhex("2e2406e0"))
+
     def test_07_json_catalogue_consistency(self):
         """JSON catalogue must exist and contain verified complete structures."""
         json_path = Path(__file__).resolve().parents[1] / "reports" / "verified-ui-routing-catalogue.json"

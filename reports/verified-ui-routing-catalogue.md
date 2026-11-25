@@ -206,6 +206,11 @@ The parameter object and the post-dispatch virtual call are observed, but the av
    in `r0`, tests its returned pointer, and calls `0x9012B810` on the
    success path. This proves factory control flow, not an allocation strategy
    or object lifetime.
+
+   `0x900F01FC` bounds-checks this selector against five cases and its
+   selector-zero case loads immediate `0x2E` before calling another provider.
+   The provider's type, the meaning of `0x2E`, and any pool/heap ownership are
+   unproven; names such as “heap allocation” are intentionally avoided.
 2. **Transfer**:
    Passed as argument `r2` into `CMENUController::InvokeButtonDispatch` (`0x90032AF8`).
    Forwarded unchanged to active view virtual method `OnEvent` (slot `+0x10`) $\rightarrow$ `OnButtonEvent` (slot `+0x40`) $\rightarrow$ `DispatchButtonAction` (slot `+0x44`).
