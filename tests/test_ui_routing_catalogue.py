@@ -166,6 +166,15 @@ class UIRoutingCatalogueTest(unittest.TestCase):
         self.assertEqual(hw[2], 0x4620, "mov r0, r4 (this pointer)")
         self.assertEqual(hw[3], 0x4788, "blx r1 (indirect virtual call)")
 
+    def test_08_event_param_factory_control_flow(self):
+        """Factory returns zero on failure and directly invokes the initializer on success."""
+        self.assertEqual(
+            self.read_bytes(0x9012B82A, 14),
+            bytes.fromhex("10b50020c4f7e5fc04000ed02068"),
+        )
+        self.assertEqual(self.read_bytes(0x9012B842, 4), bytes.fromhex("fff7e5ff"))
+        self.assertEqual(self.read_bytes(0x90032C18, 8), bytes.fromhex("f8f007fe04003bd0"))
+
     def test_07_json_catalogue_consistency(self):
         """JSON catalogue must exist and contain verified complete structures."""
         json_path = Path(__file__).resolve().parents[1] / "reports" / "verified-ui-routing-catalogue.json"

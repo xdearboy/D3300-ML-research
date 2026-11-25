@@ -1832,14 +1832,15 @@
     "factory": "0x9012B82A",
     "destructor": "0x9012B868",
     "deleting_destructor": "0x9012B882",
-    "allocation_callsites": [
+  "factory_callsites": [
       "0x90032C18",
       "0x90032C46"
     ],
     "post_dispatch_indirect_callsite": "0x90032C80..0x90032C86",
     "lifetime_scope": "UNPROVEN",
     "async_safety": "UNPROVEN",
-    "lifetime_details": "The post-dispatch slice loads r0 from r4, loads vtable slot +0x00, and calls it. This does not by itself establish that r4 is CJAPFButtonEventParam, that the slot is a destructor, or that memory is released.",
+  "factory_details": "0x9012B82A calls helper 0x900F01FC with r0=0, tests the returned pointer, and calls initializer 0x9012B810 on its success path. This does not establish an allocation pool ABI or object lifetime.",
+  "lifetime_details": "The post-dispatch slice loads r0 from r4, loads vtable slot +0x00, and calls it. This does not by itself establish that r4 is CJAPFButtonEventParam, that the slot is a destructor, or that memory is released.",
     "confidence": "PROVEN_INSTRUCTION_SEQUENCE_ONLY"
   },
   "semantic_evidence_boundary": {

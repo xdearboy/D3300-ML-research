@@ -16,8 +16,11 @@ The menu event processing system on the D3300 follows a 3-stage table-branch (TB
    Maps raw input codes (0..58) to 40 logical IDs (1..28 and 33..44)
        │
        ▼
-2. Dynamic Parameter Object Construction
-   CJAPFButtonEventParam allocated via 0x9012B82A; param+0x0C = record.value_1
+2. Parameter Factory
+   Factory `0x9012B82A` returns either an object pointer or zero, and on its
+   success path calls initializer `0x9012B810`. The allocator/pool ABI behind
+   its first helper (`0x900F01FC`) remains unproven. `param+0x0C` receives
+   `record.value_1` on the traced controller path.
        │
        ▼
 3. Screen Lookup & Dispatch (0x90032AF8)
@@ -197,8 +200,12 @@ The parameter object and the post-dispatch virtual call are observed, but the av
   - `+0x0C`: event value / key payload (`record.value_1`)
 
 ### Lifecycle Trace
-1. **Creation**:
-   Instantiated inside `CMENUController::ProcessEventQueue` at `0x90032C18` or `0x90032C46` via factory `0x9012B82A`.
+1. **Factory call sites**:
+   `CMENUController::ProcessEventQueue` directly calls `0x9012B82A` at
+   `0x90032C18` and `0x90032C46`. That factory calls `0x900F01FC` with zero
+   in `r0`, tests its returned pointer, and calls `0x9012B810` on the
+   success path. This proves factory control flow, not an allocation strategy
+   or object lifetime.
 2. **Transfer**:
    Passed as argument `r2` into `CMENUController::InvokeButtonDispatch` (`0x90032AF8`).
    Forwarded unchanged to active view virtual method `OnEvent` (slot `+0x10`) $\rightarrow$ `OnButtonEvent` (slot `+0x40`) $\rightarrow$ `DispatchButtonAction` (slot `+0x44`).
