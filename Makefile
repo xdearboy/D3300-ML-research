@@ -2,8 +2,8 @@ CC ?= cc
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror -O2
 LDFLAGS ?= -lm
 
-CORE_SOURCES = core/dml.c core/dml_menu.c core/dml_nikon_adapter.c core/dml_nikon_relay_snapshot.c core/dml_ui_logical_event.c core/dml_draw_buffer.c core/dml_fonts_data.c core/dml_tkernel.c core/dml_camera_status.c core/dml_camera_status_hw.c core/dml_info_screen.c core/dml_menu_screen.c payload/dml_payload.c modules/intervalometer.c modules/fuji_film_sim.c modules/photo_assist.c
-CORE_HEADERS = core/dml.h core/dml_menu.h core/dml_nikon_adapter.h core/dml_nikon_relay_snapshot.h core/dml_ui_logical_event.h core/dml_draw_buffer.h core/dml_fonts_data.h core/dml_tkernel.h core/dml_camera_status.h core/dml_camera_status_hw.h core/dml_info_screen.h core/dml_menu_screen.h payload/dml_payload.h modules/intervalometer.h modules/fuji_film_sim.h modules/photo_assist.h
+CORE_SOURCES = core/dml.c core/dml_menu.c core/dml_nikon_adapter.c core/dml_nikon_menu_contract.c core/dml_nikon_relay_snapshot.c core/dml_ui_logical_event.c core/dml_draw_buffer.c core/dml_fonts_data.c core/dml_tkernel.c core/dml_camera_status.c core/dml_camera_status_hw.c core/dml_info_screen.c core/dml_menu_screen.c payload/dml_payload.c modules/intervalometer.c modules/fuji_film_sim.c modules/photo_assist.c
+CORE_HEADERS = core/dml.h core/dml_menu.h core/dml_nikon_adapter.h core/dml_nikon_menu_contract.h core/dml_nikon_relay_snapshot.h core/dml_ui_logical_event.h core/dml_draw_buffer.h core/dml_fonts_data.h core/dml_tkernel.h core/dml_camera_status.h core/dml_camera_status_hw.h core/dml_info_screen.h core/dml_menu_screen.h payload/dml_payload.h modules/intervalometer.h modules/fuji_film_sim.h modules/photo_assist.h
 
 .PHONY: all run test audit-fast clean
 all: build/d3300_sim
@@ -49,9 +49,12 @@ build/test_relay_snapshot: $(CORE_SOURCES) $(CORE_HEADERS) tests/test_relay_snap
 build/test_ui_logical_event: $(CORE_SOURCES) $(CORE_HEADERS) tests/test_ui_logical_event.c
 	mkdir -p build
 	$(CC) $(CFLAGS) $(CORE_SOURCES) tests/test_ui_logical_event.c $(LDFLAGS) -o $@
+build/test_nikon_menu_contract: $(CORE_SOURCES) $(CORE_HEADERS) tests/test_nikon_menu_contract.c
+	mkdir -p build
+	$(CC) $(CFLAGS) $(CORE_SOURCES) tests/test_nikon_menu_contract.c $(LDFLAGS) -o $@
 run: all
 	./build/d3300_sim
-test: all build/test_menu build/test_adapter build/test_draw_buffer build/test_tkernel build/test_payload build/test_info_screen build/test_camera_status_hw build/test_menu_screen build/test_fuji_film_sim build/test_photo_assist build/test_mvp_pipeline build/test_relay_snapshot build/test_ui_logical_event
+test: all build/test_menu build/test_adapter build/test_draw_buffer build/test_tkernel build/test_payload build/test_info_screen build/test_camera_status_hw build/test_menu_screen build/test_fuji_film_sim build/test_photo_assist build/test_mvp_pipeline build/test_relay_snapshot build/test_ui_logical_event build/test_nikon_menu_contract
 	./build/d3300_sim
 	./build/test_menu
 	./build/test_adapter
@@ -66,6 +69,7 @@ test: all build/test_menu build/test_adapter build/test_draw_buffer build/test_t
 	./build/test_mvp_pipeline
 	./build/test_relay_snapshot
 	./build/test_ui_logical_event
+	./build/test_nikon_menu_contract
 	python3 -m unittest discover -s tests -v
 audit-fast:
 	@test -n "$(D3300_FIRMWARE)" || (echo "D3300_FIRMWARE=/path/to/b860_102.bin is required" >&2; exit 2)
