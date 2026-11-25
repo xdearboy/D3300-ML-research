@@ -1,0 +1,32 @@
+{
+  "firmware": "b860_102.bin",
+  "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+  "scope": "static ROM control-flow only",
+  "proven_edges": [
+    {
+      "from": "CMENUTopMenuView setup 0x900767CE",
+      "observation": "loads vtable slot +0x140 and calls it",
+      "evidence_bytes": "2068d0f8402120469047"
+    },
+    {
+      "from": "CGUICTask branches 0x900EE49C and 0x900EE4B2",
+      "observation": "load view vtable slots +0x10 and +0x14, respectively, then branch indirectly",
+      "evidence_bytes": ["b26803681b690ae0002da4d0", "b26803685b69984701462868"]
+    },
+    {
+      "from": "view continuation 0x900EF8D4",
+      "to": "0x9012A73C",
+      "observation": "direct Thumb BL into draw-state-manager path"
+    },
+    {
+      "from": "draw-state path 0x90129FA0",
+      "observation": "calls an output object's vtable slot +0x5C; subsequent code issues a call through veneer 0x90225D70",
+      "evidence_bytes": ["3068c26d30469047", "c120fcf082ea0446"]
+    }
+  ],
+  "not_proven": [
+    "Physical MENU or OK identity for any raw queue code.",
+    "The concrete output-object implementation, pixel format, scan-out engine, DMA semantics, or vertical-blank synchronization.",
+    "Safety of inserting records, calling these methods, or writing any firmware memory."
+  ]
+}
