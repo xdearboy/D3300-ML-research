@@ -64,6 +64,17 @@ class MenuRenderPathTest(unittest.TestCase):
         self.assertEqual(self.raw(0x90129FA0, 8), bytes.fromhex("3068c26d30469047"))
         self.assertEqual(self.raw(0x90129868, 8), bytes.fromhex("c120fcf082ea0446"))
 
+    def test_cguicdraw_has_five_initialized_state_slots(self):
+        """Constructor installs the CGUICDraw vtable and iterates exactly five slots."""
+        self.assertEqual(struct.unpack("<I", self.raw(0x9012AD90, 4))[0], 0x9154AD28)
+        # 0x9012AD38..0x9012AD40 forms index * 19, then index * 76 bytes.
+        self.assertEqual(self.raw(0x9012AD38, 12), bytes.fromhex("05eb450000eb051006eb8001"))
+        self.assertEqual(self.raw(0x9012AD5A, 6), bytes.fromhex("6d1c4b70052d"))
+
+    def test_cguicdraw_handoff_calls_state_manager(self):
+        """0x9012A73C copies selected state then directly invokes 0x90129EFE."""
+        self.assertEqual(thumb_bl_target(0x9012A7A4, self.raw(0x9012A7A4, 4)), 0x90129EFE)
+
 
 if __name__ == "__main__":
     unittest.main()

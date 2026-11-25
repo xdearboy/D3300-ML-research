@@ -19,6 +19,19 @@
       "observation": "direct Thumb BL into draw-state-manager path"
     },
     {
+      "from": "CGUICDraw constructor 0x9012AD16",
+      "observation": "installs vtable 0x9154AD28 and initializes five 0x4C-byte state slots beginning at object +0x58",
+      "evidence": {
+        "vtable_literal": "ROM 0x9012AD90 = 0x9154AD28",
+        "slot_index_loop": "0x9012AD38 forms index * 19, then shifts by 2; 0x9012AD5E compares index < 5"
+      }
+    },
+    {
+      "from": "CGUICDraw state handoff 0x9012A73C",
+      "to": "0x90129EFE",
+      "observation": "copies selected-state fields into the manager and directly calls the subsequent state-manager routine at 0x9012A7A4"
+    },
+    {
       "from": "draw-state path 0x90129FA0",
       "observation": "calls an output object's vtable slot +0x5C; subsequent code issues a call through veneer 0x90225D70",
       "evidence_bytes": ["3068c26d30469047", "c120fcf082ea0446"]
@@ -27,6 +40,7 @@
   "not_proven": [
     "Physical MENU or OK identity for any raw queue code.",
     "The concrete output-object implementation, pixel format, scan-out engine, DMA semantics, or vertical-blank synchronization.",
+    "The semantic meaning of CGUICDraw state-slot fields or their runtime-selected output-object instances.",
     "Safety of inserting records, calling these methods, or writing any firmware memory."
   ]
 }
