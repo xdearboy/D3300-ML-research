@@ -1,0 +1,170 @@
+{
+  "metadata": {
+    "firmware": "b860_102.bin",
+    "sha256": "c7eb89f1a8e699fdd92c907989682d6d8746a46648436137cbd7e138f9afc3ff",
+    "rom_base": "0x90020000",
+    "pipeline_name": "OSD Vector Primitive, Clipping, Batching, and DMA Submit Pipeline"
+  },
+  "stages": [
+    {
+      "stage": 1,
+      "name": "vector_primitive_appender",
+      "address": "0x903111BC",
+      "stride_bytes": 10,
+      "layout": {
+        "offset_0x00": {
+          "size": 2,
+          "type": "u16",
+          "name": "x_coord",
+          "confidence": "PROVEN"
+        },
+        "offset_0x02": {
+          "size": 2,
+          "type": "u16",
+          "name": "y_coord",
+          "confidence": "PROVEN"
+        },
+        "offset_0x04": {
+          "size": 2,
+          "type": "u16",
+          "name": "width",
+          "confidence": "PROVEN"
+        },
+        "offset_0x06": {
+          "size": 2,
+          "type": "u16",
+          "name": "height",
+          "confidence": "PROVEN"
+        },
+        "offset_0x08": {
+          "size": 1,
+          "type": "u8",
+          "name": "attribute_color_index",
+          "confidence": "PROVEN"
+        },
+        "offset_0x09": {
+          "size": 1,
+          "type": "u8",
+          "name": "unwritten_byte",
+          "confidence": "UNPROVEN",
+          "details": "Byte is NOT written by 0x903111BC (strb r4, [r1, #8]); hardware/consumer semantics remain UNPROVEN"
+        }
+      },
+      "bounds_checking": {
+        "in_appender": false,
+        "note": "0x903111BC contains NO internal capacity check; increments *count_ptr unconditionally. Bounds checking is enforced by callers."
+      },
+      "callers_count": 14,
+      "callers": [
+        "0x9030CB30",
+        "0x9030CC14",
+        "0x90311210",
+        "0x90311234",
+        "0x9031125E",
+        "0x90311288",
+        "0x903112BE",
+        "0x903112E8",
+        "0x9031130A",
+        "0x90311332",
+        "0x9031135A",
+        "0x90311388",
+        "0x903113B0",
+        "0x903113E0"
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "rectangular_clipping",
+      "address": "0x9030C9D0",
+      "arguments": "r1 = &rect, r2 = clip_x, r3 = clip_y, [sp, 0x14] = clip_w, [sp, 0x18] = clip_h",
+      "operation": "Clamps rect X, Y against clip viewport; recalculates width and height. Returns 0 if rectangle is outside viewport.",
+      "confidence": "PROVEN"
+    },
+    {
+      "stage": 3,
+      "name": "cosd_control_batching",
+      "class_name": "COSDDControl",
+      "rtti_descriptor": "0x91500F70",
+      "vtable": "0x91517260",
+      "slots": {
+        "+0x00": {
+          "target": "0x902EDE1C",
+          "name": "QueryCapability",
+          "confidence": "PROVEN"
+        },
+        "+0x04": {
+          "target": "0x902EDE22",
+          "name": "SubmitRectList",
+          "stride_bytes": 12,
+          "plane_bounds_check": "cmp r0, #7 (bhs 0x902EDE94) enforces max 7 planes",
+          "rect_loop": "iterates r5 over rect count r7",
+          "confidence": "PROVEN"
+        },
+        "+0x08": {
+          "target": "0x902EDE9A",
+          "name": "FlushDisplayPlanes",
+          "calls_clipping": "0x9030C9D0",
+          "calls_dma_submit": "0x902BC5F4",
+          "confidence": "PROVEN"
+        },
+        "+0x14": {
+          "target": "0x902EDF32",
+          "name": "SetPlaneVisibility",
+          "confidence": "PROVEN"
+        }
+      }
+    },
+    {
+      "stage": 4,
+      "name": "color_palette_binding",
+      "class_name": "COSDCColorPalette",
+      "rtti_descriptor": "0x915029F8",
+      "vtable": "0x9151FBB0",
+      "slots": {
+        "+0x10": {
+          "target": "0x902AFF16",
+          "name": "BindPalette",
+          "confidence": "PROVEN"
+        },
+        "+0x14": {
+          "target": "0x902AFF50",
+          "name": "ResetPalette",
+          "confidence": "PROVEN"
+        },
+        "+0x18": {
+          "target": "0x902AFF78",
+          "name": "GetPaletteTablePtr",
+          "confidence": "PROVEN"
+        }
+      }
+    },
+    {
+      "stage": 5,
+      "name": "hardware_plane_dma_boundary",
+      "address": "0x902BC5F4",
+      "state_structures": {
+        "display_controller_state": "0x10348F6C",
+        "active_plane_descriptor": "0x10123358"
+      },
+      "dma_submit_targets": [
+        "0x902BC24E",
+        "0x902BC314"
+      ],
+      "synchronization": "Hardware VSYNC / vertical blanking interrupt sync required to prevent tearing / watchdog timeout",
+      "confidence": "PROVEN"
+    }
+  ],
+  "safety_ledger": {
+    "proven_facts": [
+      "Vector primitive appender 0x903111BC appends 10-byte records (<HHHBB) without internal capacity check.",
+      "Clipping routine 0x9030C9D0 clamps coordinates against rectangular viewports.",
+      "COSDDControl (vtable 0x91517260) manages 12-byte COSDCRectInfo lists, enforces plane < 7 bounds, and executes FlushDisplayPlanes.",
+      "FlushDisplayPlanes (0x902EDE9A) invokes DMA boundary routine 0x902BC5F4.",
+      "COSDCColorPalette (vtable 0x9151FBB0) slot +0x18 provides 256-color LUT pointer."
+    ],
+    "unproven_boundaries": [
+      "Byte +0x09 of the 10-byte primitive is never written by 0x903111BC; its semantic meaning remains UNPROVEN.",
+      "Direct RAM injection of custom OSD primitives into active display queues is UNPROVEN and unsafe without hardware lock synchronization."
+    ]
+  }
+}
