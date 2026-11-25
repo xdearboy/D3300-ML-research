@@ -101,7 +101,7 @@ static void test_record_translation(void) {
     DmlMenuCommand menu_cmd = 0;
     DmlEvent event = {0};
 
-    /* MENU candidate */
+    /* Historical host-simulator fixture, not a physical MENU assertion. */
     DmlNikonButtonRecord rec_menu = {.code = DML_NIKON_BTN_CODE_MENU_CANDIDATE, .value_1 = 1};
     assert(dml_nikon_translate_record(&rec_menu, &menu_cmd, &event, 100) == 1);
     assert(menu_cmd == DML_MENU_TOGGLE);
@@ -109,12 +109,12 @@ static void test_record_translation(void) {
     assert(event.button == (int)DML_NIKON_BTN_CODE_MENU_CANDIDATE);
     assert(event.millis == 100);
 
-    /* OK candidate with value_1 == 1 (press) */
+    /* Historical host fixture with value_1 == 1. */
     DmlNikonButtonRecord rec_ok_press = {.code = DML_NIKON_BTN_CODE_OK_CANDIDATE, .value_1 = 1};
     assert(dml_nikon_translate_record(&rec_ok_press, &menu_cmd, &event, 200) == 1);
     assert(menu_cmd == DML_MENU_ACTIVATE);
 
-    /* OK candidate with value_1 == 0 (not active press) -> does not trigger menu command */
+    /* Historical host fixture with value_1 == 0 -> no host menu command. */
     DmlNikonButtonRecord rec_ok_idle = {.code = DML_NIKON_BTN_CODE_OK_CANDIDATE, .value_1 = 0};
     assert(dml_nikon_translate_record(&rec_ok_idle, &menu_cmd, &event, 250) == 0);
 

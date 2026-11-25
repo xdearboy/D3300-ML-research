@@ -13,7 +13,11 @@
 #define DML_NIKON_QUEUE_RECORD_SIZE 16u
 #define DML_NIKON_RELAY_EVENT_EX_MAX_SLOTS 32u
 
-/* Candidate button codes verified in B firmware input pipeline */
+/*
+ * Historical host-simulator fixtures only.  The raw queue values are observed
+ * in B firmware, but their MENU/OK/INFO/arrow physical identities are not
+ * established and these constants are not a camera ABI.
+ */
 #define DML_NIKON_BTN_CODE_MENU_CANDIDATE  0x000Bu
 #define DML_NIKON_BTN_CODE_OK_CANDIDATE    0x000Cu
 #define DML_NIKON_BTN_CODE_INFO_CANDIDATE  0x000Du
