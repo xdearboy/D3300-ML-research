@@ -16,7 +16,12 @@ class FastAuditTest(unittest.TestCase):
             digest = hashlib.sha256(fw.read_bytes()).hexdigest()
             cache_dir = root / "cache"
             cache_dir.mkdir()
-            cache = cache_dir / f"{digest}.json"
+            tool_dir = Path("tools")
+            fingerprint = hashlib.sha256()
+            for name in ("d3300_fast_audit.py", "d3300_verify_camera_status.py",
+                         "d3300_info_disp_map.py", "d3300_tkernel_veneer_audit.py"):
+                fingerprint.update(name.encode() + b"\0" + (tool_dir / name).read_bytes())
+            cache = cache_dir / f"{digest}-{fingerprint.hexdigest()}.json"
             cache.write_text(json.dumps({"sha256": digest, "cached": True}))
             p = subprocess.run([
                 sys.executable, "tools/d3300_fast_audit.py", str(fw), "--cache-dir", str(cache_dir)

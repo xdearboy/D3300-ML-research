@@ -27,13 +27,21 @@ def main() -> int:
     fw = args.firmware.resolve()
     digest = sha256(fw)
     args.cache_dir.mkdir(parents=True, exist_ok=True)
-    cache = args.cache_dir / f"{digest}.json"
+    root = Path(__file__).resolve().parent
+    check_files = [root / name for name in (
+        "d3300_fast_audit.py", "d3300_verify_camera_status.py",
+        "d3300_info_disp_map.py", "d3300_tkernel_veneer_audit.py",
+    )]
+    checks_digest = hashlib.sha256()
+    for path in check_files:
+        checks_digest.update(path.name.encode() + b"\0" + path.read_bytes())
+    fingerprint = checks_digest.hexdigest()
+    cache = args.cache_dir / f"{digest}-{fingerprint}.json"
     if cache.exists() and not args.force:
         print(f"CACHE {digest} {cache}")
         print(cache.read_text())
         return 0
 
-    root = Path(__file__).resolve().parent
     checks = [
         [sys.executable, str(root / "d3300_verify_camera_status.py"), str(fw), "--verify"],
         [sys.executable, str(root / "d3300_info_disp_map.py"), str(fw), "--verify"],
@@ -47,7 +55,7 @@ def main() -> int:
             print(p.stdout, end="")
             print(p.stderr, end="", file=sys.stderr)
             return p.returncode
-    payload = {"firmware": str(fw), "sha256": digest, "checks": results}
+    payload = {"firmware": str(fw), "sha256": digest, "checks_fingerprint": fingerprint, "checks": results}
     cache.write_text(json.dumps(payload, indent=2) + "\n")
     print(f"PASS {digest} {cache}")
     return 0
