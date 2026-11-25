@@ -86,6 +86,14 @@ class MenuRenderPathTest(unittest.TestCase):
         self.assertEqual(struct.unpack("<I", self.raw(0x9012A51C, 4))[0], 0x10383580)
         self.assertEqual(thumb_bl_target(0x9012A11E, self.raw(0x9012A11E, 4)), 0x90129EFE)
 
+    def test_output_object_virtual_slots_are_control_flow_only(self):
+        """State manager invokes output-object slots; their implementations are dynamic."""
+        self.assertEqual(self.raw(0x90129FBE, 8), bytes.fromhex("3068016a30468847"))  # +0x20
+        self.assertEqual(self.raw(0x9012A012, 10), bytes.fromhex("30683a46836e30469847"))  # +0x68
+        self.assertEqual(self.raw(0x9012A028, 10), bytes.fromhex("30683946026f30469047"))  # +0x70
+        self.assertEqual(self.raw(0x9012A062, 10), bytes.fromhex("30680021426830469047"))  # +0x04
+        self.assertEqual(self.raw(0x90129AE6, 16), bytes.fromhex("2868012102aad0f894302846984754f8"))  # +0x94
+
 
 if __name__ == "__main__":
     unittest.main()

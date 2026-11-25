@@ -45,12 +45,24 @@
       "from": "draw-state path 0x90129FA0",
       "observation": "calls an output object's vtable slot +0x5C; subsequent code issues a call through veneer 0x90225D70",
       "evidence_bytes": ["3068c26d30469047", "c120fcf082ea0446"]
+    },
+    {
+      "from": "state manager 0x90129EFE",
+      "observation": "after selecting a non-null output object from a state-dependent pointer, conditionally invokes its vtable slots +0x04, +0x20, +0x5C, +0x68 and +0x70; helper 0x90129AA6 invokes slot +0x94",
+      "evidence_bytes": {
+        "slot_0x20": "3068016a30468847",
+        "slot_0x68": "30683a46836e30469847",
+        "slot_0x70": "30683946026f30469047",
+        "slot_0x04": "30680021426830469047",
+        "slot_0x94": "2868012102aad0f894302846984754f8"
+      }
     }
   ],
   "not_proven": [
     "Physical MENU or OK identity for any raw queue code.",
     "The concrete output-object implementation, pixel format, scan-out engine, DMA semantics, or vertical-blank synchronization.",
     "The semantic meaning of CGUICDraw state-slot fields or their runtime-selected output-object instances.",
+    "The names, calling contracts, side effects or safety of output-object virtual slots +0x04/+0x20/+0x5C/+0x68/+0x70/+0x94.",
     "Safety of inserting records, calling these methods, or writing any firmware memory."
   ]
 }
