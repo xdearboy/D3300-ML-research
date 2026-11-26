@@ -20,7 +20,8 @@ class FastAuditTest(unittest.TestCase):
             fingerprint = hashlib.sha256()
             for name in ("d3300_fast_audit.py", "d3300_verify_camera_status.py",
                          "d3300_info_disp_map.py", "d3300_tkernel_veneer_audit.py",
-                         "d3300_runtime_boundaries.py", "d3300_extension_seams.py"):
+                         "d3300_runtime_boundaries.py", "d3300_extension_seams.py",
+                         "d3300_info_consumer_candidates.py"):
                 fingerprint.update(name.encode() + b"\0" + (tool_dir / name).read_bytes())
             cache = cache_dir / f"{digest}-{fingerprint.hexdigest()}.json"
             cache.write_text(json.dumps({"sha256": digest, "cached": True}))

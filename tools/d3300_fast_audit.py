@@ -32,6 +32,7 @@ def main() -> int:
         "d3300_fast_audit.py", "d3300_verify_camera_status.py",
         "d3300_info_disp_map.py", "d3300_tkernel_veneer_audit.py",
         "d3300_runtime_boundaries.py", "d3300_extension_seams.py",
+        "d3300_info_consumer_candidates.py",
     )]
     checks_digest = hashlib.sha256()
     for path in check_files:
@@ -49,6 +50,7 @@ def main() -> int:
         [sys.executable, str(root / "d3300_tkernel_veneer_audit.py"), str(fw), "--verify"],
         [sys.executable, str(root / "d3300_runtime_boundaries.py"), str(fw), "--verify"],
         [sys.executable, str(root / "d3300_extension_seams.py"), str(fw), "--verify"],
+        [sys.executable, str(root / "d3300_info_consumer_candidates.py"), str(fw), "--verify"],
     ]
     results = []
     for cmd in checks:
