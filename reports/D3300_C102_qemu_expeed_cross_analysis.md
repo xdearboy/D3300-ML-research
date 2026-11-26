@@ -9,7 +9,7 @@
 
 In November 2026, software engineer Arne Baeyens published **qemu-expeed** and a working native port of **DOOM** on the Nikon Z 6II (dual EXPEED 6 SoC), accompanied by an article on NikonRumors.
 
-This report analyzes the architecture, execution vectors, and reverse-engineering findings of `qemu-expeed` and evaluates how they map directly to our **D3300 C 1.02 (EXPEED 4)** research.
+This report uses `qemu-expeed` only to generate search hypotheses for **D3300 C 1.02 (EXPEED 4)**. It does not establish compatible execution vectors, addresses, service IDs, or peripheral layouts.
 
 ---
 
@@ -20,10 +20,10 @@ This report analyzes the architecture, execution vectors, and reverse-engineerin
 | **SoC Lineage** | Socionext Milbeaut (dual Cortex-A7) | Socionext Milbeaut (Cortex-A9) |
 | **Operating System** | **T-Kernel** (μITRON specification) | **T-Kernel 2.0** (identified at `0x9154EE20`) |
 | **Syscall Mechanism** | `svc #6` with code in `IP` (e.g. `0x80180100`) | RAM dispatch table `0x10000000` / SWI thunks |
-| **Task Creation** | `tk_cre_tsk` (`0x101044EC`), `tk_sta_tsk` | `0x10000028` (`tk_cre_tsk`), `0x90226040` thunk |
+| **Task Creation** | `tk_cre_tsk` (`0x101044EC`), `tk_sta_tsk` | runtime-target calls observed; service names and ABI unproven |
 | **Hardware Reference** | GoPro GP1 / GP2 GPL kernel patches | Socionext Milbeaut M-series reference drivers |
 | **Non-Volatile RAM** | DRAM above OS space (`0xD0000000`) | RAM space (`0x10000000..0x104A0000`) |
-| **Display Overlay** | Hardware planes (`Z6II_DISPENG + 0x6440`) | DrawBuffer 20-slot descriptor table (`0x104A0868`) |
+| **Display Overlay** | Hardware planes (`Z6II_DISPENG + 0x6440`) | OSD command path observed; live scan-out ABI unproven |
 | **PTP Service Mode** | `0x94FE` / `0x94FF` with sub-ops `0xF036`/`0xF037` | Unverified; raw value occurrences only |
 
 ---

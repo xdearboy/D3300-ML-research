@@ -206,13 +206,13 @@
 
 ## 5. Event Trigger Ledger (`0x90027316`)
 
-Функция `0x90027316` является тонкой обёрткой над системным вызовом T-Kernel `tk_set_flg`:
+Функция `0x90027316` передаёт идентификатор и маску в veneer `0x90225FD0`. Поведение согласуется с установкой event flag, но имя `tk_set_flg` и ABI здесь являются гипотезой, а не доказанным символом ROM:
 ```arm
 90027316: 4601        mov     r1, r0              ; r1 = event_mask (flgptn)
 90027318: 4804        ldr     r0, [0x9002732c]    ; [0x9002732c] = 0x10121EA8
 9002731a: b510        push    {r4, lr}
 9002731c: 6840        ldr     r0, [r0, #4]        ; r0 = flgid (идентификатор флага диспетчера)
-9002731e: f1fe ef57   blx     0x90225FD0          ; tk_set_flg(flgid, flgptn)
+9002731e: f1fe ef57   blx     0x90225FD0          ; runtime-target veneer; inferred event-flag role
 90027322: 2800        cmp     r0, #0
 90027324: d001        beq     0x9002732a
 90027326: f06f 0001   mvn     r0, #1

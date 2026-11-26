@@ -59,7 +59,7 @@ The entry point is Method 37 of class `CGPSCProcedure` (`14CGPSCProcedure`, vtab
 The parser verifies the inner container structure:
 - Root record identifier must be `'M'` (`0x4D`, checked at `0x902E7F10`).
 - Sub-records are iterated in a loop up to `r8` sections; each entry must begin with `'S'` (`0x53`, checked at `0x902E7F36`).
-- Once verified, the update worker task is launched via T-Kernel system call `0x10000028` (`tk_cre_tsk` / `tk_sta_tsk`) via thunk `0x90226040`.
+- Once verified, control reaches thunk `0x90226040`, whose final target is runtime RAM state. The ROM call shape is consistent with task setup, but the exact T-Kernel service name and packet ABI are not proven by this image.
 
 ---
 
@@ -88,8 +88,7 @@ At `0x902F5B0E`:
 At `0x9026F1C2` (called from `CCIPBController` vtable entry at `0x9151AAA0`):
 - Checks for file `/sd0/LVRAW/LVRAW.BIN`.
 - If found, opens the stream via `vfunc [r1 + 0xE8]` and queries the payload length.
-- Loads raw sensor data directly into the LiveView DSP DMA receive buffer at `[r4 + 0x794]` via `0x902765E8`.
-- This enables synthetic testing of the LiveView pipeline without exposing the physical sensor to light.
+- Passes the stream data toward object field `[r4 + 0x794]` through `0x902765E8`. Static control flow does not establish that field as a DMA receive buffer or establish the resulting hardware behavior.
 
 ---
 
@@ -97,4 +96,4 @@ At `0x9026F1C2` (called from `CCIPBController` vtable entry at `0x9151AAA0`):
 
 1. **No firmware-flashing conclusion is authorized by this report**: RAM addresses in the analyzed image (`0x10000000..0x104A0000`) and file-service paths do not prove relocatable module hooks, an executable loader, or a safe camera execution path. Any in-memory-module design remains a hypothesis requiring independent ARM/Thumb, relocation, cache, privilege, and lifecycle evidence.
 2. **Standard File Access**: The camera's file system service natively mounts the SD card as `/sd0/` and provides standard open/read/close facilities through `CJAFFSignalEvntPort` and `CGPSCProcedure`.
-3. **OSD boundary**: Framebuffer descriptor table `0x104A0868` is observed as a RAM data structure in the static image. Safe mutation, display ownership, and rollback behavior are not proven by this report.
+3. **OSD boundary**: a RAM data structure exists at `0x104A0868`; calling it a framebuffer descriptor table, assigning a pixel format, or mutating it is not justified by this report.

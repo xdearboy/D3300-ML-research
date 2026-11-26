@@ -40,7 +40,7 @@
     "worker_dispatcher": {
       "address": "0x900271A4",
       "mode": "Thumb-2",
-      "wait_call": "0x900271C0 bl 0x90025FB8 (tk_wai_flg)",
+      "wait_call": "0x900271C0 bl 0x90025FB8 (runtime-target veneer; event-wait role inferred)",
       "mask_test": "0x900271CE tst r0, r1",
       "dispatch_call": "0x900271DA blx r0",
       "clearing_store": "none (strictly persistent)"
@@ -49,17 +49,17 @@
       "address": "0x900272A6",
       "mode": "Thumb-2",
       "input_args": "r0 = callback_func_ptr (Thumb address with LSB=1)",
-      "locking": "0x900272BE bl 0x90025F36 (tk_wai_sem)",
+      "locking": "0x900272BE bl 0x90025F36 (runtime-target veneer; locking role inferred)",
       "slot_search": "checks [slot + 4] == 0 for r4 in 0..31",
       "write_instruction": "0x9002730A str.w r9, [r1, #4]",
-      "unlocking": "0x900272EA bl 0x90025F48 (tk_sig_sem)",
+      "unlocking": "0x900272EA bl 0x90025F48 (runtime-target veneer; unlock role inferred)",
       "return_value": "r0 = slots[r4].mask (1 << r4) on success; 0 on table full"
     },
     "event_signal": {
       "address": "0x90027316",
       "mode": "Thumb-2",
       "input_args": "r0 = event_mask (token returned by registration)",
-      "syscall": "0x9002731E bl 0x90025FD2 (tk_set_flg)",
+      "syscall": "0x9002731E bl 0x90025FD2 (runtime-target veneer; event-signal role inferred)",
       "return_value": "0 on success, -1 on error"
     }
   },

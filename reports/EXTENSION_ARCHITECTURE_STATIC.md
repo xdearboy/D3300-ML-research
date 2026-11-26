@@ -105,7 +105,7 @@ Complete static reverse engineering audit of Nikon D3300 Firmware C 1.02 (`b860_
 
 ---
 
-### Graph 3: Unified OSD & Hardware Plane DMA Graph
+### Graph 3: OSD downstream control-flow graph
 ```text
 [UI Screens / Graphical Widgets (Audio Meter 0x9030CB30, AF Reticle, Text)]
              │
@@ -236,15 +236,9 @@ For non-destructive extension modules running in the host simulator or host tool
 
 ---
 
-## 4. Hardware Proof Checklist
+## 4. Unresolved runtime evidence
 
-Before deploying any experimental payload to physical hardware, the following hardware proofs must be obtained using physical test equipment:
-
-- [ ] **Hardware Pin 8 Mapping**: Connect a logic analyzer to Expeed 4 GPIO Pin 8; press each physical camera button (MENU, OK, INFO, D-pad) and record which button toggles the pin.
-- [ ] **RAM Table 0x10319D2C Post-Boot Dump**: Read RAM at `0x10319D2C` after camera initialization to identify the runtime-registered function pointer at offset `+0x18` (Channel 2 handler).
-- [ ] **Display VSYNC Interrupt Timing**: Capture the vertical blanking interval interrupt handler to identify safe display plane switching windows.
-- [ ] **Watchdog Refresh Rate**: Verify the kick interval of watchdog service `0x90226068` to ensure custom extensions do not starve the watchdog timer.
-- [ ] **OSD Primitive Byte +0x09 Consumer**: Trace hardware rasterizer register writes to determine if byte `+0x09` is consumed by the hardware display plane blitter.
+ROM-only analysis stops at runtime-populated callback tables, output objects and RAM-target veneers. This project does not perform camera operations. Physical Pin 8 identity, the post-boot callback at `0x10319D2C + 0x18`, live display ownership and synchronization, watchdog service identity, and the consumer semantics of OSD byte `+0x09` therefore remain unresolved.
 
 ---
 
