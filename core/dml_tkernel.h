@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* Nikon D3300 C 1.02 T-Kernel 2.0 RTOS interface definitions.
-   Verified against B-firmware strings at ROM 0x9154EE20 and kernel init at 0x9158B40C. */
+/* Host-side T-Kernel model used by the simulator and unit tests.
+   These declarations are not a recovered Nikon D3300 firmware ABI. */
 
 typedef int32_t  DmlTkError;
 typedef int32_t  DmlTkId;
@@ -84,13 +84,12 @@ DmlTkError dml_tk_unl_mtx(DmlTkId mtxid);
 DmlTkError dml_tk_quiet_tasks(DmlTkQuietState *state, const DmlTkId *targets, size_t n_targets);
 DmlTkError dml_tk_unquiet_tasks(DmlTkQuietState *state);
 
-/* Mailbox send message: models firmware 0x9002EC0E (snd_mbf) */
+/* Host-model message-buffer operations. */
 DmlTkError dml_tk_snd_mbf(DmlTkId mbfid, const void *msg, size_t msgsz, DmlTkTimeout tmout);
 
-/* Mailbox receive message: models firmware rcv_mbf */
 DmlTkError dml_tk_rcv_mbf(DmlTkId mbfid, void *out_msg, DmlTkTimeout tmout);
 
-/* Task delay (sleep): models firmware dly_tsk */
+/* Host-model task delay. */
 DmlTkError dml_tk_dly_tsk(DmlTkTimeout millis);
 
 #endif /* DML_TKERNEL_H */

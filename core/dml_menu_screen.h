@@ -5,9 +5,8 @@
 #include "dml_menu.h"
 #include "dml_camera_status.h"
 
-/* D3300-ML Flat Cinema Settings Menu Renderer
-   Strict 90-degree flat geometry, Catppuccin Mocha colors, and precise grid layout.
-   Renders onto 720x480 32bpp ARGB8888 DrawBuffer. */
+/* Host-simulator menu renderer.  The 720x480 ARGB8888 surface is a project
+   design choice; it is not a recovered D3300 LCD buffer format or address. */
 
 int dml_menu_screen_render(
     DmlDrawBufferTable *table,
