@@ -22,7 +22,7 @@ class FastAuditTest(unittest.TestCase):
                          "d3300_info_disp_map.py", "d3300_tkernel_veneer_audit.py",
                          "d3300_runtime_boundaries.py", "d3300_extension_seams.py",
                          "d3300_info_consumer_candidates.py",
-                         "d3300_info_state_gates.py"):
+                         "d3300_info_state_gates.py", "d3300_state_route_analyzer.py"):
                 fingerprint.update(name.encode() + b"\0" + (tool_dir / name).read_bytes())
             cache = cache_dir / f"{digest}-{fingerprint.hexdigest()}.json"
             cache.write_text(json.dumps({"sha256": digest, "cached": True}))

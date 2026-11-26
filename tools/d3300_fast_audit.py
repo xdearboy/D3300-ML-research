@@ -34,6 +34,7 @@ def main() -> int:
         "d3300_runtime_boundaries.py", "d3300_extension_seams.py",
         "d3300_info_consumer_candidates.py",
         "d3300_info_state_gates.py",
+        "d3300_state_route_analyzer.py",
     )]
     checks_digest = hashlib.sha256()
     for path in check_files:
@@ -53,6 +54,7 @@ def main() -> int:
         [sys.executable, str(root / "d3300_extension_seams.py"), str(fw), "--verify"],
         [sys.executable, str(root / "d3300_info_consumer_candidates.py"), str(fw), "--verify"],
         [sys.executable, str(root / "d3300_info_state_gates.py"), str(fw), "--verify"],
+        [sys.executable, str(root / "d3300_state_route_analyzer.py"), str(fw), "--verify"],
     ]
     results = []
     for cmd in checks:
