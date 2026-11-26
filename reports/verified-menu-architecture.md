@@ -114,62 +114,20 @@ The verified execution path from queue retrieval to virtual method execution:
 
 ---
 
-## 3. Passive Observation Seams
+## 3. Candidate classification and stopping points
 
-For non-destructive extension modules that need to track menu activity without modifying camera code or state:
+- `0x9002A6A8` writes a view pointer to RAM `0x10123844`. This is an
+  observation candidate, not a proven safe external-read contract: object
+  lifetime and synchronization are unknown.
+- The menu TBB and virtual slots prove stock control flow. They do not prove
+  physical button labels, an event-tap interface, or safe interception.
+- `0x903111BC` proves construction of 10-byte OSD records. It does not prove
+  that an external caller may submit records or that capacity and ownership
+  requirements are satisfied.
+- The output path reaches runtime-selected objects and RAM-target veneers, so
+  the concrete display implementation and ABI are outside the static image.
 
-1. **Active Screen Observation Seam**:
-   - Location: RAM pointer at `0x10123844`.
-   - Populated by `CMENUController` at `0x9002A6AC` (`str r0, [0x10123844]`).
-   - Content: pointer to currently active `CGUICView` / `CMENUTopMenuView`.
-   - Safety: **Read-Only**. Reading `0x10123844` introduces zero side effects.
-
-2. **Screen Stack Inspection**:
-   - Location: `[controller + 0x18] + 0x0C` (container list).
-   - Element 0 points to active `CGUICEntry`.
-   - `*(uint32_t*)(entry + 8)` gives the active view pointer.
-   - `*(uint32_t*)(entry + 0x0C)` gives the active screen ID.
-   - Safety: **Read-Only**.
-
-3. **Button Event Tap**:
-   - Mailbox getter `0x9035128C` safely reads the last 16-byte button message from `[state + 0x30]`.
-   - Returns ready flag (`state + 0x10`).
-   - Callers: `0x903292C6`, `0x9032936A`, `0x90332E58`, `0x90332FAC`.
-   - Safety: **Read-Only**.
-
----
-
-## 4. Conceptual Extension Architecture
-
-An extension framework for custom menus (such as intervalometer, film simulation, photo assist) can be structured with clean separation of concerns:
-
-```text
-┌────────────────────────────────────────────────────────┐
-│                   Module Manager                       │
-│  (Orchestrates lifecycle: init, update, render, exit)  │
-└───────┬───────────────────┬────────────────────┬───────┘
-        │                   │                    │
-        ▼                   ▼                    ▼
-┌──────────────┐    ┌──────────────┐    ┌─────────────────┐
-│ EventAdapter │    │  MenuModel   │    │ RendererAdapter │
-│ (Read-Only   │    │ (State Tree, │    │ (OSD Primitives │
-│  Event Tap)  │    │  Navigation) │    │  0x903111BC)    │
-└──────────────┘    └──────────────┘    └─────────────────┘
-```
-
-1. **EventAdapter**:
-   - Taps logical IDs: `0x01` (Slot +0x12C), `0x05..0x08` (Slots +0x130..+0x13C), `0x1B` (Slot +0x17C).
-   - While custom menu is inactive, all events pass through unaffected.
-   - When custom overlay is engaged, events update the custom `MenuModel`.
-
-2. **MenuModel**:
-   - Represents custom menu hierarchy: Categories -> Items -> Values/Actions.
-   - Tracks cursor position, active tab, edit mode, and parameter ranges.
-
-3. **RendererAdapter**:
-   - Emits 10-byte vector primitives (`0x903111BC`) or direct frame-buffer overlays.
-   - Uses `COSDDControl` / `COSDCRectInfo` bounding boxes to avoid corrupting native display planes.
-
-4. **ModuleManager**:
-   - Hosts decoupled modules (`Intervalometer`, `FujiFilmSim`, `PhotoAssist`).
-   - Each module implements uniform hooks: `init()`, `handle_key(key)`, `render(ctx)`, `destroy()`.
+No camera-safe insertion, event-consumption or rendering seam is currently
+proven. Host-side `MenuModel` and module interfaces remain useful simulator
+architecture, but they are not bindings to the camera firmware. See
+`verified-extension-seams.md` for the machine-checked classification.

@@ -1,6 +1,6 @@
-"""Tests verifying the verified menu architecture, class hierarchy,
+"""Tests for D3300 menu class hierarchy and ROM control-flow anchors.
 
-vtable dispatch slots, and passive observation seams on Nikon D3300 C 1.02.
+The RAM observations here do not establish a safe external read or hook ABI.
 """
 
 from __future__ import annotations
